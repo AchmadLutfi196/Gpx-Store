@@ -1,6 +1,6 @@
 # GPX Store
 
-GPX Store adalah platform e-commerce berbasis Laravel yang memungkinkan pengguna untuk menjelajahi, membeli, dan mengelola produk secara online. Website ini dibangun menggunakan Laravel 11 dengan Filament sebagai admin panel, serta integrasi pembayaran dengan Midtrans.
+GPX Store adalah platform e-commerce berbasis Laravel yang memungkinkan pengguna untuk menjelajahi, membeli, dan mengelola produk secara online. Website ini dibangun menggunakan Laravel 12 dengan Filament sebagai admin panel, serta integrasi pembayaran dengan Midtrans.
 
 ## Fitur Utama
 - Manajemen pengguna dan autentikasi
