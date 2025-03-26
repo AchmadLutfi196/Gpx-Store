@@ -1,0 +1,23 @@
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                "resources/css/app.css",
+                "resources/css/luvi-ui.css",
+                "resources/js/app.js",
+            ],
+            refresh: true,
+        }),
+    ],
+    server: {
+        proxy: {
+            "/uploads": {
+                target: "http://localhost:3000",
+                changeOrigin: true,
+            },
+        },
+    },
+});
