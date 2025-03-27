@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Facades\Filament;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AddressController;
 
 
 /*
@@ -52,6 +54,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/wishlist/remove/{wishlistId}', [App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
     Route::delete('/wishlist/clear', [App\Http\Controllers\WishlistController::class, 'clear'])->name('wishlist.clear');
     Route::post('/wishlist/toggle/{productId}', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Address routes
+     // This single line defines the main 'profile.addresses' route that's missing
+    Route::get('/profile/addresses', [AddressController::class, 'index'])->name('profile.addresses');
+    
+     // These are the additional routes with the nested naming
+    Route::get('/profile/addresses/create', [AddressController::class, 'create'])->name('profile.addresses.create');
+    Route::post('/profile/addresses', [AddressController::class, 'store'])->name('profile.addresses.store');
+    Route::get('/profile/addresses/{id}/edit', [AddressController::class, 'edit'])->name('profile.addresses.edit');
+    Route::put('/profile/addresses/{id}', [AddressController::class, 'update'])->name('profile.addresses.update');
+    Route::patch('/profile/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('profile.addresses.set-default');
+    Route::delete('/profile/addresses/{id}', [AddressController::class, 'destroy'])->name('profile.addresses.destroy');
+
 });
 
 
@@ -66,6 +81,33 @@ Route::get('/checkout/error', [App\Http\Controllers\CheckoutController::class, '
 // Route untuk mengecek status wishlist (tidak perlu auth)
 Route::get('/wishlist/check/{product}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
 
+// Profile Routes
+Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::put('/update', [ProfileController::class, 'update'])->name('update');
+    
+    Route::get('/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('change-password');
+    Route::put('/update-password', [ProfileController::class, 'updatePassword'])->name('update-password');
+    
+    Route::put('/update-profile-picture', [ProfileController::class, 'updateProfilePicture'])->name('update-profile-picture');
+    
+    // Orders
+    Route::get('/orders', [ProfileController::class, 'getOrders'])->name('orders');
+    Route::get('/orders/{id}', [ProfileController::class, 'showOrder'])->name('orders.show');
+    
+    // Wishlist
+    Route::get('/wishlist', [ProfileController::class, 'getWishlist'])->name('wishlist');
+    Route::post('/wishlist/add', [ProfileController::class, 'addToWishlist'])->name('wishlist.add');
+    Route::delete('/wishlist/{id}', [ProfileController::class, 'removeFromWishlist'])->name('wishlist.remove');
+    
+    // Reviews
+    Route::get('/reviews', [ProfileController::class, 'getUserReviews'])->name('reviews');
+    Route::delete('/reviews/{id}', [ProfileController::class, 'deleteReview'])->name('reviews.delete');
+    
+    // Account deletion
+    Route::delete('/delete-account', [ProfileController::class, 'deleteAccount'])->name('delete-account');
+});
 
 
 Route::middleware([Authenticate::class])->group(function () {

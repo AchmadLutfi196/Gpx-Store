@@ -9,7 +9,15 @@ class Wishlist extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'product_id'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'user_id',
+        'product_id',
+    ];
 
     /**
      * Get the user that owns the wishlist item.
@@ -20,7 +28,7 @@ class Wishlist extends Model
     }
 
     /**
-     * Get the product in the wishlist.
+     * Get the product that is in the wishlist.
      */
     public function product()
     {

@@ -138,7 +138,7 @@ class ProductController extends Controller
         $review = new Review([
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? null,
             'product_id' => $product->id,
             'is_approved' => true, // Auto-approve for simplicity
         ]);

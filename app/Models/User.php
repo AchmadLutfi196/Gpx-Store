@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Address;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\Wishlist;
+use App\Models\Review;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -48,13 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
     
     // All other methods remain the same...
     
-    /**
-     * Get the user's addresses.
-     */
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
-    }
+    
     
     /**
      * Get the user's orders.
@@ -136,5 +135,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
     }
 }

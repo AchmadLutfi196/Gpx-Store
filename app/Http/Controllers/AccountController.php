@@ -107,6 +107,9 @@ class AccountController extends Controller
             'new_password' => ['nullable', 'min:8', 'confirmed'],
         ]);
         
+        // Get the user model
+        $user = \App\Models\User::find(Auth::id());
+        
         // Update basic info
         $user->name = $validated['name'];
         $user->email = $validated['email'];
@@ -132,7 +135,7 @@ class AccountController extends Controller
                     ->withErrors(['current_password' => 'Password saat ini tidak cocok']);
             }
             
-            $user->password = Hash::make($validated['new_password']);
+        $user->password = Hash::make($validated['new_password']);
         }
         
         $user->save();

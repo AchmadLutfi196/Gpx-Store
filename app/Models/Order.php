@@ -60,4 +60,12 @@ class Order extends Model
 
         return $statuses[$this->payment_status] ?? $statuses['pending'];
     }
+
+    /**
+     * Get the order items for the order.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
