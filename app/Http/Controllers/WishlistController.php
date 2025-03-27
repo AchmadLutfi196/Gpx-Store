@@ -90,44 +90,27 @@ class WishlistController extends Controller
     /**
      * Remove a product from the wishlist.
      */
-    public function remove(Request $request, $wishlistId)
-    {
-        // Pastikan user sudah login
-        if (!Auth::check()) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Please login to remove item from wishlist.'
-                ], 401);
-            }
-            return redirect()->route('login')->with('error', 'Please login to remove item from wishlist.');
-        }
-
-        try {
-            $wishlist = Wishlist::where('id', $wishlistId)
-                              ->where('user_id', Auth::id())
-                              ->firstOrFail();
-
-            $wishlist->delete();
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Product removed from wishlist.'
-                ]);
-            }
-            return redirect()->back()->with('success', 'Product removed from wishlist.');
-
-        } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to remove product from wishlist.'
-                ], 500);
-            }
-            return redirect()->back()->with('error', 'Failed to remove product from wishlist.');
-        }
+    public function remove($id)
+{
+    $wishlist = Wishlist::where('id', $id)
+        ->where('user_id', Auth::id())
+        ->first();
+        
+    if (!$wishlist) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Wishlist item not found'
+        ], 404);
     }
+    
+    $wishlist->delete();
+    
+    // Always return a JSON response for AJAX requests
+    return response()->json([
+        'success' => true,
+        'message' => 'Product removed from wishlist'
+    ]);
+}
 
     /**
      * Clear the entire wishlist.
