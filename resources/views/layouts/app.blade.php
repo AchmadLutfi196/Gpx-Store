@@ -459,10 +459,9 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Kategori</h3>
                     <ul class="space-y-2">
-                        <li><a href="{{ route('shop', ['category' => 1]) }}" class="text-gray-300 hover:text-white footer-link inline-block">Tas Ransel</a></li>
-                        <li><a href="{{ route('shop', ['category' => 2]) }}" class="text-gray-300 hover:text-white footer-link inline-block">Tas Selempang</a></li>
-                        <li><a href="{{ route('shop', ['category' => 3]) }}" class="text-gray-300 hover:text-white footer-link inline-block">Tas Tangan</a></li>
-                        <li><a href="{{ route('shop', ['category' => 4]) }}" class="text-gray-300 hover:text-white footer-link inline-block">Koper</a></li>
+                        @foreach(App\Models\Category::take(5)->get() as $category)
+                            <li><a href="{{ route('shop', ['category' => $category->id]) }}" class="text-gray-300 hover:text-white footer-link inline-block">{{ $category->name }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
                 

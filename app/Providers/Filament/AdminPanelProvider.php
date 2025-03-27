@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Models\User;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -27,6 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->authMiddleware([
+                Authenticate::class, // Pastikan user login
+                \App\Http\Middleware\AdminMiddleware::class, // Gunakan middleware dengan path lengkap
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])

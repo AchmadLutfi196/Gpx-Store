@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use Filament\Http\Middleware\Authenticate;
+use Filament\Facades\Filament;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -62,3 +65,9 @@ Route::get('/checkout/error', [App\Http\Controllers\CheckoutController::class, '
 
 // Route untuk mengecek status wishlist (tidak perlu auth)
 Route::get('/wishlist/check/{product}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
+
+
+
+Route::middleware([Authenticate::class])->group(function () {
+    // Route khusus admin Filament otomatis sudah diatur lewat AdminPanelProvider
+});

@@ -494,16 +494,30 @@
                             </div>
                         </div>
                         
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ $product->short_description ?? 'Tas premium dengan desain stylish dan bahan berkualitas tinggi.' }}</p>
+                        <p class="text-sm text-gray-600 mb-3 truncate overflow-hidden whitespace-normal line-clamp-2 h-10">{{ $product->description ?? 'Tas premium dengan desain stylish dan bahan berkualitas tinggi.' }}</p>
                         
                         <div class="flex justify-between items-center">
                             <span class="text-blue-600 font-bold text-lg">{{ 'Rp ' . number_format($product->price, 0, ',', '.') }}</span>
                             <div class="flex space-x-2">
-                                <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 hover:text-red-500 transition-colors duration-300">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                @auth
+                                @php
+                                    $inWishlist = App\Models\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
+                                @endphp
+                                <button type="button" 
+                                       class="wishlist-toggle p-2 bg-gray-100 hover:bg-gray-200 rounded-full {{ $inWishlist ? 'text-red-500' : 'text-gray-600 hover:text-red-500' }} transition-colors duration-300"
+                                       data-product-id="{{ $product->id }}"
+                                       data-status="{{ $inWishlist ? 'true' : 'false' }}">
+                                    <svg class="w-5 h-5" fill="{{ $inWishlist ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                     </svg>
                                 </button>
+                                @else
+                                <a href="{{ route('login') }}" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 hover:text-red-500 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </a>
+                                @endauth
                                 <button class="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors duration-300">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -756,6 +770,44 @@
                 el: '#testimonial-pagination',
                 clickable: true,
             },
+        });
+        
+        // Handle wishlist toggle with AJAX
+        document.querySelectorAll('.wishlist-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const inWishlist = this.dataset.status === 'true';
+                
+                // Send AJAX request
+                fetch(`/wishlist/toggle/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Toggle button appearance
+                        this.classList.toggle('text-red-500');
+                        this.classList.toggle('text-gray-600');
+                        
+                        const svg = this.querySelector('svg');
+                        if (inWishlist) {
+                            svg.setAttribute('fill', 'none');
+                            this.dataset.status = 'false';
+                        } else {
+                            svg.setAttribute('fill', 'currentColor');
+                            this.dataset.status = 'true';
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
         });
     });
 </script>

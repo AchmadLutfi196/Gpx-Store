@@ -229,7 +229,17 @@
                 Add to Wishlist
             </a>
             @endauth
-            
+            <!-- Product Description -->
+            <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-800 mb-2">Product Description</h4>
+                <div class="text-gray-600 prose max-w-none">
+                    @if(isset($product->description) && !empty($product->description))
+                        {!! $product->description !!}
+                    @else
+                        <p>No detailed description available for this product.</p>
+                    @endif
+                </div>
+            </div>
             <!-- Product Meta -->
             <div class="mt-6 border-t border-gray-200 pt-4">
                 @if(isset($product->sku) && !empty($product->sku))
@@ -241,7 +251,11 @@
                 
                 <div class="flex items-center text-sm text-gray-500 mb-2">
                     <span class="font-medium mr-2">Category:</span>
-                    <a href="{{ route('shop', ['category' => $product->category_id]) }}" class="text-blue-600 hover:underline">{{ $product->category->name ?? 'Uncategorized' }}</a>
+                    @if($product->category)
+                        <a href="{{ route('shop', ['category' => $product->category_id]) }}" class="text-blue-600 hover:underline">{{ $product->category->name }}</a>
+                    @else
+                        <span>Uncategorized</span>
+                    @endif
                 </div>
                 
                 @if(isset($product->brand) && $product->brand)
@@ -774,6 +788,7 @@
                 
                 // AJAX request would go here
                 
+
                 // Clear form and show success
                 Swal.fire({
                     title: 'Review Submitted!',

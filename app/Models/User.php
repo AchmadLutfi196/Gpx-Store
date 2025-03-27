@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'avatar',
+        'role',
     ];
 
     /**
@@ -44,6 +45,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
+    // All other methods remain the same...
     
     /**
      * Get the user's addresses.
@@ -120,9 +123,18 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function wishlist()
-{
-    return $this->hasMany(Wishlist::class);
-}
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 
+    public function hasRole($role)
+    {
+        // Implement your role checking logic here
+        return $this->role === $role; // Simple example, adjust based on your actual implementation
+    }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
 }

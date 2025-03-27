@@ -157,4 +157,17 @@ class Product extends Model
         return $query->whereNotNull('original_price')
                     ->whereColumn('original_price', '>', 'price');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the brand that owns the product.
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
 }
