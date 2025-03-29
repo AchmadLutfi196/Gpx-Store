@@ -50,6 +50,7 @@ class CheckoutController extends Controller
             'tax' => $tax,
             'total' => $total,
             'user' => Auth::user(),
+            'addresses' => Auth::user() ? Auth::user()->addresses()->orderBy('is_default', 'desc')->get() : [],
         ]);
     }
     
