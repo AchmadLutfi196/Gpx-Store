@@ -17,10 +17,17 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 class AdminPanelProvider extends PanelProvider
 {
+    public function boot()
+    {
+        Gate::define('accessFilamentAdmin', function ($user) {
+            return $user->is_admin === true;
+        });
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -28,9 +35,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->authGuard('web')
             ->authMiddleware([
-                Authenticate::class, // Pastikan user login
-                \App\Http\Middleware\AdminMiddleware::class, // Gunakan middleware dengan path lengkap
+                Authenticate::class, // Middleware autentikasi
             ])
             ->colors([
                 'primary' => Color::Amber,
@@ -55,9 +62,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
             ]);
     }
 }

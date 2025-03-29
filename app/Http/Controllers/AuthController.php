@@ -43,7 +43,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
                 
-            return redirect()->intended(route('account.dashboard'))
+            return redirect()->intended(route('profile.index'))
                 ->with('success', 'Welcome back, ' . Auth::user()->name);
         }
 
@@ -94,7 +94,7 @@ class AuthController extends Controller
         Auth::login($user);
 
         // Redirect to dashboard
-        return redirect(route('account.dashboard'))
+        return redirect(route('profile.index'))
             ->with('success', 'Welcome, ' . $user->name . '! Your account has been successfully created.');
     }
 

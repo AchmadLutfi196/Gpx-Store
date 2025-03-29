@@ -6,170 +6,218 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-#[\Illuminate\Routing\Controllers\Middleware(['auth'])]
 class AddressController extends Controller
 {
     /**
-     * Create a new controller instance.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Display a listing of the resource.
+     * Display a listing of the user's addresses.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        // Use the query builder's latest() method before calling get()
-        $addresses = Auth::user()->addresses()->latest()->get();
+        $addresses = Auth::user()->addresses()->orderBy('is_default', 'desc')->get();
         
-        return view('profile.addresses', compact('addresses'));
+        return view('addresses.index', compact('addresses'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new address.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('profile.address-form');
+        // Get list of provinces for select input
+        $provinces = $this->getProvincesList();
+        
+        return view('addresses.create', compact('provinces'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created address in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:15',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
-            'district' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:10',
             'province' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:20',
-            'notes' => 'nullable|string|max:1000',
-            'is_default' => 'sometimes|boolean',
         ]);
         
-        $user = Auth::user();
+        // Add user_id to the validated data
+        $validated['user_id'] = Auth::id();
         
-        // If this is the first address or is_default is checked, make it default
-        $makeDefault = $request->has('is_default') || $user->addresses()->count() === 0;
-        
-        // If making this address default, unset any existing defaults
-        if ($makeDefault) {
-            $user->addresses()->update(['is_default' => false]);
-        }
-        
-        // Create the address
-        $address = $user->addresses()->create(array_merge(
-            $validated,
-            ['is_default' => $makeDefault]
-        ));
-        
-        return redirect()->route('addresses.index')->with('success', 'Alamat berhasil ditambahkan');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Address $address)
-    {
-        // Check if the address belongs to the authenticated user
-        if ($address->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        return view('profile.address-form', compact('address'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Address $address)
-    {
-        // Check if the address belongs to the authenticated user
-        if ($address->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address_line1' => 'required|string|max:255',
-            'address_line2' => 'nullable|string|max:255',
-            'city' => 'required|string|max:100',
-            'district' => 'required|string|max:100',
-            'province' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:20',
-            'notes' => 'nullable|string|max:1000',
-            'is_default' => 'sometimes|boolean',
-        ]);
-        
-        $user = Auth::user();
-        
-        // If making this address default, unset any existing defaults
-        if ($request->has('is_default') && !$address->is_default) {
-            $user->addresses()->update(['is_default' => false]);
+        // If this is the first address or if set_as_default is checked, make it default
+        if (Auth::user()->addresses()->count() === 0 || $request->has('set_as_default')) {
             $validated['is_default'] = true;
-        }
-        
-        $address->update($validated);
-        
-        return redirect()->route('addresses.index')->with('success', 'Alamat berhasil diperbarui');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Address $address)
-    {
-        // Check if the address belongs to the authenticated user
-        if ($address->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        $user = Auth::user();
-        
-        // Don't allow deletion if this is the only address
-        if ($user->addresses()->count() <= 1) {
-            return back()->with('error', 'Tidak dapat menghapus alamat terakhir.');
-        }
-        
-        $wasDefault = $address->is_default;
-        $address->delete();
-        
-        // If the deleted address was the default, set another address as default
-        if ($wasDefault) {
-            $newDefaultAddress = $user->addresses()->first();
-            if ($newDefaultAddress) {
-                $newDefaultAddress->update(['is_default' => true]);
+            
+            // If making this address default, remove default status from other addresses
+            if (Auth::user()->addresses()->count() > 0) {
+                Auth::user()->addresses()->update(['is_default' => false]);
             }
         }
         
-        return redirect()->route('addresses.index')->with('success', 'Alamat berhasil dihapus');
+        // Create the address
+        $address = Address::create($validated);
+        
+        return redirect()->route('addresses.index')
+                         ->with('success', 'Address has been added successfully.');
+    }
+
+    /**
+     * Show the form for editing the specified address.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $address = Address::where('user_id', Auth::id())
+                          ->findOrFail($id);
+        
+        $provinces = $this->getProvincesList();
+        
+        return view('addresses.edit', compact('address', 'provinces'));
+    }
+
+    /**
+     * Update the specified address in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $address = Address::where('user_id', Auth::id())
+                          ->findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+            'address_line1' => 'required|string|max:255',
+            'address_line2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:10',
+            'province' => 'required|string|max:100',
+        ]);
+        
+        // If set_as_default is checked, make it default
+        if ($request->has('set_as_default') && !$address->is_default) {
+            // Remove default status from other addresses
+            Auth::user()->addresses()->where('id', '!=', $address->id)
+                                    ->update(['is_default' => false]);
+            
+            $validated['is_default'] = true;
+        }
+        
+        // Update the address
+        $address->update($validated);
+        
+        return redirect()->route('addresses.index')
+                         ->with('success', 'Address has been updated successfully.');
+    }
+
+    /**
+     * Remove the specified address from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $address = Address::where('user_id', Auth::id())
+                          ->findOrFail($id);
+        
+        // If deleting the default address, make another address default if available
+        if ($address->is_default) {
+            $newDefault = Auth::user()->addresses()
+                                     ->where('id', '!=', $address->id)
+                                     ->first();
+            
+            if ($newDefault) {
+                $newDefault->update(['is_default' => true]);
+            }
+        }
+        
+        $address->delete();
+        
+        return redirect()->route('addresses.index')
+                         ->with('success', 'Address has been deleted successfully.');
     }
 
     /**
      * Set the specified address as default.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function setDefault(Address $address)
+    public function setDefault($id)
     {
-        // Check if the address belongs to the authenticated user
-        if ($address->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
+        $address = Address::where('user_id', Auth::id())
+                          ->findOrFail($id);
         
-        $user = Auth::user();
+        // Remove default status from all addresses
+        Auth::user()->addresses()->update(['is_default' => false]);
         
-        // Unset any existing default addresses
-        $user->addresses()->update(['is_default' => false]);
-        
-        // Set the new default address
+        // Set the selected address as default
         $address->update(['is_default' => true]);
         
-        return back()->with('success', 'Alamat utama berhasil diperbarui');
+        return redirect()->route('addresses.index')
+                         ->with('success', 'Default address has been updated.');
+    }
+
+    /**
+     * Get list of provinces for select input.
+     *
+     * @return array
+     */
+    private function getProvincesList()
+    {
+        // This is a basic list of Indonesian provinces
+        // You can replace this with an API call or a more complete list
+        return [
+            'Aceh',
+            'Bali',
+            'Bangka Belitung',
+            'Banten',
+            'Bengkulu',
+            'DI Yogyakarta',
+            'DKI Jakarta',
+            'Gorontalo',
+            'Jambi',
+            'Jawa Barat',
+            'Jawa Tengah',
+            'Jawa Timur',
+            'Kalimantan Barat',
+            'Kalimantan Selatan',
+            'Kalimantan Tengah',
+            'Kalimantan Timur',
+            'Kalimantan Utara',
+            'Kepulauan Riau',
+            'Lampung',
+            'Maluku',
+            'Maluku Utara',
+            'Nusa Tenggara Barat',
+            'Nusa Tenggara Timur',
+            'Papua',
+            'Papua Barat',
+            'Riau',
+            'Sulawesi Barat',
+            'Sulawesi Selatan',
+            'Sulawesi Tengah',
+            'Sulawesi Tenggara',
+            'Sulawesi Utara',
+            'Sumatera Barat',
+            'Sumatera Selatan',
+            'Sumatera Utara',
+        ];
     }
 }

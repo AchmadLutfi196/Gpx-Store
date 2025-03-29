@@ -190,6 +190,7 @@
             @endif
             
             <!-- Add to Cart Form -->
+            @auth
             <form id="add-to-cart-form" class="mt-6">
                 <div class="flex items-center space-x-4 mb-4">
                     <div class="flex items-center border border-gray-300 rounded-md">
@@ -206,6 +207,17 @@
                     </button>
                 </div>
             </form>
+            @else
+            <div class="mt-6">
+                <a href="{{ route('login') }}" class="inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                    Login to Add to Cart
+                </a>
+                <p class="text-sm text-gray-500 mt-2 text-center">You need to be logged in to add items to your cart</p>
+            </div>
+            @endauth
             
             <!-- Tambahkan ini di bagian detail produk, di dekat tombol Add to Cart -->
             @auth

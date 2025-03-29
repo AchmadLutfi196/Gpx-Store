@@ -68,4 +68,13 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Get the address associated with the order.
+     */
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
+
 }

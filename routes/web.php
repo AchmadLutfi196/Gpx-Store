@@ -7,6 +7,8 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Facades\Filament;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\OrderController;
+
 
 
 /*
@@ -42,7 +44,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated user routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
     // User account routes
@@ -59,14 +61,9 @@ Route::middleware('auth')->group(function () {
      // This single line defines the main 'profile.addresses' route that's missing
     Route::get('/profile/addresses', [AddressController::class, 'index'])->name('profile.addresses');
     
-     // These are the additional routes with the nested naming
-    Route::get('/profile/addresses/create', [AddressController::class, 'create'])->name('profile.addresses.create');
-    Route::post('/profile/addresses', [AddressController::class, 'store'])->name('profile.addresses.store');
-    Route::get('/profile/addresses/{id}/edit', [AddressController::class, 'edit'])->name('profile.addresses.edit');
-    Route::put('/profile/addresses/{id}', [AddressController::class, 'update'])->name('profile.addresses.update');
-    Route::patch('/profile/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('profile.addresses.set-default');
-    Route::delete('/profile/addresses/{id}', [AddressController::class, 'destroy'])->name('profile.addresses.destroy');
-
+  
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
 });
 
 
@@ -110,6 +107,16 @@ Route::prefix('profile')->name('profile.')->middleware('auth')->group(function (
 });
 
 
+// Address routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/addresses', [App\Http\Controllers\AddressController::class, 'index'])->name('addresses.index');
+    Route::get('/addresses/create', [App\Http\Controllers\AddressController::class, 'create'])->name('addresses.create');
+    Route::post('/addresses', [App\Http\Controllers\AddressController::class, 'store'])->name('addresses.store');
+    Route::get('/addresses/{address}/edit', [App\Http\Controllers\AddressController::class, 'edit'])->name('addresses.edit');
+    Route::put('/addresses/{address}', [App\Http\Controllers\AddressController::class, 'update'])->name('addresses.update');
+    Route::delete('/addresses/{address}', [App\Http\Controllers\AddressController::class, 'destroy'])->name('addresses.destroy');
+    Route::post('/addresses/{address}/default', [App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.default');
+});
 Route::middleware([Authenticate::class])->group(function () {
     // Route khusus admin Filament otomatis sudah diatur lewat AdminPanelProvider
 });

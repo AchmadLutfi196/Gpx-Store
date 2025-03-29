@@ -311,15 +311,15 @@
                         </button>
                         <div class="dropdown-menu" id="user-dropdown-menu">
                             @auth
-                                <a href="{{ route('account.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">
+                                {{-- <a href="{{ route('account.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">
                                     <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                                </a>
+                                </a> --}}
                                 <a href="{{ route('profile.index') }}" class="block px-4 py-2 hover:bg-gray-100">
                                     <i class="fas fa-user mr-2"></i>Profile
                                 </a>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                     @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">
+                                    <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100" id="logout-button">
                                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                     </button>
                                 </form>
@@ -333,6 +333,25 @@
                             @endauth
                         </div>
                     </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script>
+                        document.getElementById('logout-button').addEventListener('click', function () {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You will be logged out!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, logout!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.getElementById('logout-form').submit();
+                                }
+                            });
+                        });
+                    </script>
                     
                     <!-- Mobile Menu Button -->
                     <button id="mobile-menu-button" class="ml-2 p-2 text-gray-600 hover:text-blue-600 md:hidden">
@@ -399,12 +418,12 @@
                     <a href="{{ route('account.dashboard') }}" class="block py-2 text-gray-800 hover:text-blue-600">
                         <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                     </a>
-                    <a href="#" class="block py-2 text-gray-800 hover:text-blue-600">
+                    <a href="{{ route('profile.index') }}" class="block py-2 text-gray-800 hover:text-blue-600">
                         <i class="fas fa-user mr-2"></i>Profile
                     </a>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" id="mobile-logout-form">
                         @csrf
-                        <button type="submit" class="w-full text-left flex items-center py-2 text-gray-800 hover:text-blue-600">
+                        <button type="button" class="w-full text-left flex items-center py-2 text-gray-800 hover:text-blue-600" id="mobile-logout-button">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </button>
                     </form>
@@ -417,6 +436,31 @@
                     </a>
                 @endauth
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const mobileLogoutButton = document.getElementById('mobile-logout-button');
+                    const mobileLogoutForm = document.getElementById('mobile-logout-form');
+
+                    if (mobileLogoutButton && mobileLogoutForm) {
+                        mobileLogoutButton.addEventListener('click', function () {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You will be logged out!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, logout!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    mobileLogoutForm.submit();
+                                }
+                            });
+                        });
+                    }
+                });
+            </script>
         </div>
     </div>
     

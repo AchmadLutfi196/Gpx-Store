@@ -65,7 +65,7 @@
                         <div class="ml-4">
                             <div class="font-medium">{{ $item->product->name }}</div>
                             <div class="text-sm text-gray-500">
-                                Qty: {{ $item->quantity }} × Rp {{ number_format($item->price, 0, ',', '.') }}
+                                Qty: {{ $item->quantity }} × Rp {{ number_format($item->price ?? 0, 0, ',', '.') }}
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                 
                 <div class="mt-4 border-t pt-4 flex justify-between">
                     <div class="text-gray-500">Total:</div>
-                    <div class="font-medium">Rp {{ number_format($order->total, 0, ',', '.') }}</div>
+                    <div class="font-medium">Rp {{ number_format($order->items->sum(fn($item) => ($item->price ?? 0) * $item->quantity), 0, ',', '.') }}</div>
                 </div>
             </div>
         </div>
