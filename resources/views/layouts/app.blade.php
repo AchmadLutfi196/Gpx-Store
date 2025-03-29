@@ -415,9 +415,6 @@
             </a>
             <div class="border-t border-gray-200 pt-4 mt-4">
                 @auth
-                    <a href="{{ route('account.dashboard') }}" class="block py-2 text-gray-800 hover:text-blue-600">
-                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                    </a>
                     <a href="{{ route('profile.index') }}" class="block py-2 text-gray-800 hover:text-blue-600">
                         <i class="fas fa-user mr-2"></i>Profile
                     </a>

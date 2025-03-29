@@ -47,10 +47,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
-    // User account routes
-    Route::get('/account/dashboard', function () {
-        return view('account.dashboard');
-    })->name('account.dashboard');
+    // Wishlist routes
     Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist/add/{productId}', [App\Http\Controllers\WishlistController::class, 'add'])->name('wishlist.add');
     Route::delete('/wishlist/remove/{wishlistId}', [App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
