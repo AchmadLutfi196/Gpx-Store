@@ -86,13 +86,21 @@
                     
                     <ul class="divide-y divide-gray-200" id="cart-items-list">
                         @foreach($cartItems as $item)
-                            <li class="cart-item p-6 flex flex-col sm:flex-row items-start sm:items-center" data-id="{{ $item->id }}">
-                                <div class="flex-shrink-0 w-full sm:w-auto mb-4 sm:mb-0">
-                                    <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-20 h-20 object-cover rounded-md">
+                            <li class="cart-item p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4" data-id="{{ $item->id }}">
+                                <!-- Product Image -->
+                                <div class="flex-shrink-0 w-24 h-24">
+                                    <img 
+                                        src="{{ asset('storage/' . $item->product->image) }}" 
+                                        alt="{{ $item->product->name }}" 
+                                        class="w-full h-full object-cover rounded-md"
+                                    >
                                 </div>
-                                <div class="sm:ml-6 flex-1">
-                                    <div class="flex justify-between">
-                                        <div>
+                                
+                                <!-- Product Details -->
+                                <div class="flex-1">
+                                    <div class="flex flex-col sm:flex-row justify-between">
+                                        <!-- Product Info -->
+                                        <div class="mb-2 sm:mb-0">
                                             <h3 class="text-base font-medium text-gray-900">
                                                 <a href="{{ route('product', ['id' => $item->product->id]) }}" class="hover:text-blue-600">
                                                     {{ $item->product->name }}
@@ -102,24 +110,40 @@
                                                 <p class="mt-1 text-sm text-gray-500">{{ $item->product->brand->name }}</p>
                                             @endif
                                         </div>
+                                        
+                                        <!-- Price -->
                                         <div class="text-right">
                                             @if($item->product->discount_price && $item->product->discount_price < $item->product->price)
-                                                <p class="price" data-price="{{ $item->product->discount_price }}">Rp {{ number_format($item->product->discount_price, 0, ',', '.') }}</p>
-                                                <p class="text-sm text-gray-500 line-through">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
+                                                <p class="price" data-price="{{ $item->product->discount_price }}">
+                                                    Rp {{ number_format($item->product->discount_price, 0, ',', '.') }}
+                                                </p>
+                                                <p class="text-sm text-gray-500 line-through">
+                                                    Rp {{ number_format($item->product->price, 0, ',', '.') }}
+                                                </p>
                                             @else
-                                                <p class="price" data-price="{{ $item->product->price }}">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
+                                                <p class="price" data-price="{{ $item->product->price }}">
+                                                    Rp {{ number_format($item->product->price, 0, ',', '.') }}
+                                                </p>
                                             @endif
                                         </div>
                                     </div>
                                     
-                                    <div class="flex items-center justify-between mt-4">
-                                        <div class="flex items-center border border-gray-300 rounded-md">
+                                    <!-- Quantity and Subtotal -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 gap-3">
+                                        <!-- Quantity Controls -->
+                                        <div class="inline-flex items-center border border-gray-300 rounded-md">
                                             <button type="button" class="px-3 py-1 text-gray-600 hover:bg-gray-100 btn-decrease">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                                                 </svg>
                                             </button>
-                                            <input type="number" value="{{ $item->quantity }}" class="quantity-input" min="1" max="{{ $item->product->stock ?? 99 }}">
+                                            <input 
+                                                type="number" 
+                                                value="{{ $item->quantity }}" 
+                                                class="quantity-input" 
+                                                min="1" 
+                                                max="{{ $item->product->stock ?? 99 }}"
+                                            >
                                             <button type="button" class="px-3 py-1 text-gray-600 hover:bg-gray-100 btn-increase">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -127,8 +151,11 @@
                                             </button>
                                         </div>
                                         
+                                        <!-- Subtotal and Remove Button -->
                                         <div class="flex items-center">
-                                            <span class="font-medium mr-3 item-subtotal">Rp {{ number_format(($item->product->discount_price ?? $item->product->price) * $item->quantity, 0, ',', '.') }}</span>
+                                            <span class="font-medium mr-3 item-subtotal">
+                                                Rp {{ number_format(($item->product->discount_price ?? $item->product->price) * $item->quantity, 0, ',', '.') }}
+                                            </span>
                                             <button type="button" class="remove-btn text-gray-500 hover:text-red-600">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -240,11 +267,19 @@
                 <!-- Payment Options -->
                 <div class="mt-4 bg-white rounded-lg shadow-sm p-6">
                     <h3 class="text-sm font-medium text-gray-900 mb-3">We Accept</h3>
-                    <div class="flex space-x-4">
-                        <img src="https://via.placeholder.com/60x30?text=Visa" alt="Visa" class="h-8 object-contain">
-                        <img src="https://via.placeholder.com/60x30?text=MasterCard" alt="MasterCard" class="h-8 object-contain">
-                        <img src="https://via.placeholder.com/60x30?text=PayPal" alt="PayPal" class="h-8 object-contain">
-                        <img src="https://via.placeholder.com/60x30?text=BCA" alt="BCA" class="h-8 object-contain">
+                    <div class="grid grid-cols-4 gap-4 items-center">
+                        <div class="flex justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" class="h-6 object-contain">
+                        </div>
+                        <div class="flex justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" alt="MasterCard" class="h-6 object-contain">
+                        </div>
+                        <div class="flex justify-center">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQNLXl3jfcXtasbERHWaGpbc4tKs8sldzktA&s" alt="PayPal" class="h-6 object-contain">
+                        </div>
+                        <div class="flex justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/1200px-Bank_Central_Asia.svg.png" alt="BCA" class="h-6 object-contain">
+                        </div>
                     </div>
                 </div>
             </div>
