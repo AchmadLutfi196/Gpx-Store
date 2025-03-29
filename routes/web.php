@@ -114,6 +114,24 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/addresses/{address}', [App\Http\Controllers\AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::post('/addresses/{address}/default', [App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.default');
 });
+
+// Checkout routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/payment/finish/{orderId}', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('payment.finish');
+    
+    // Order routes
+    Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    
+    // Optional: Add route to re-initiate payment if needed
+    Route::get('/payment/{order}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment');
+});
+
+// Midtrans notification webhook - no auth required
+Route::post('/payment/notification', [App\Http\Controllers\PaymentController::class, 'notification'])->name('payment.notification');
+
 Route::middleware([Authenticate::class])->group(function () {
     // Route khusus admin Filament otomatis sudah diatur lewat AdminPanelProvider
 });

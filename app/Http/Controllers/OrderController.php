@@ -8,27 +8,23 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the orders.
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
-        $orders = Auth::user()->orders()->latest()->paginate(10);
-        
+        $orders = Order::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+            
         return view('orders.index', compact('orders'));
     }
-
-    /**
-     * Display the specified order.
-     *
-     * @param  int  $id
-     * @return \Illuminate\View\View
-     */
-    public function show($id)
+    
+    public function show(Order $order)
     {
-        $order = Auth::user()->orders()->with(['items.product', 'address'])->findOrFail($id);
+        // Pastikan user hanya bisa melihat ordernya sendiri
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action');
+        }
+        
+        $order->load('items.product');
         
         return view('orders.show', compact('order'));
     }
