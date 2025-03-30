@@ -12,10 +12,12 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Wishlist;
 use App\Models\Review;
+use Spatie\Permission\Traits\HasRoles;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -126,16 +128,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Wishlist::class);
     }
 
-    public function hasRole($role)
-    {
-        // Implement your role checking logic here
-        return $this->role === $role; // Simple example, adjust based on your actual implementation
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->hasRole('admin');
-    }
     public function reviews()
     {
         return $this->hasMany(Review::class);

@@ -21,12 +21,6 @@ use Illuminate\Support\Facades\Gate;
 
 class AdminPanelProvider extends PanelProvider
 {
-    public function boot()
-    {
-        Gate::define('accessFilamentAdmin', function ($user) {
-            return $user->is_admin === true;
-        });
-    }
 
     public function panel(Panel $panel): Panel
     {
@@ -36,9 +30,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->authGuard('web')
-            ->authMiddleware([
-                Authenticate::class, // Middleware autentikasi
-            ])
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -62,6 +53,12 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ]);
-    }
+        }
 }
