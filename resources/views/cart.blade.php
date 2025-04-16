@@ -237,7 +237,12 @@
                                 Apply
                             </button>
                         </form>
-                    </div>
+                    @if(isset($appliedPromo))
+                        <div class="mt-2 text-sm text-green-600">
+                            <span class="font-semibold">{{ $appliedPromo['code'] }}</span> diterapkan
+                        </div>
+                    @endif
+                </div>
                     
                     <!-- Shipping Method -->
                     <div class="px-6 py-4 border-t border-gray-200">

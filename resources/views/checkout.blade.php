@@ -535,9 +535,33 @@
                         <div class="mt-4 border-t border-gray-200 pt-4">
                             <label for="coupon_code" class="form-label">Coupon Code</label>
                             <div class="flex">
-                                <input type="text" id="coupon_code" name="coupon_code" placeholder="Enter coupon code" class="flex-1 form-control rounded-r-none">
-                                <button type="button" id="apply-coupon" class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">Apply</button>
+                                <input type="text" id="coupon_code" name="coupon_code" 
+                                    placeholder="Enter coupon code" 
+                                    class="flex-1 form-control rounded-r-none {{ isset($appliedPromo) ? 'bg-green-50 border-green-500' : '' }}"
+                                    value="{{ $appliedPromo['code'] ?? '' }}"
+                                    {{ isset($appliedPromo) ? 'readonly' : '' }}>
+                                <button type="button" id="apply-coupon" 
+                                    class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0"
+                                    {{ isset($appliedPromo) ? 'disabled' : '' }}>
+                                    {{ isset($appliedPromo) ? 'Applied' : 'Apply' }}
+                                </button>
                             </div>
+                            
+                            @if(isset($appliedPromo))
+                                <div class="mt-2 text-sm text-green-600 font-medium">
+                                    <span class="inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Promo "{{ $appliedPromo['code'] }}" applied: 
+                                        @if($appliedPromo['discount_type'] === 'percentage')
+                                            {{ $appliedPromo['discount_value'] }}% off
+                                        @else
+                                            Rp {{ number_format($appliedPromo['discount_value'], 0, ',', '.') }} off
+                                        @endif
+                                    </span>
+                                </div>
+                            @endif
                         </div>
                         
                         <!-- Payment Information -->

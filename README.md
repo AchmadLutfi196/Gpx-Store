@@ -29,18 +29,7 @@ Buat file `.env` dari template:
 ```sh
 cp .env.example .env
 ```
-Edit `.env` dan atur konfigurasi database serta Midtrans:
-```sh
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=gpx_store
-DB_USERNAME=root
-DB_PASSWORD=
 
-MIDTRANS_SERVER_KEY=your_midtrans_server_key
-MIDTRANS_CLIENT_KEY=your_midtrans_client_key
-```
 
 ### 4. Generate Key dan Migrate Database
 ```sh
@@ -65,6 +54,12 @@ Filament digunakan sebagai admin panel. Untuk mengaksesnya:
 Jika tidak ada akun admin, buat dengan:
 ```sh
 php artisan make:filament-user
+
+```
+
+## konfigurasi filament shield
+```sh
+php artisan shield:generate --all
 ```
 
 ## Kontribusi

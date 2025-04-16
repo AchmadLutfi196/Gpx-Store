@@ -31,6 +31,8 @@ class Product extends Model
         'weight',
         'rating',
         'review_count',
+        'brand_id',
+        'category_id',
     ];
 
     /**

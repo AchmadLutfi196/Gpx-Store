@@ -8,6 +8,7 @@ use Filament\Facades\Filament;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CartController;
 
 
 
@@ -125,6 +126,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     
+    Route::post('/cart/apply-promo', [CartController::class, 'applyPromo'])->name('cart.apply-promo');
+
     // Optional: Add route to re-initiate payment if needed
     Route::get('/payment/{order}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment');
 });
