@@ -28,6 +28,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
 Route::get('/product/{id}', [HomeController::class, 'product'])->name('product');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
+Route::get('/tentang-kami', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
 
 // Cart Routes
 Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');

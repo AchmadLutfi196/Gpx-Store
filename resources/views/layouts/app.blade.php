@@ -202,8 +202,8 @@
     <div class="bg-blue-600 text-white py-2 text-sm">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center px-4">
             <div>
-                <a href="tel:+6281234567890" class="mr-4 hover:text-blue-200">
-                    <i class="fas fa-phone-alt mr-2"></i>0812-3456-7890
+                <a href="tel:+62895337436089" class="mr-4 hover:text-blue-200">
+                    <i class="fas fa-phone-alt mr-2"></i>0895-33743-6089
                 </a>
                 <a href="mailto:info@gpx-store.com" class="hover:text-blue-200">
                     <i class="fas fa-envelope mr-2"></i>info@gpx-store.com
@@ -265,7 +265,7 @@
                         </div>
                     </div>
                     
-                    <a href="#" class="nav-link">Tentang Kami</a>
+                    <a href="{{ route('about') }}" class="nav-link">Tentang Kami</a>
                     <a href="#" class="nav-link">Kontak</a>
                 </div>
                 
@@ -407,7 +407,7 @@
                 </div>
             </div>
             
-            <a href="#" class="block py-2 text-gray-800 hover:text-blue-600">
+            <a href="{{ route('about') }}" class="block py-2 text-gray-800 hover:text-blue-600">
                 <i class="fas fa-info-circle mr-2"></i>Tentang Kami
             </a>
             <a href="#" class="block py-2 text-gray-800 hover:text-blue-600">
@@ -516,7 +516,7 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone-alt mr-3 text-blue-400"></i>
-                            <span>0812-3456-7890</span>
+                            <span>0895-33743-6089</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope mr-3 text-blue-400"></i>

@@ -57,7 +57,7 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image')->circular()->disk('public'),
+                ImageColumn::make('image')->circular(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('brand.name')->sortable()->searchable(),
                 TextColumn::make('category.name')->sortable()->searchable(),
