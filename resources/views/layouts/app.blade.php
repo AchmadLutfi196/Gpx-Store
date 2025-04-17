@@ -536,11 +536,11 @@
                 <div class="mb-4 md:mb-0">
                     <p>&copy; {{ date('Y') }} GPX Store. All rights reserved.</p>
                 </div>
-                <div class="flex space-x-4">
+                {{-- <div class="flex space-x-4">
                     <img src="{{ asset('images/payment/visa.png') }}" alt="Visa" class="h-8">
                     <img src="{{ asset('images/payment/mastercard.png') }}" alt="Mastercard" class="h-8">
                     <img src="{{ asset('images/payment/paypal.png') }}" alt="PayPal" class="h-8">
-                </div>
+                </div> --}}
             </div>
         </div>
     </footer>

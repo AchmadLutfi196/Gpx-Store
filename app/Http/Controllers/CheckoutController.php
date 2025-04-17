@@ -152,7 +152,7 @@ class CheckoutController extends Controller
             $order->shipping_address = json_encode([
                 'recipient_name' => $address->recipient_name,
                 'phone' => $address->phone,
-                'street_address' => $address->street_address,
+                'address_line1' => $address->address_line1,
                 'address_line2' => $address->address_line2 ?? '',
                 'city' => $address->city,
                 'province' => $address->province,
@@ -165,7 +165,7 @@ class CheckoutController extends Controller
             $order->shipping_address = json_encode([
                 'recipient_name' => $request->recipient_name,
                 'phone' => $request->recipient_phone,
-                'street_address' => $request->street_address,
+                'address_line1' => $request->address_line1,
                 'address_line2' => $request->address_line2 ?? '',
                 'city' => $request->city,
                 'province' => $request->province,
@@ -180,7 +180,7 @@ class CheckoutController extends Controller
                 $newAddress->user_id = $user->id;
                 $newAddress->recipient_name = $request->recipient_name;
                 $newAddress->phone = $request->recipient_phone;
-                $newAddress->street_address = $request->street_address;
+                $newAddress->address_line1 = $request->address_line1;
                 $newAddress->address_line2 = $request->address_line2 ?? null;
                 $newAddress->city = $request->city;
                 $newAddress->province = $request->province;

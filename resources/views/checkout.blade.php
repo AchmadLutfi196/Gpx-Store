@@ -1,3 +1,4 @@
+{{-- {{ dd($addresses) }} --}}
 @extends('layouts.app')
 
 @section('styles')
@@ -300,7 +301,7 @@
                                      onclick="selectAddress(this, {{ $address->id }})">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h3 class="font-medium text-gray-900">{{ $address->recipient_name }}</h3>
+                                            <h4 class="text-sm font-semibold text-gray-900">{{ $address->name }}</h4>
                                             <p class="text-sm text-gray-600 mt-1">{{ $address->phone }}</p>
                                         </div>
                                         <div>
@@ -313,7 +314,7 @@
                                     </div>
                                     
                                     <div class="mt-3 text-sm text-gray-700">
-                                        <p>{{ $address->street_address }}</p>
+                                        <p>{{ $address->address_line1 }}</p>
                                         <p>{{ $address->city }}, {{ $address->province }} {{ $address->postal_code }}</p>
                                     </div>
                                     
@@ -368,9 +369,9 @@
                             </div>
                             
                             <div class="mb-4">
-                                <label for="street_address" class="form-label">Street Address</label>
-                                <input type="text" id="street_address" name="street_address" class="form-control" placeholder="House number and street name">
-                                @error('street_address')
+                                <label for="address_line1" class="form-label">Street Address</label>
+                                <input type="text" id="address_line1" name="address_line1" class="form-control" placeholder="House number and street name">
+                                @error('address_line1')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>

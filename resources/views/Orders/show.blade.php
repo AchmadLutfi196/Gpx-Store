@@ -1,3 +1,4 @@
+{{-- {{ dd ($order) }} --}}
 @extends('layouts.app')
 
 @section('styles')
@@ -182,45 +183,48 @@
         </div>
     </div>
 
+    @php
+    $shippingAddress = null;
+    if (!empty($order->shipping_address)) {
+        $shippingAddress = json_decode($order->shipping_address, true);
+    }
+    
+    // Ambil nama dari user jika recipient_name null
+    $recipientName = $shippingAddress['recipient_name'] ?? '';
+    if (empty($recipientName) && !empty($order->user_id)) {
+        $user = \App\Models\User::find($order->user_id);
+        $recipientName = $user ? $user->name : 'Pelanggan';
+    }
+@endphp
+
     <!-- Shipping Information -->
     <div class="detail-section">
         <h2 class="section-title">Informasi Pengiriman</h2>
         
-        @php
-            $shippingAddress = json_decode($order->shipping_address, true);
-        @endphp
-        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <p class="text-sm font-medium text-gray-900 mb-1">Penerima:</p>
-                <p class="text-gray-700">{{ $shippingAddress['recipient_name'] ?? 'Belum ada' }}</p>
-                <p class="text-gray-700">{{ $shippingAddress['phone'] ?? $order->shipping_phone }}</p>
+                <p class="text-gray-700">{{ $recipientName ?: 'N/A' }}</p>
+                <p class="text-gray-700">{{ $shippingAddress['phone'] ?? $order->shipping_phone ?? 'N/A' }}</p>
             </div>
             
             <div>
                 <p class="text-sm font-medium text-gray-900 mb-1">Alamat Pengiriman:</p>
-                <p class="text-gray-700">{{ $shippingAddress['street_address'] ?? 'Belum ada' }}</p>
+                <p class="text-gray-700">
+                    {{ $shippingAddress['address_line1'] ?: ($order->user->address ?? 'Alamat tidak tersedia') }}
+                </p>
+                
                 @if(!empty($shippingAddress['address_line2']))
                     <p class="text-gray-700">{{ $shippingAddress['address_line2'] }}</p>
                 @endif
+                
                 <p class="text-gray-700">
-                    {{ $shippingAddress['city'] ?? '' }}, 
+                    {{ $shippingAddress['city'] ?? '' }}
+                    {{ !empty($shippingAddress['city']) ? ',' : '' }} 
                     {{ $shippingAddress['province'] ?? '' }} 
-                    {{ $shippingAddress['postal_code'] ?? $order->shipping_postal_code }}
+                    {{ $shippingAddress['postal_code'] ?? $order->shipping_postal_code ?? '' }}
                 </p>
             </div>
-        </div>
-        
-        <div class="mt-4 border-t pt-4">
-            <p class="text-sm font-medium text-gray-900 mb-1">Metode Pengiriman:</p>
-            <p class="text-gray-700">{{ ucfirst($order->shipping_method) }} Shipping</p>
-            
-            @if(!empty($order->notes))
-                <div class="mt-4">
-                    <p class="text-sm font-medium text-gray-900 mb-1">Catatan Pesanan:</p>
-                    <p class="text-gray-700">{{ $order->notes }}</p>
-                </div>
-            @endif
         </div>
     </div>
     
@@ -327,6 +331,7 @@
                 </div>
             </div>
         @endif
+
         @if($order->status === 'processing')
         <div class="mt-6 text-center">
             <form action="{{ route('orders.complete', $order->id) }}" method="POST">
