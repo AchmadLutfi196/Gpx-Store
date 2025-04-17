@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CartItem;
@@ -341,7 +342,7 @@ class CheckoutController extends Controller
                     $product->save();
                     
                     // Opsional: log perubahan stok
-                    \Log::info("Stok dikurangi untuk produk ID {$product->id} ({$product->name}). Jumlah: -{$item->quantity}. Stok baru: {$product->stock}");
+                    Log::info("Stok dikurangi untuk produk ID {$product->id} ({$product->name}). Jumlah: -{$item->quantity}. Stok baru: {$product->stock}");
                 }
             });
         }
