@@ -707,7 +707,7 @@
     </section>
 
     <!-- Floating Action Button -->
-    <div class="fixed bottom-8 right-8 z-50">
+    <div class="fixed bottom-8 left-6 z-50">
         <a href="https://wa.me/62895337436089" 
            class="float-button bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:bg-green-600 transition-all duration-300 transform hover:scale-110">
             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">

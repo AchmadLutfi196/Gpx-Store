@@ -303,7 +303,7 @@
                                             @endif
                                         @endfor
                                     </div>
-                                    <span class="text-gray-500 ml-2">({{ number_format($rating, 1) }}) - {{ $reviewCount }} Reviews</span>
+                                    <span class="text-gray-500 ml-2">({{ number_format($rating, 1) }}) - {{ $reviewCount }} Terjual</span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     @if($product->discount_price && $product->discount_price < $product->price)
