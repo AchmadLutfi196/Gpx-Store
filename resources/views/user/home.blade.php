@@ -378,7 +378,7 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach ($categories as $index => $category)
+                @foreach ($categories->take(6) as $index => $category)
                 <div class="category-card rounded-xl overflow-hidden shadow-xl" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                     <div class="relative aspect-w-16 aspect-h-10">
                         <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}"
@@ -463,7 +463,7 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                @foreach ($latestProducts as $index => $product)
+                @foreach ($latestProducts->take(8) as $index => $product)
                 <div class="product-card bg-white rounded-xl shadow-md overflow-hidden" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                     <div class="relative overflow-hidden">
                         <img class="product-img h-64 w-full object-cover" 
