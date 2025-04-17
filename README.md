@@ -29,7 +29,15 @@ Buat file `.env` dari template:
 ```sh
 cp .env.example .env
 ```
-
+edit `.env`:
+```sh
+MIDTRANS_MERCHANT_ID=G209014024
+MIDTRANS_SERVER_KEY=SB-Mid-server-GIMSDnkG4K6kwl64FVbxM4Ta
+MIDTRANS_CLIENT_KEY=SB-Mid-client-zaRhcKaRZe8iScLn
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_IS_SANITIZED=true
+MIDTRANS_IS_3DS=true
+```
 
 ### 4. Generate Key dan Migrate Database
 ```sh
