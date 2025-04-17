@@ -135,7 +135,14 @@
             
             <!-- Product Rating - Dynamically generated based on actual ratings if available -->
             @php
-                $rating = $product->reviews_avg_rating ?? 4.0;
+                // Calculate average rating from product reviews
+                $rating = 0;
+                if ($product->reviews->count() > 0) {
+                    $rating = $product->reviews->avg('rating');
+                } else {
+                    $rating = 0; // Default rating if no reviews
+                }
+                $reviewCount = $product->reviews->count();
                 $reviewCount = $product->reviews_count ?? 0;
             @endphp
             <div class="flex items-center mt-2">

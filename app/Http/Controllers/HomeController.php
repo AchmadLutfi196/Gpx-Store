@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Brand;
+use App\Models\ProductReview;
 
 class HomeController extends Controller
 {
@@ -25,11 +26,22 @@ class HomeController extends Controller
         // You may also want to get other data like featured products
         $featuredProducts = Product::where('is_featured', true)->take(4)->get();
         
-        return view('user.home', [
-            'categories' => $categories,
-            'latestProducts' => $latestProducts,
-            'featuredProducts' => $featuredProducts,
-        ]);
+        // Reviews terbaik (rating tertinggi)
+        $bestReviews = ProductReview::with(['product', 'user'])
+            ->select('product_reviews.*')
+            ->join('products', 'product_reviews.product_id', '=', 'products.id')
+            ->whereNotNull('review') // Hanya yang ada deskripsi review
+            ->where('rating', '>=', 4) // Rating minimal 4
+            ->latest()
+            ->take(3)
+            ->get();
+        
+        return view('user.home', compact(
+            'latestProducts', 
+            'featuredProducts', 
+            'categories',
+            'bestReviews'
+        ));
     }
     
     /**

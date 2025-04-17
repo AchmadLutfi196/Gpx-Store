@@ -29,6 +29,7 @@ Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
 Route::get('/product/{id}', [HomeController::class, 'product'])->name('product');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::get('/tentang-kami', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
+Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'allReviews'])->name('reviews.all');
 
 // Cart Routes
 Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');
@@ -64,10 +65,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/regenerate-payment', [App\Http\Controllers\OrderController::class, 'regeneratePayment'])->name('orders.regenerate-payment');
+    Route::post('/orders/{order}/complete', [App\Http\Controllers\OrderController::class, 'completeOrder'])->name('orders.complete');
     // Checkout routes
     Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/payment/finish/{order}', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('payment.finish');
+
+    // review routes
+    Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'index'])
+        ->name('reviews.index');
+    Route::get('/orders/{order}/review', [App\Http\Controllers\ReviewController::class, 'create'])
+        ->name('reviews.create');
+    Route::post('/orders/{order}/review', [App\Http\Controllers\ReviewController::class, 'store'])
+        ->name('reviews.store');
+    Route::get('/reviews/{review}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])
+        ->name('reviews.edit');
+    Route::put('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'update'])
+        ->name('reviews.update');
+    Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])
+        ->name('reviews.destroy');
     
     // Promo code routes
     Route::post('/coupon/apply', [App\Http\Controllers\PromoCodeController::class, 'apply'])->name('coupon.apply');

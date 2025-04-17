@@ -327,7 +327,22 @@
                 </div>
             </div>
         @endif
-
+        @if($order->status === 'processing')
+        <div class="mt-6 text-center">
+            <form action="{{ route('orders.complete', $order->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Pesanan Diterima
+                </button>
+            </form>
+            <p class="mt-2 text-sm text-gray-500">
+                Klik tombol di atas jika Anda sudah menerima pesanan Anda.
+            </p>
+        </div>
+        @endif
 
 
 @endsection

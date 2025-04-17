@@ -172,4 +172,20 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    // Method untuk mendapatkan rating rata-rata
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?: 0;
+    }
+
+    // Method untuk mendapatkan jumlah review
+    public function getReviewsCountAttribute()
+    {
+        return $this->reviews()->count();
+    }
 }

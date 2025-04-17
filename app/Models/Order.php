@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -80,5 +81,33 @@ class Order extends Model
     {
         return $this->belongsTo(Address::class);
     }
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
 
+    // Sesuaikan method untuk menghitung item yang sudah direview
+    public function getReviewedItemsCountAttribute()
+    {
+        // Ambil produk ID yang sudah direview di order ini
+        $reviewedProductIds = DB::table('product_reviews')
+            ->where('order_id', $this->id)
+            ->pluck('product_id')
+            ->toArray();
+        
+        // Hitung berapa item order yang produknya sudah direview
+        return DB::table('order_items')
+            ->where('order_id', $this->id)
+            ->whereIn('product_id', $reviewedProductIds)
+            ->count();
+    }
+
+    // Method untuk menghitung item yang belum direview
+    public function getUnreviewedItemsCountAttribute()
+    {
+        $totalItems = $this->items()->count();
+        $reviewedItems = $this->getReviewedItemsCountAttribute();
+        
+        return $totalItems - $reviewedItems;
+    }
 }

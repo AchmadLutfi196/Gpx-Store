@@ -131,4 +131,24 @@ public function regeneratePayment(Order $order)
             ->with('error', 'Error saat memproses pembayaran: ' . $e->getMessage());
     }
 }
+
+public function completeOrder(Order $order)
+{
+    // Pastikan user hanya bisa menyelesaikan pesanannya sendiri
+    if ($order->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
+    }
+    
+    // Pastikan order dalam status yang tepat
+    if ($order->status !== 'processing') {
+        return redirect()->route('orders.show', $order->id)
+            ->with('error', 'Status pesanan tidak dapat diubah.');
+    }
+    
+    $order->status = 'completed';
+    $order->save();
+    
+    return redirect()->route('orders.show', $order->id)
+        ->with('success', 'Pesanan telah diselesaikan. Terima kasih telah berbelanja!');
+}
 }

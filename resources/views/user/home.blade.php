@@ -487,7 +487,7 @@
                             <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-300">{{ $product->name }}</h3>
                             <div class="flex">
                                 @for($i = 0; $i < 5; $i++)
-                                    <svg class="w-4 h-4 {{ $i < ($product->rating ?? 4) ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-4 h-4 {{ $i <= (isset($product->rating) ? round($product->rating) : 4) ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                     </svg>
                                 @endfor
@@ -568,87 +568,73 @@
         </div>
     </section>
 
-    <!-- Testimonials with Slide Animation -->
-    <section class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold mb-3">TESTIMONIAL</span>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 relative inline-block">
-                    Apa Kata Pelanggan Kami
-                    <span class="absolute -bottom-2 left-0 right-0 mx-auto w-24 h-1 bg-yellow-400 rounded"></span>
-                </h2>
-                <p class="mt-6 max-w-2xl text-xl text-gray-500 mx-auto">
-                    Testimoni dari pelanggan yang puas dengan produk GPX Store
-                </p>
+    <!-- Bagian Review/Testimonial Customer -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Apa Kata Customer Kami</h2>
+                <p class="mt-4 text-lg text-gray-600">Testimoni dari pelanggan yang puas dengan produk kami</p>
             </div>
-            
-            <div class="testimonial-slider relative">
-                <div class="swiper-container" id="testimonial-swiper">
-                    <div class="swiper-wrapper">
-                        @foreach([
-                            ['name' => 'Sarah Wijaya', 'rating' => 5, 'comment' => '"Tasnya sangat berkualitas, bahannya premium dan desainnya sangat stylish. Pengiriman juga cepat! Sudah 3 kali belanja di GPX Store dan selalu puas dengan pelayanannya."', 'image' => 'women/32', 'location' => 'Jakarta'],
-                            ['name' => 'Budi Santoso', 'rating' => 5, 'comment' => '"Sudah beli 3 tas di GPX Store, semuanya kualitasnya bagus. Harga juga bersaing untuk kualitas premium seperti ini. Pengiriman cepat dan customer service sangat responsif."', 'image' => 'men/54', 'location' => 'Surabaya'],
-                            ['name' => 'Dewi Lestari', 'rating' => 4, 'comment' => '"Tasnya sangat bagus, tapi sayang warnanya sedikit berbeda dengan yang di foto. Tapi secara keseluruhan sangat puas! Proses pengembalian juga sangat mudah dan uang cepat dikembalikan."', 'image' => 'women/68', 'location' => 'Bandung'],
-                            ['name' => 'Rudi Pratama', 'rating' => 5, 'comment' => '"Tas ransel yang saya beli sangat nyaman digunakan untuk bekerja. Kompartemen laptopnya sangat aman dan desainnya profesional. Rekomendasi untuk para profesional muda."', 'image' => 'men/41', 'location' => 'Yogyakarta']
-                        ] as $testimonial)
-                        <div class="swiper-slide p-2">
-                            <div class="testimonial-card bg-gray-50 p-8 rounded-xl h-full">
-                                <div class="flex items-center mb-6">
-                                    <div class="flex-shrink-0">
-                                        <img class="h-14 w-14 rounded-full object-cover border-2 border-yellow-400 p-1" 
-                                             src="https://randomuser.me/api/portraits/{{ $testimonial['image'] }}.jpg" 
-                                             alt="{{ $testimonial['name'] }}"
-                                             loading="lazy">
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="text-lg font-bold text-gray-900">{{ $testimonial['name'] }}</h4>
-                                        <div class="flex items-center">
-                                            <span class="text-sm text-gray-600 mr-2">{{ $testimonial['location'] }}</span>
-                                            <div class="flex text-yellow-400">
-                                                @for($i = 0; $i < $testimonial['rating']; $i++)
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                                </svg>
-                                                @endfor
-                                                @for($i = $testimonial['rating']; $i < 5; $i++)
-                                                <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                                </svg>
-                                                @endfor
-                                            </div>
+
+            @if($bestReviews->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach($bestReviews as $review)
+                        <div class="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1">
+                            <div class="flex items-center mb-4">
+                                <div class="flex-shrink-0">
+                                    @if($review->product->image)
+                                        <img src="{{ asset('storage/' . $review->product->image) }}" alt="{{ $review->product->name }}" class="w-16 h-16 object-cover rounded-lg">
+                                    @else
+                                        <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
-                                <p class="text-gray-600 relative z-10">
-                                    {{ $testimonial['comment'] }}
-                                </p>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-900 truncate" title="{{ $review->product->name }}">
+                                        {{ \Illuminate\Support\Str::limit($review->product->name, 25) }}
+                                    </h3>
+                                    <a href="{{ route('product', $review->product->id) }}" class="text-sm text-blue-600 hover:underline">Lihat Produk</a>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="flex items-center mb-1">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                    @endfor
+                                </div>
+                                
+                                <blockquote class="italic text-gray-700 mt-2">
+                                    "{{ \Illuminate\Support\Str::limit($review->review, 150) }}"
+                                </blockquote>
+                            </div>
+
+                            <div class="flex justify-between items-center mt-4 text-sm">
+                                <div class="font-semibold text-gray-900">{{ $review->user->name }}</div>
+                                <div class="text-gray-500">{{ $review->created_at->format('d M Y') }}</div>
                             </div>
                         </div>
-                        @endforeach
-                    </div>
+                    @endforeach
                 </div>
-                <!-- Navigation buttons -->
-                <div class="absolute top-1/2 -left-5 transform -translate-y-1/2 z-10">
-                    <button id="testimonial-prev" class="bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition-colors focus:outline-none">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
+                
+                {{-- <div class="text-center mt-12">
+                    <a href="{{ route('reviews.all') }}" class="inline-block bg-white border border-gray-300 text-gray-700 rounded-md px-6 py-3 font-medium hover:bg-gray-50 transition">
+                        Lihat Semua Ulasan
+                    </a>
+                </div> --}}
+            @else
+                <div class="text-center py-12">
+                    <p class="text-gray-500">Belum ada ulasan produk</p>
                 </div>
-                <div class="absolute top-1/2 -right-5 transform -translate-y-1/2 z-10">
-                    <button id="testimonial-next" class="bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition-colors focus:outline-none">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-                <!-- Pagination -->
-                <div class="mt-8 flex justify-center">
-                    <div id="testimonial-pagination" class="flex space-x-2"></div>
-                </div>
-            </div>
+            @endif
         </div>
     </section>
+
 
     <!-- CTA Section with Wave Background -->
     <section class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-800 py-24">
