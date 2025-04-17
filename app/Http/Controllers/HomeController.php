@@ -33,7 +33,6 @@ class HomeController extends Controller
             ->whereNotNull('review') // Hanya yang ada deskripsi review
             ->where('rating', '>=', 4) // Rating minimal 4
             ->latest()
-            ->take(3)
             ->get();
         
         return view('user.home', compact(

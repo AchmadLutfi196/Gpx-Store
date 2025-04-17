@@ -2,6 +2,7 @@
 
 @section('styles')
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <style>
     /* Custom Animation Styles */
     @keyframes fadeInUp {
@@ -53,6 +54,9 @@
         position: relative;
     }
     
+    .scrollbar-hide::-webkit-scrollbar {
+    display: none; 
+    }
     /* Custom Utility Classes */
     .bg-gradient-primary {
         background: linear-gradient(to right, #4f46e5, #1d4ed8);
@@ -183,6 +187,58 @@
         filter: blur(40px);
         opacity: 0.2;
         mix-blend-mode: multiply;
+    }
+    /* Hide scrollbar for all browsers */
+    .scrollbar-hide {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, and Opera */
+        width: 0;
+        height: 0;
+    }
+
+    /* Additional styling for Swiper to hide scrollbar */
+    .swiper-container {
+        overflow: hidden !important;
+    }
+
+    #testimonial-swiper {
+        overflow: hidden !important;
+    }
+    /* Swiper Navigation - Hidden by default, visible on hover */
+    #testimonial-swiper .swiper-button-next,
+    #testimonial-swiper .swiper-button-prev {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+        background-color: rgba(255, 255, 255, 0.8);
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #testimonial-swiper .swiper-button-next:after,
+    #testimonial-swiper .swiper-button-prev:after {
+        font-size: 18px !important;
+        color: #4f46e5;
+    }
+
+    /* Show navigation arrows on hover */
+    #testimonial-swiper:hover .swiper-button-next,
+    #testimonial-swiper:hover .swiper-button-prev {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Additional hover effect for buttons */
+    #testimonial-swiper .swiper-button-next:hover,
+    #testimonial-swiper .swiper-button-prev:hover {
+        background-color: #ffffff;
+        transform: scale(1.1);
     }
     
     /* Scroll appearance animation */
@@ -484,40 +540,53 @@
                     
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-300">{{ $product->name }}</h3>
-                            <div class="flex">
-                                @php
-                                    // Calculate average rating from product reviews
-                                    $rating = 0;
-                                    if ($product->reviews->count() > 0) {
-                                        $rating = $product->reviews->avg('rating');
-                                    } else {
-                                        $rating = 0; // Default rating if no reviews
-                                    }
-                                    $reviewCount = $product->reviews->count();
-                                    $reviewCount = $product->reviews_count ?? 0;
-                                @endphp
-                                <div class="flex items-center mt-2">
-                                    <div class="flex text-yellow-400">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= floor($rating))
-                                                <i class="fas fa-star"></i>
-                                            @elseif ($i - 0.5 <= $rating)
-                                                <i class="fas fa-star-half-alt"></i>
-                                            @else
-                                                <i class="far fa-star"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                </div>
-                            </div>
+                            <a href="{{ route('product', ['id' => $product->id]) }}">
+                                <h2 class="text-gray-800 font-medium mb-1 hover:text-blue-600">{{ $product->name }}</h2>
+                            </a>
                         </div>
+
+                        {{-- Brand --}}
+                        @if(isset($product->brand) && $product->brand)
+                            <div class="flex items-center text-sm text-gray-500 mb-2">
+                                <span class="font-medium mr-2">Brand:</span>
+                                <span>{{ $product->brand->name }}</span>
+                            </div>
+                         @endif
                         
+                        {{-- Rating Produk --}}
+                        @php
+                            // Calculate average rating from product reviews
+                            $rating = 0;
+                            if ($product->reviews->count() > 0) {
+                                $rating = $product->reviews->avg('rating');
+                            } else {
+                                $rating = 0; // Default rating if no reviews
+                            }
+                            $reviewCount = $product->reviews->count();
+                            $reviewCount = $product->reviews_count ?? 0;
+                        @endphp
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= floor($rating))
+                                        <i class="fas fa-star"></i>
+                                    @elseif ($i - 0.5 <= $rating)
+                                        <i class="fas fa-star-half-alt"></i>
+                                    @else
+                                        <i class="far fa-star"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            <span class="text-gray-500 ml-2">({{ number_format($rating, 1) }}) - {{ $reviewCount }} Terjual</span>
+                        </div>
+
                         <p class="text-sm text-gray-600 mb-3 truncate overflow-hidden whitespace-normal line-clamp-2 h-10">{{ $product->description ?? 'Tas premium dengan desain stylish dan bahan berkualitas tinggi.' }}</p>
                         
                         <div class="flex justify-between items-center">
+                            {{-- harga --}}
                             <span class="text-blue-600 font-bold text-lg">{{ 'Rp ' . number_format($product->price, 0, ',', '.') }}</span>
                             <div class="flex space-x-2">
+                                {{-- Wishlist --}}
                                 @auth
                                 @php
                                     $inWishlist = App\Models\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
@@ -531,7 +600,8 @@
                                         </svg>
                                     </button>
                                 </form>
-                                
+
+                                {{-- cart --}}
                                 <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -595,72 +665,74 @@
     </section>
 
     <!-- Bagian Review/Testimonial Customer -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Apa Kata Customer Kami</h2>
-                <p class="mt-4 text-lg text-gray-600">Testimoni dari pelanggan yang puas dengan produk kami</p>
-            </div>
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900">Apa Kata Customer Kami</h2>
+            <p class="mt-4 text-lg text-gray-600">Testimoni dari pelanggan yang puas dengan produk kami</p>
+        </div>
 
-            @if($bestReviews->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($bestReviews as $review)
-                        <div class="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1">
-                            <div class="flex items-center mb-4">
-                                <div class="flex-shrink-0">
-                                    @if($review->product->image)
-                                        <img src="{{ asset('storage/' . $review->product->image) }}" alt="{{ $review->product->name }}" class="w-16 h-16 object-cover rounded-lg">
-                                    @else
-                                        <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg">
-                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                            </svg>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="ml-4">
-                                    <h3 class="text-lg font-semibold text-gray-900 truncate" title="{{ $review->product->name }}">
-                                        {{ \Illuminate\Support\Str::limit($review->product->name, 25) }}
-                                    </h3>
-                                    <a href="{{ route('product', $review->product->id) }}" class="text-sm text-blue-600 hover:underline">Lihat Produk</a>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <div class="flex items-center mb-1">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+        @if($bestReviews->count() > 0)
+        <div id="testimonial-swiper" class="swiper-container">
+            <div class="swiper-wrapper">
+                @foreach($bestReviews as $index => $review)
+                <div class="swiper-slide">
+                    <div class="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1" data-aos="fade-left" data-aos-delay="{{ $index * 100 }}">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0">
+                                @if($review->product->image)
+                                    <img src="{{ asset('storage/' . $review->product->image) }}" alt="{{ $review->product->name }}" class="w-16 h-16 object-cover rounded-lg">
+                                @else
+                                    <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-lg">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
-                                    @endfor
-                                </div>
-                                
-                                <blockquote class="italic text-gray-700 mt-2">
-                                    "{{ \Illuminate\Support\Str::limit($review->review, 150) }}"
-                                </blockquote>
+                                    </div>
+                                @endif
                             </div>
-
-                            <div class="flex justify-between items-center mt-4 text-sm">
-                                <div class="font-semibold text-gray-900">{{ $review->user->name }}</div>
-                                <div class="text-gray-500">{{ $review->created_at->format('d M Y') }}</div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-900 truncate" title="{{ $review->product->name }}">
+                                    {{ \Illuminate\Support\Str::limit($review->product->name, 25) }}
+                                </h3>
+                                <a href="{{ route('product', $review->product->id) }}" class="text-sm text-blue-600 hover:underline">Lihat Produk</a>
                             </div>
                         </div>
-                    @endforeach
+    
+                        <div class="mb-4">
+                            <div class="flex items-center mb-1">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                @endfor
+                            </div>
+                            
+                            <blockquote class="italic text-gray-700 mt-2">
+                                "{{ \Illuminate\Support\Str::limit($review->review, 150) }}"
+                            </blockquote>
+                        </div>
+    
+                        <div class="flex justify-between items-center mt-4 text-sm">
+                            <div class="font-semibold text-gray-900">{{ $review->user->name }}</div>
+                            <div class="text-gray-500">{{ $review->created_at->format('d M Y') }}</div>
+                        </div>
+                    </div>
                 </div>
-                
-                {{-- <div class="text-center mt-12">
-                    <a href="{{ route('reviews.all') }}" class="inline-block bg-white border border-gray-300 text-gray-700 rounded-md px-6 py-3 font-medium hover:bg-gray-50 transition">
-                        Lihat Semua Ulasan
-                    </a>
-                </div> --}}
-            @else
-                <div class="text-center py-12">
-                    <p class="text-gray-500">Belum ada ulasan produk</p>
-                </div>
-            @endif
+                @endforeach
+            </div>
+            <!-- Navigasi -->
+            <div id="testimonial-next" class="swiper-button-next"></div>
+            <div id="testimonial-prev" class="swiper-button-prev"></div>
+            <!-- Pagination -->
+            <div id="testimonial-pagination" class="swiper-pagination"></div>
         </div>
-    </section>
-
+        @else
+            <div class="text-center py-12">
+                <p class="text-gray-500">Belum ada ulasan produk</p>
+            </div>
+        @endif
+    </div>
+</section>
 
     <!-- CTA Section with Wave Background -->
     <section class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-800 py-24">
@@ -731,19 +803,40 @@
 
         // Initialize Swiper for testimonials
         const swiper = new Swiper('#testimonial-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 30,
             loop: true,
             autoplay: {
-                delay: 5000,
+                delay: 1000,
                 disableOnInteraction: false,
+            },
+            speed: 1000, // Durasi transisi antar slide
+            effect: "coverflow", 
+            coverflowEffect: {
+                rotate: 0,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: false,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 1,
+                },
+                768: {
+                    slidesPerView: 2,
+                },
+                1024: {
+                    slidesPerView: 3,
+                },
             },
             navigation: {
                 nextEl: '#testimonial-next',
                 prevEl: '#testimonial-prev',
             },
-            pagination: {
-                el: '#testimonial-pagination',
-                clickable: true,
-            },
+            grabCursor: true, // Kursor menjadi 'grab' saat hover
+            centeredSlides: true, // Membuat slide aktif berada di tengah
+            roundLengths: true, // Mencegah blur teks saat transisi
         });
         
         // Handle wishlist toggle with AJAX
@@ -839,5 +932,7 @@
             });
         });
     });
+
+    
 </script>
 @endsection
