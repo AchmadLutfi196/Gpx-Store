@@ -8,6 +8,8 @@ use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
@@ -109,50 +111,83 @@ class CartController extends Controller
     /**
      * Update cart item quantity
      */
-    public function updateCart(Request $request)
-    {
-        $request->validate([
-            'cart_item_id' => 'required|exists:cart_items,id',
-            'quantity' => 'required|integer|min:0',
+    public function update(Request $request)
+{
+    try {
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
         ]);
-        
-        $cartItemId = $request->cart_item_id;
-        $quantity = $request->quantity;
-        
-        $cartItem = CartItem::findOrFail($cartItemId);
-        
-        // Verify the cart item belongs to the current user/session
-        if (!$this->verifyCartItemOwnership($cartItem)) {
+
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $productId = $request->input('product_id');
+        $quantity = (int) $request->input('quantity');
+        
+        // Get product to check stock
+        $product = \App\Models\Product::findOrFail($productId);
+        
+        // Validate against stock
+        if ($quantity > $product->stock) {
+            return response()->json([
+                'success' => false,
+                'message' => "Stok tidak cukup. Maksimal {$product->stock} item",
+                'available_stock' => $product->stock
+            ], 422);
         }
         
-        if ($quantity == 0) {
-            // Remove the item if quantity is zero
-            $cartItem->delete();
-            $message = 'Item removed from cart';
+        // Update cart
+        $cart = session('cart', []);
+        
+        if (isset($cart[$productId])) {
+            if ($quantity <= 0) {
+                // Remove from cart if quantity is 0 or negative
+                unset($cart[$productId]);
+            } else {
+                // Update quantity
+                $cart[$productId]['quantity'] = $quantity;
+            }
+            
+            // Save updated cart
+            session(['cart' => $cart]);
+            
+            // Calculate cart total
+            $cartCount = array_sum(array_column($cart, 'quantity'));
+            $cartTotal = 0;
+            
+            foreach ($cart as $item) {
+                $cartTotal += $item['price'] * $item['quantity'];
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Keranjang berhasil diperbarui',
+                'cart_count' => $cartCount,
+                'cart_total' => $cartTotal,
+                'cart_total_formatted' => 'Rp ' . number_format($cartTotal, 0, ',', '.')
+            ]);
         } else {
-            // Update quantity
-            $cartItem->quantity = $quantity;
-            $cartItem->save();
-            $message = 'Cart updated successfully';
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan di keranjang'
+            ], 404);
         }
-        
-        // Recalculate cart totals
-        $subtotal = $this->getCartItems()->sum(function ($item) {
-            $price = $item->product->discount_price ?? $item->product->price;
-            return $price * $item->quantity;
-        });
+    } catch (\Exception $e) {
+        Log::error('Cart Update Error', ['error' => $e->getMessage()]);
         
         return response()->json([
-            'success' => true,
-            'message' => $message,
-            'cart_count' => $this->getCartItems()->sum('quantity'),
-            'subtotal' => number_format($subtotal, 0, ',', '.'),
-        ]);
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
     }
+}
     
     /**
      * Remove an item from the cart
@@ -242,6 +277,100 @@ class CartController extends Controller
         
         return false;
     }
+    
+    
+    public function add(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $productId = $request->input('product_id');
+        $quantity = (int) $request->input('quantity', 1);
+        $product = \App\Models\Product::findOrFail($productId);
+
+        // Ambil keranjang saat ini
+        $cart = session('cart', []);
+        
+        // Hitung jumlah produk yang sudah ada di keranjang (jika ada)
+        $cartQuantity = isset($cart[$productId]) ? $cart[$productId]['quantity'] : 0;
+        
+        // Hitung total yang akan ada di keranjang
+        $totalQuantity = $cartQuantity + $quantity;
+        
+        // Check stock - pastikan total tidak melebihi stok
+        if ($product->stock < $totalQuantity) {
+            // Jika stok tidak cukup, beri pesan error yang jelas
+            $availableToAdd = $product->stock - $cartQuantity;
+            
+            if ($availableToAdd <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Produk ini sudah ada di keranjang dengan jumlah maksimal yang tersedia',
+                    'remaining_stock' => 0
+                ], 422);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Stok tidak cukup. Anda hanya dapat menambahkan {$availableToAdd} lagi ke keranjang",
+                    'remaining_stock' => $availableToAdd
+                ], 422);
+            }
+        }
+
+        // Initialize cart if not exists
+        if (!session()->has('cart')) {
+            session(['cart' => []]);
+        }
+
+        // Check if product already in cart
+        if (isset($cart[$productId])) {
+            $cart[$productId]['quantity'] = $totalQuantity;
+        } else {
+            $cart[$productId] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
+                'quantity' => $quantity,
+                'image' => $product->featured_image ?? '',
+                'stock' => $product->stock,
+            ];
+        }
+
+        // Save cart back to session
+        session(['cart' => $cart]);
+
+        // Calculate cart total items
+        $cartCount = array_sum(array_column($cart, 'quantity'));
+        
+        // Calculate remaining stock available to add
+        $remainingStock = $product->stock - $cart[$productId]['quantity'];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Produk berhasil ditambahkan ke keranjang',
+            'cart_count' => $cartCount,
+            'remaining_stock' => $remainingStock
+        ]);
+        
+    } catch (\Exception $e) {
+        Log::error('Cart Add Error', ['error' => $e->getMessage()]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
+    }
+}
  
 }

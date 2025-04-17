@@ -280,17 +280,30 @@
                                         <span>{{ $product->brand->name }}</span>
                                     </div>
                                 @endif
+                                @php
+                                    // Calculate average rating from product reviews
+                                    $rating = 0;
+                                    if ($product->reviews->count() > 0) {
+                                        $rating = $product->reviews->avg('rating');
+                                    } else {
+                                        $rating = 0; // Default rating if no reviews
+                                    }
+                                    $reviewCount = $product->reviews->count();
+                                    $reviewCount = $product->reviews_count ?? 0;
+                                @endphp
                                 <div class="flex items-center mb-2">
                                     <div class="flex text-yellow-400">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= 4)
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= floor($rating))
                                                 <i class="fas fa-star"></i>
+                                            @elseif ($i - 0.5 <= $rating)
+                                                <i class="fas fa-star-half-alt"></i>
                                             @else
                                                 <i class="far fa-star"></i>
                                             @endif
                                         @endfor
                                     </div>
-                                    <span class="text-gray-500 text-xs ml-1">({{ rand(5, 20) }})</span>
+                                    <span class="text-gray-500 ml-2">({{ number_format($rating, 1) }}) - {{ $reviewCount }} Reviews</span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     @if($product->discount_price && $product->discount_price < $product->price)
@@ -302,15 +315,16 @@
                                         <span class="price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                                     @endif
                                     @auth
-                                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 {{ $product->stock <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}" {{ $product->stock <= 0 ? 'disabled' : '' }}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors duration-300 add-to-cart-button">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
                                     @else
                                         <a href="{{ route('login') }}" class="bg-gray-500 text-white p-2 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
                                             <i class="fas fa-shopping-cart"></i>
@@ -367,6 +381,60 @@
                 priceMaxInput.value = this.value;
             });
         }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.add-to-cart-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw {status: response.status, data: errorData};
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: 'Produk berhasil ditambahkan ke keranjang',
+                        icon: 'success',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(error => {
+                    let errorMessage = 'Gagal menambahkan produk ke keranjang';
+                    
+                    if (error.status === 422) {
+                        errorMessage = 'Stok produk tidak tersedia';
+                        if (error.data && error.data.message) {
+                            errorMessage = error.data.message;
+                        }
+                    }
+                    
+                    Swal.fire({
+                        title: 'Oops!',
+                        text: errorMessage,
+                        icon: 'error',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                });
+            });
+        });
     });
 </script>
 @endsection

@@ -198,7 +198,9 @@
             
             <!-- Add to Cart Form -->
             @auth
-            <form id="add-to-cart-form" class="mt-6">
+            <form id="add-to-cart-form" class="mt-6" action="{{ route('cart.add') }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <div class="flex items-center space-x-4 mb-4">
                     <div class="flex items-center border border-gray-300 rounded-md">
                         <button type="button" id="decrease-qty" class="px-3 py-2 text-gray-600 hover:bg-gray-100">-</button>
@@ -208,12 +210,14 @@
                     
                     <button type="submit" id="add-to-cart" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md flex items-center justify-center transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" {{ isset($product->stock) && $product->stock <= 0 ? 'disabled' : '' }}>
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                         </svg>
                         Add to Cart
                     </button>
                 </div>
             </form>
+
+            
             @else
             <div class="mt-6">
                 <a href="{{ route('login') }}" class="inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -414,114 +418,142 @@
                 });
             });
         }
-        
-        // Add to Cart Form with AJAX
-        const addToCartForm = document.getElementById('add-to-cart-form');
-        
-        if (addToCartForm) {
-            addToCartForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const quantity = parseInt(document.getElementById('quantity').value || 1);
-                const addToCartBtn = document.getElementById('add-to-cart');
-                const productId = {{ $product->id }};
-                
-                // Disable button and show loading state
-                addToCartBtn.disabled = true;
-                addToCartBtn.classList.add('bg-gray-400');
-                addToCartBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                addToCartBtn.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-                
-                // Send AJAX request to add item to cart
-                fetch('{{ route('cart.add') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        quantity: quantity
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update cart count in navbar if it exists
-                        const cartCountElement = document.querySelector('.cart-count');
-                        if (cartCountElement) {
-                            cartCountElement.textContent = data.cart_count;
-                            
-                            // Add animation to the cart count
-                            cartCountElement.classList.add('animate-pulse');
-                            setTimeout(() => {
-                                cartCountElement.classList.remove('animate-pulse');
-                            }, 2000);
-                        }
-                        
-                        // Success animation on button
-                        addToCartBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Added to Cart';
-                        addToCartBtn.classList.remove('bg-gray-400');
-                        addToCartBtn.classList.add('bg-green-600');
-                        
-                        // Show success message with SweetAlert
-                        Swal.fire({
-                            title: 'Added to Cart!',
-                            text: `${quantity} item(s) added to your cart.`,
-                            icon: 'success',
-                            confirmButtonColor: '#3085d6',
-                            confirmButtonText: 'Continue Shopping',
-                            showDenyButton: true,
-                            denyButtonText: 'View Cart',
-                            denyButtonColor: '#10B981'
-                        }).then((result) => {
-                            if (result.isDenied) {
-                                // Redirect to cart page
-                                window.location.href = "{{ route('cart') }}";
-                            } else {
-                                // Reset button
-                                setTimeout(() => {
-                                    addToCartBtn.disabled = false;
-                                    addToCartBtn.classList.remove('bg-green-600');
-                                    addToCartBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                                    addToCartBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Add to Cart';
-                                }, 2000);
-                            }
-                        });
-                    } else {
-                        // Show error message
-                        Swal.fire({
-                            title: 'Error',
-                            text: data.message || 'Something went wrong. Please try again.',
-                            icon: 'error',
-                            confirmButtonColor: '#3085d6'
-                        });
-                        
-                        // Reset button
-                        addToCartBtn.disabled = false;
-                        addToCartBtn.classList.remove('bg-gray-400');
-                        addToCartBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                        addToCartBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Add to Cart';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Something went wrong. Please try again.',
-                        icon: 'error',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    
-                    // Reset button
-                    addToCartBtn.disabled = false;
-                    addToCartBtn.classList.remove('bg-gray-400');
-                    addToCartBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                    addToCartBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Add to Cart';
+
+        // add to cart
+        document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const maxStock = parseInt(document.getElementById('quantity').getAttribute('max'));
+
+            // Validate quantity against stock before submitting
+            if (maxStock === 0) {
+            Swal.fire({
+                title: 'Out of Stock',
+                text: 'Sorry, this product is currently out of stock',
+                icon: 'error',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            return;
+            }
+
+            if (quantity > maxStock) {
+            // Reset quantity input to max stock
+            document.getElementById('quantity').value = maxStock;
+            
+            Swal.fire({
+                title: 'Stock Limit Exceeded',
+                text: `Sorry, only ${maxStock} items available in stock`,
+                icon: 'warning',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            return;
+            }
+
+            if (quantity <= 0) {
+            Swal.fire({
+                title: 'Invalid Quantity',
+                text: 'Please enter a valid quantity',
+                icon: 'warning',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            return;
+            }
+            
+            fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+            })
+            .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                throw {status: response.status, data: errorData};
                 });
+            }
+            return response.json();
+            })
+            .then(data => {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Product added to cart successfully',
+                icon: 'success',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            })
+            .catch(error => {
+            let errorMessage = 'Failed to add product to cart';
+            
+            if (error.status === 422) {
+                errorMessage = 'Product stock not available';
+                if (error.data && error.data.message) {
+                errorMessage = error.data.message;
+                }
+            }
+            
+            Swal.fire({
+                title: 'Oops!',
+                text: errorMessage,
+                icon: 'error',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            });
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity');
+        const addToCartForm = document.getElementById('add-to-cart-form');
+        const maxStock = parseInt(quantityInput?.getAttribute('max') || 0);
+        
+        if (addToCartForm && quantityInput) {
+            addToCartForm.addEventListener('submit', function(e) {
+                const quantity = parseInt(quantityInput.value);
+                
+                // Validasi stok
+                if (isNaN(quantity) || quantity < 1) {
+                    e.preventDefault();
+                    alert('Jumlah minimal adalah 1');
+                    return false;
+                }
+                
+                if (quantity > maxStock) {
+                    e.preventDefault();
+                    alert(`Stok tidak cukup. Maksimal ${maxStock} item`);
+                    return false;
+                }
             });
         }
         
+        // Validasi input langsung saat diubah
+        if (quantityInput) {
+            quantityInput.addEventListener('change', function() {
+                let value = parseInt(this.value);
+                
+                if (isNaN(value) || value < 1) {
+                    this.value = 1;
+                } else if (value > maxStock) {
+                    this.value = maxStock;
+                    alert(`Jumlah maksimal adalah ${maxStock}`);
+                }
+            });
+        }
+    });
+
+
         // Add to Wishlist
         const addToWishlistBtn = document.getElementById('add-to-wishlist');
         
@@ -541,290 +573,6 @@
                 // Change button appearance
                 const icon = this.querySelector('svg');
                 icon.classList.add('text-red-600');
-            });
-        }
-
-        // Rest of your JavaScript code...
-        
-    });
-</script>
-@endsection
-
-@section('scripts')
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Quantity Input
-        const decreaseBtn = document.getElementById('decrease-qty');
-        const increaseBtn = document.getElementById('increase-qty');
-        const quantityInput = document.getElementById('quantity');
-        
-        if (decreaseBtn && increaseBtn && quantityInput) {
-            decreaseBtn.addEventListener('click', function() {
-                const currentValue = parseInt(quantityInput.value);
-                if (currentValue > 1) {
-                    quantityInput.value = currentValue - 1;
-                }
-            });
-            
-            increaseBtn.addEventListener('click', function() {
-                const currentValue = parseInt(quantityInput.value);
-                const maxStock = parseInt(quantityInput.getAttribute('max'));
-                if (!maxStock || currentValue < maxStock) {
-                    quantityInput.value = currentValue + 1;
-                } else {
-                    Swal.fire({
-                        title: 'Stock Limit',
-                        text: `Sorry, only ${maxStock} items available in stock.`,
-                        icon: 'warning',
-                        confirmButtonColor: '#3085d6',
-                    });
-                }
-            });
-            
-            quantityInput.addEventListener('change', function() {
-                const currentValue = parseInt(this.value);
-                const maxStock = parseInt(this.getAttribute('max'));
-                
-                if (currentValue < 1) {
-                    this.value = 1;
-                } else if (maxStock && currentValue > maxStock) {
-                    this.value = maxStock;
-                    Swal.fire({
-                        title: 'Stock Limit',
-                        text: `Sorry, only ${maxStock} items available in stock.`,
-                        icon: 'warning',
-                        confirmButtonColor: '#3085d6',
-                    });
-                }
-            });
-        }
-        
-        // Thumbnail Images
-        const mainImage = document.getElementById('main-image');
-        const thumbnails = document.querySelectorAll('.thumbnail');
-        
-        if (mainImage && thumbnails.length > 0) {
-            thumbnails.forEach(function(thumbnail) {
-                thumbnail.addEventListener('click', function() {
-                    // Update main image
-                    mainImage.src = this.getAttribute('data-image');
-                    
-                    // Update active state
-                    thumbnails.forEach(function(thumb) {
-                        thumb.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-        }
-        
-        // Tabs
-        const tabLinks = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-        
-        if (tabLinks.length > 0 && tabContents.length > 0) {
-            tabLinks.forEach(function(tabLink) {
-                tabLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // Update active tab
-                    tabLinks.forEach(function(link) {
-                        link.classList.remove('border-blue-600', 'text-blue-600', 'active');
-                        link.classList.add('border-transparent', 'text-gray-600');
-                    });
-                    
-                    this.classList.remove('border-transparent', 'text-gray-600');
-                    this.classList.add('border-blue-600', 'text-blue-600', 'active');
-                    
-                    // Show active content
-                    tabContents.forEach(function(content) {
-                        content.classList.remove('active');
-                    });
-                    
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-        }
-        
-        // Add to Cart Form with SweetAlert
-        const addToCartForm = document.getElementById('add-to-cart-form');
-        
-        if (addToCartForm) {
-            addToCartForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const quantity = parseInt(document.getElementById('quantity').value || 1);
-                const addToCartBtn = document.getElementById('add-to-cart');
-                const productId = this.querySelector('input[name="product_id"]').value;
-                
-                // AJAX request to add item to cart would go here
-                // For demonstration, we'll simulate with a timeout
-                addToCartBtn.disabled = true;
-                addToCartBtn.classList.add('bg-gray-400');
-                addToCartBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                addToCartBtn.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-                
-                setTimeout(() => {
-                    // Create success message with SweetAlert
-                    Swal.fire({
-                        title: 'Added to Cart!',
-                        text: `${quantity} item(s) added to your cart.`,
-                        icon: 'success',
-                        confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'Continue Shopping',
-                        showDenyButton: true,
-                        denyButtonText: 'View Cart',
-                        denyButtonColor: '#10B981'
-                    }).then((result) => {
-                        if (result.isDenied) {
-                            // Redirect to cart page
-                            window.location.href = "{{ route('cart') }}";
-                        }
-                    });
-                    
-                    // Reset button
-                    addToCartBtn.disabled = false;
-                    addToCartBtn.classList.remove('bg-gray-400');
-                    addToCartBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                    addToCartBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Add to Cart';
-                }, 1000);
-            });
-        }
-        
-        // Quick Add to Cart Buttons
-        const quickAddButtons = document.querySelectorAll('.add-to-cart-quick');
-        
-        if (quickAddButtons.length > 0) {
-            quickAddButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-product-id');
-                    
-                    // AJAX request would go here
-                    this.innerHTML = '<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-                    
-                    setTimeout(() => {
-                        // Reset and show success
-                        this.innerHTML = '<i class="fas fa-check"></i>';
-                        
-                        // SweetAlert notification
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'bottom-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                        
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Item added to cart'
-                        });
-                        
-                        setTimeout(() => {
-                            this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
-                        }, 2000);
-                    }, 800);
-                });
-            });
-        }
-        
-        // Add to Wishlist
-        const addToWishlistBtn = document.getElementById('add-to-wishlist');
-        
-        if (addToWishlistBtn) {
-            addToWishlistBtn.addEventListener('click', function() {
-                // AJAX request would go here
-                
-                // SweetAlert notification
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: 'Added to Wishlist',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                
-                // Change button appearance
-                const icon = this.querySelector('svg');
-                icon.classList.add('text-red-600');
-            });
-        }
-        
-        // Rating stars
-        const stars = document.querySelectorAll('.star-rating');
-        const ratingInput = document.getElementById('rating-value');
-        
-        if (stars.length > 0 && ratingInput) {
-            stars.forEach(star => {
-                star.addEventListener('mouseover', function() {
-                    const rating = parseInt(this.getAttribute('data-rating'));
-                    
-                    stars.forEach((s, index) => {
-                        if (index < rating) {
-                            s.classList.add('text-yellow-400');
-                        } else {
-                            s.classList.remove('text-yellow-400');
-                        }
-                    });
-                });
-                
-                star.addEventListener('click', function() {
-                    const rating = parseInt(this.getAttribute('data-rating'));
-                    ratingInput.value = rating;
-                    
-                    stars.forEach((s, index) => {
-                        if (index < rating) {
-                            s.classList.add('text-yellow-400');
-                        } else {
-                            s.classList.remove('text-yellow-400');
-                        }
-                    });
-                });
-            });
-            
-            document.querySelector('.rating-stars').addEventListener('mouseleave', function() {
-                const currentRating = parseInt(ratingInput.value);
-                
-                stars.forEach((s, index) => {
-                    if (index < currentRating) {
-                        s.classList.add('text-yellow-400');
-                    } else {
-                        s.classList.remove('text-yellow-400');
-                    }
-                });
-            });
-        }
-        
-        // Review submission
-        const reviewForm = document.getElementById('review-form');
-        
-        if (reviewForm) {
-            reviewForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // AJAX request would go here
-                
-
-                // Clear form and show success
-                Swal.fire({
-                    title: 'Review Submitted!',
-                    text: 'Thank you for your feedback.',
-                    icon: 'success',
-                    confirmButtonColor: '#3085d6'
-                }).then(() => {
-                    this.reset();
-                    ratingInput.value = 5;
-                    stars.forEach((s, index) => {
-                        if (index < 5) {
-                            s.classList.add('text-yellow-400');
-                        } else {
-                            s.classList.remove('text-yellow-400');
-                        }
-                    });
-                });
             });
         }
     });
