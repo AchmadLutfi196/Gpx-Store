@@ -4,16 +4,29 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CartItem;
 use App\Models\Address;
+use App\Models\PromoCode;
+use App\Models\Product;
+use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
-use Midtrans\Config;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    public function __construct()
+    {
+        // Konfigurasi Midtrans
+        MidtransConfig::$serverKey = config('midtrans.server_key');
+        MidtransConfig::$isProduction = config('midtrans.is_production');
+        MidtransConfig::$isSanitized = config('midtrans.is_sanitized');
+        MidtransConfig::$is3ds = config('midtrans.is_3ds');
+    }
+
     public function index()
     {
         $user = Auth::user();
@@ -21,7 +34,7 @@ class CheckoutController extends Controller
         $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
         
         if($cartItems->count() == 0) {
-            return redirect()->route('cart')->with('error', 'Your cart is empty');
+            return redirect()->route('cart')->with('error', 'Keranjang Anda kosong');
         }
         
         // Hitung subtotal
@@ -35,10 +48,12 @@ class CheckoutController extends Controller
         $shipping = 10000; // Default shipping (Regular)
         $tax = $subtotal * 0.11; // 11% tax
         $discount = 0; // Default discount
+        $appliedPromo = null;
         
         // Jika ada kode kupon yang diterapkan, hitung diskon
-        if (session()->has('coupon')) {
-            // Logika untuk menghitung diskon berdasarkan kupon
+        if (Session::has('applied_promo')) {
+            $appliedPromo = Session::get('applied_promo');
+            $discount = $appliedPromo['discount_amount'];
         }
         
         $total = $subtotal + $shipping + $tax - $discount;
@@ -51,7 +66,8 @@ class CheckoutController extends Controller
             'shipping', 
             'tax', 
             'discount', 
-            'total'
+            'total',
+            'appliedPromo'
         ));
     }
     
@@ -68,7 +84,14 @@ class CheckoutController extends Controller
         $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
         
         if($cartItems->count() == 0) {
-            return redirect()->route('cart')->with('error', 'Your cart is empty');
+            return redirect()->route('cart')->with('error', 'Keranjang Anda kosong');
+        }
+        
+        // Periksa ketersediaan stok
+        foreach ($cartItems as $item) {
+            if ($item->product->stock < $item->quantity) {
+                return redirect()->route('cart')->with('error', "Stok tidak cukup untuk produk {$item->product->name}. Tersedia: {$item->product->stock}, Dibutuhkan: {$item->quantity}");
+            }
         }
         
         // Hitung total seperti di method index
@@ -92,6 +115,21 @@ class CheckoutController extends Controller
         
         $tax = $subtotal * 0.11;
         $discount = 0;
+        $promo_id = null;
+        
+        // Jika ada kode kupon yang diterapkan
+        if (Session::has('applied_promo')) {
+            $appliedPromo = Session::get('applied_promo');
+            $discount = $appliedPromo['discount_amount'];
+            $promo_id = $appliedPromo['id'];
+            
+            // Increment usage pada promo code
+            $promoCode = PromoCode::find($promo_id);
+            if ($promoCode) {
+                $promoCode->incrementUsage();
+            }
+        }
+        
         $total = $subtotal + $shipping_cost + $tax - $discount;
         
         // Buat order baru
@@ -103,6 +141,7 @@ class CheckoutController extends Controller
         $order->shipping_amount = $shipping_cost;
         $order->tax_amount = $tax;
         $order->discount_amount = $discount;
+        $order->promo_code_id = $promo_id;
         $order->shipping_method = $shipping_method;
         
         // Atur alamat pengiriman
@@ -118,6 +157,8 @@ class CheckoutController extends Controller
                 'province' => $address->province,
                 'postal_code' => $address->postal_code,
             ]);
+            $order->shipping_postal_code = $address->postal_code;
+            $order->shipping_phone = $address->phone;
         } else {
             // Jika menggunakan alamat baru
             $order->shipping_address = json_encode([
@@ -129,6 +170,8 @@ class CheckoutController extends Controller
                 'province' => $request->province,
                 'postal_code' => $request->postal_code,
             ]);
+            $order->shipping_postal_code = $request->postal_code;
+            $order->shipping_phone = $request->recipient_phone;
 
             // Jika user ingin menyimpan alamat
             if ($request->has('save_address') && $request->save_address) {
@@ -153,8 +196,6 @@ class CheckoutController extends Controller
             }
         }
         
-        $order->shipping_postal_code = $request->postal_code ?? '00000';
-        $order->shipping_phone = $request->recipient_phone ?? '00000000000';
         // Tambahkan catatan pesanan jika ada
         $order->notes = $request->notes;
         $order->save();
@@ -168,8 +209,10 @@ class CheckoutController extends Controller
             $orderItem = new OrderItem();
             $orderItem->order_id = $order->id;
             $orderItem->product_id = $item->product_id;
+            $orderItem->name = $item->product->name; // Tambahkan nama produk
             $orderItem->quantity = $item->quantity;
             $orderItem->price = $price;
+            $orderItem->subtotal = $price * $item->quantity; // Tambahkan subtotal
             $orderItem->save();
         }
         
@@ -238,14 +281,15 @@ class CheckoutController extends Controller
             $order->payment_token = $snapToken;
             $order->save();
             
-            // Hapus item dari keranjang
+            // Hapus item dari keranjang dan clear promo code
             CartItem::where('user_id', $user->id)->delete();
+            Session::forget('applied_promo');
             
             // Response dengan token untuk frontend
             return view('payment', [
                 'snapToken' => $snapToken,
                 'order' => $order,
-                'client_key' => Config::$clientKey
+                'client_key' => config('midtrans.client_key')
             ]);
             
         } catch (\Exception $e) {
@@ -257,12 +301,15 @@ class CheckoutController extends Controller
     public function finish(Request $request, $orderId)
     {
         // Handle callback setelah pembayaran
-        $order = Order::findOrFail($orderId);
+        $order = Order::with('items.product')->findOrFail($orderId);
         
         // Update status order berdasarkan status transaksi
         if ($request->transaction_status === 'capture' || $request->transaction_status === 'settlement') {
             $order->status = 'processing';
             $order->payment_status = 'completed';
+            
+            // Kurangi stok produk setelah pembayaran berhasil
+            $this->reduceProductStock($order);
         } elseif ($request->transaction_status === 'pending') {
             $order->status = 'pending';
             $order->payment_status = 'pending';
@@ -276,5 +323,27 @@ class CheckoutController extends Controller
         
         return redirect()->route('orders.show', $order->id)
             ->with('success', 'Order placed successfully! Order ID: ' . $order->order_number);
+    }
+    
+    /**
+     * Reduce product stock based on order items
+     */
+    private function reduceProductStock(Order $order)
+    {
+        foreach ($order->items as $item) {
+            // Gunakan transaksi database untuk menghindari race condition
+            DB::transaction(function() use ($item) {
+                $product = Product::find($item->product_id);
+                
+                if ($product) {
+                    // Kurangi stok dan simpan
+                    $product->stock = max(0, $product->stock - $item->quantity);
+                    $product->save();
+                    
+                    // Opsional: log perubahan stok
+                    \Log::info("Stok dikurangi untuk produk ID {$product->id} ({$product->name}). Jumlah: -{$item->quantity}. Stok baru: {$product->stock}");
+                }
+            });
+        }
     }
 }

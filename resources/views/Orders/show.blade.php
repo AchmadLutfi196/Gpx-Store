@@ -1,298 +1,377 @@
 @extends('layouts.app')
 
-@section('title', 'Order Details #' . $order->order_number)
-
 @section('styles')
 <style>
     .order-status {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
+        @apply inline-block px-3 py-1 text-sm font-semibold rounded-full;
     }
-    
     .status-pending {
-        background-color: #FEF3C7;
-        color: #92400E;
+        @apply bg-yellow-100 text-yellow-800;
     }
-    
     .status-processing {
-        background-color: #DBEAFE;
-        color: #1E40AF;
+        @apply bg-blue-100 text-blue-800;
+    }
+    .status-completed {
+        @apply bg-green-100 text-green-800;
+    }
+    .status-failed {
+        @apply bg-red-100 text-red-800;
     }
     
-    .status-shipped {
-        background-color: #D1FAE5;
-        color: #065F46;
+    .detail-section {
+        @apply bg-white rounded-lg shadow-sm p-6 mb-6;
     }
     
-    .status-delivered {
-        background-color: #ECFDF5;
-        color: #064E3B;
+    .section-title {
+        @apply text-xl font-semibold mb-4;
     }
     
-    .status-cancelled {
-        background-color: #FEE2E2;
-        color: #991B1B;
+    .table-responsive {
+        @apply overflow-x-auto;
     }
     
-    .timeline-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background-color: #60A5FA;
+    .btn-primary {
+        @apply inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition;
     }
     
-    .timeline-connector {
-        width: 2px;
-        background-color: #E5E7EB;
+    .btn-secondary {
+        @apply inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition;
     }
 </style>
 @endsection
 
 @section('content')
-<!-- Breadcrumb -->
-<div class="bg-gray-100 py-4">
-    <div class="container mx-auto px-4">
-        <nav class="flex" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="text-gray-500 hover:text-blue-600">Home</a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <a href="{{ route('profile.orders') }}" class="ml-1 text-gray-500 md:ml-2 hover:text-blue-600">My Orders</a>
-                    </div>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="ml-1 text-gray-500 md:ml-2">Order #{{ $order->order_number }}</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
-    </div>
-</div>
-
-<!-- Order Details Content -->
 <div class="container mx-auto px-4 py-8">
-    <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Order Summary and Status -->
-        <div class="w-full lg:w-8/12">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-900">Order #{{ $order->order_number }}</h1>
-                <span class="order-status {{ 'status-' . strtolower($order->status) }}">
-                    {{ ucfirst($order->status) }}
-                </span>
-            </div>
-            
-            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-900 mb-1">Order Details</h2>
-                        <p class="text-gray-500 text-sm">Placed on {{ $order->created_at->format('F d, Y, h:i A') }}</p>
-                    </div>
-                    
-                    <a href="{{ route('profile.orders') }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">
-                        <span class="hidden md:inline">Back to</span> All Orders
-                    </a>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Detail Pesanan</h1>
+            <p class="text-sm text-gray-600">Order ID: {{ $order->order_number }}</p>
+        </div>
+        <div>
+            <a href="{{ route('profile.orders') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Kembali ke Daftar Pesanan
+            </a>
+        </div>
+    </div>
+
+    @if (session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
                 </div>
-                
-                <!-- Order Timeline -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-base font-semibold mb-4">Order Timeline</h3>
-                    
-                    <div class="space-y-6">
-                        <div class="flex">
-                            <div class="flex flex-col items-center mr-4">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-connector h-full"></div>
-                            </div>
-                            <div>
-                                <p class="font-medium">Order Placed</p>
-                                <p class="text-sm text-gray-500">{{ $order->created_at->format('F d, Y, h:i A') }}</p>
-                            </div>
-                        </div>
-                        
-                        @if($order->status == 'processing' || $order->status == 'shipped' || $order->status == 'delivered')
-                        <div class="flex">
-                            <div class="flex flex-col items-center mr-4">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-connector h-full"></div>
-                            </div>
-                            <div>
-                                <p class="font-medium">Processing Order</p>
-                                <p class="text-sm text-gray-500">{{ $order->processed_at ? $order->processed_at->format('F d, Y, h:i A') : 'In progress' }}</p>
-                            </div>
-                        </div>
-                        @endif
-                        
-                        @if($order->status == 'shipped' || $order->status == 'delivered')
-                        <div class="flex">
-                            <div class="flex flex-col items-center mr-4">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-connector h-full"></div>
-                            </div>
-                            <div>
-                                <p class="font-medium">Order Shipped</p>
-                                <p class="text-sm text-gray-500">{{ $order->shipped_at ? $order->shipped_at->format('F d, Y, h:i A') : 'In transit' }}</p>
-                                @if($order->tracking_number)
-                                <p class="text-sm text-gray-700 mt-1">Tracking Number: <span class="font-semibold">{{ $order->tracking_number }}</span></p>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
-                        
-                        @if($order->status == 'delivered')
-                        <div class="flex">
-                            <div class="flex flex-col items-center mr-4">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-connector h-full"></div>
-                            </div>
-                            <div>
-                                <p class="font-medium">Order Delivered</p>
-                                <p class="text-sm text-gray-500">{{ $order->delivered_at ? $order->delivered_at->format('F d, Y, h:i A') : 'Completed' }}</p>
-                            </div>
-                        </div>
-                        @endif
-                        
-                        @if($order->status == 'cancelled')
-                        <div class="flex">
-                            <div class="flex flex-col items-center mr-4">
-                                <div class="timeline-dot bg-red-500"></div>
-                                <div class="timeline-connector h-full"></div>
-                            </div>
-                            <div>
-                                <p class="font-medium text-red-700">Order Cancelled</p>
-                                <p class="text-sm text-gray-500">{{ $order->cancelled_at ? $order->cancelled_at->format('F d, Y, h:i A') : 'Cancelled' }}</p>
-                                @if($order->cancellation_reason)
-                                <p class="text-sm text-gray-700 mt-1">Reason: {{ $order->cancellation_reason }}</p>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
-                    </div>
+                <div class="ml-3">
+                    <p class="text-sm">{{ session('success') }}</p>
                 </div>
             </div>
-            
-            <!-- Order Items -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Order Items</h2>
-                
-                <div class="divide-y divide-gray-200">
-                    @foreach($order->items as $item)
-                    <div class="py-4 flex flex-wrap sm:flex-nowrap">
-                        <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                            <img src="{{ asset('storage/' . ($item->product->image ?? 'products/default.jpg')) }}" alt="{{ $item->product_name }}" class="h-full w-full object-cover object-center">
-                        </div>
-                        
-                        <div class="ml-4 flex flex-1 flex-col">
-                            <div>
-                                <div class="flex justify-between text-base font-medium text-gray-900">
-                                    <h3>
-                                        <a href="{{ route('product', $item->product_id) }}">{{ $item->product_name }}</a>
-                                    </h3>
-                                    <p class="ml-4">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
-                                </div>
-                                @if($item->options)
-                                <p class="mt-1 text-sm text-gray-500">
-                                    @foreach(json_decode($item->options, true) ?? [] as $key => $value)
-                                        <span class="mr-2">{{ ucfirst($key) }}: {{ is_array($value) ? implode(', ', $value) : $value }}</span>
-                                    @endforeach
-                                </p>
-                                @endif
-                            </div>
-                            <div class="flex flex-1 items-end justify-between text-sm">
-                                <p class="text-gray-500">Qty {{ $item->quantity }}</p>
-                                
-                                <div class="flex">
-                                    <p class="font-medium">Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
                 </div>
+                <div class="ml-3">
+                    <p class="text-sm">{{ session('error') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <div class="detail-section">
+        <div class="flex flex-col md:flex-row justify-between border-b pb-4 mb-4">
+            <div>
+                <h2 class="section-title">Informasi Pesanan</h2>
+                <p class="text-sm text-gray-600">Tanggal Pemesanan: {{ $order->created_at->format('d F Y, H:i') }}</p>
+                <div class="mt-2">
+                    <span class="order-status {{ 'status-' . $order->status }}">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <div class="text-right">
+                    <p class="text-gray-600 text-sm">Total Pembayaran</p>
+                    <p class="text-2xl font-bold text-blue-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Items -->
+        <div class="mb-6">
+            <h3 class="font-semibold text-gray-900 mb-3">Items yang Dibeli</h3>
+            
+            <div class="table-responsive border rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Jumlah</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Harga</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($order->items as $item)
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        @if(isset($item->product) && $item->product && $item->product->image)
+                                            <div class="flex-shrink-0 h-16 w-16">
+                                                <img class="h-16 w-16 rounded object-cover" src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->name }}">
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-gray-900 font-medium">{{ $item->name }}</p>
+                                            </div>
+                                        @else
+                                            <p class="text-gray-900 font-medium">{{ $item->name }}</p>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-gray-900">{{ $item->quantity }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-gray-900">Rp {{ number_format($item->price, 0, ',', '.') }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-gray-900">Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="border-t pt-4">
+            <div class="flex justify-between py-1">
+                <span class="text-gray-600">Subtotal</span>
+                <span class="font-medium">Rp {{ number_format($order->total_amount - $order->shipping_amount - $order->tax_amount + $order->discount_amount, 0, ',', '.') }}</span>
+            </div>
+            <div class="flex justify-between py-1">
+                <span class="text-gray-600">Biaya Pengiriman ({{ ucfirst($order->shipping_method) }})</span>
+                <span class="font-medium">Rp {{ number_format($order->shipping_amount, 0, ',', '.') }}</span>
+            </div>
+            <div class="flex justify-between py-1">
+                <span class="text-gray-600">Pajak (11%)</span>
+                <span class="font-medium">Rp {{ number_format($order->tax_amount, 0, ',', '.') }}</span>
+            </div>
+
+            @if($order->discount_amount > 0)
+                <div class="flex justify-between py-1">
+                    <span class="text-gray-600">Diskon</span>
+                    <span class="font-medium text-red-600">- Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
+                </div>
+            @endif
+
+            <div class="flex justify-between py-3 border-t mt-2">
+                <span class="text-base font-semibold">Total</span>
+                <span class="text-lg font-bold text-blue-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Information -->
+    <div class="detail-section">
+        <h2 class="section-title">Informasi Pengiriman</h2>
+        
+        @php
+            $shippingAddress = json_decode($order->shipping_address, true);
+        @endphp
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <p class="text-sm font-medium text-gray-900 mb-1">Penerima:</p>
+                <p class="text-gray-700">{{ $shippingAddress['recipient_name'] ?? 'Belum ada' }}</p>
+                <p class="text-gray-700">{{ $shippingAddress['phone'] ?? $order->shipping_phone }}</p>
+            </div>
+            
+            <div>
+                <p class="text-sm font-medium text-gray-900 mb-1">Alamat Pengiriman:</p>
+                <p class="text-gray-700">{{ $shippingAddress['street_address'] ?? 'Belum ada' }}</p>
+                @if(!empty($shippingAddress['address_line2']))
+                    <p class="text-gray-700">{{ $shippingAddress['address_line2'] }}</p>
+                @endif
+                <p class="text-gray-700">
+                    {{ $shippingAddress['city'] ?? '' }}, 
+                    {{ $shippingAddress['province'] ?? '' }} 
+                    {{ $shippingAddress['postal_code'] ?? $order->shipping_postal_code }}
+                </p>
             </div>
         </div>
         
-        <!-- Order Summary and Shipping Info -->
-        <div class="w-full lg:w-4/12">
-            <!-- Order Summary -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
-                
-                <div class="space-y-3">
-                    <div class="flex justify-between">
-                        <p class="text-gray-600">Subtotal</p>
-                        <p class="font-medium">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</p>
-                    </div>
-                    
-                    <div class="flex justify-between">
-                        <p class="text-gray-600">Shipping</p>
-                        <p class="font-medium">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</p>
-                    </div>
-                    
-                    @if($order->discount > 0)
-                    <div class="flex justify-between text-blue-600">
-                        <p>Discount</p>
-                        <p class="font-medium">- Rp {{ number_format($order->discount, 0, ',', '.') }}</p>
-                    </div>
-                    @endif
-                    
-                    @if($order->tax > 0)
-                    <div class="flex justify-between">
-                        <p class="text-gray-600">Tax</p>
-                        <p class="font-medium">Rp {{ number_format($order->tax, 0, ',', '.') }}</p>
-                    </div>
-                    @endif
-                    
-                    <div class="border-t border-gray-200 pt-3 flex justify-between">
-                        <p class="text-lg font-semibold">Total</p>
-                        <p class="text-lg font-semibold text-blue-600">Rp {{ number_format($order->total, 0, ',', '.') }}</p>
-                    </div>
-                    
-                    <div class="border-t border-gray-200 pt-3">
-                        <p class="text-gray-600">Payment Method</p>
-                        <p class="font-medium">{{ $order->payment_method ?? 'Bank Transfer' }}</p>
-                    </div>
+        <div class="mt-4 border-t pt-4">
+            <p class="text-sm font-medium text-gray-900 mb-1">Metode Pengiriman:</p>
+            <p class="text-gray-700">{{ ucfirst($order->shipping_method) }} Shipping</p>
+            
+            @if(!empty($order->notes))
+                <div class="mt-4">
+                    <p class="text-sm font-medium text-gray-900 mb-1">Catatan Pesanan:</p>
+                    <p class="text-gray-700">{{ $order->notes }}</p>
+                </div>
+            @endif
+        </div>
+    </div>
+    
+    <!-- Payment Information -->
+    <div class="detail-section">
+        <h2 class="section-title">Status Pembayaran</h2>
+        
+        <div class="flex items-center justify-between border-b pb-4 mb-4">
+            <div>
+                <p class="text-sm font-medium text-gray-900">Status:</p>
+                <div class="mt-2">
+                    <span class="order-status {{ 'status-' . ($order->payment_status ?? $order->status) }}">
+                        {{ ucfirst($order->payment_status ?? $order->status) }}
+                    </span>
                 </div>
             </div>
             
-            <!-- Shipping Information -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Shipping Information</h2>
-                
-                @if($order->address)
-                <div class="space-y-1 mb-4">
-                    <p class="font-medium">{{ $order->address->name }}</p>
-                    <p>{{ $order->address->phone }}</p>
-                    <p>{{ $order->address->address_line1 }}</p>
-                    @if($order->address->address_line2)
-                    <p>{{ $order->address->address_line2 }}</p>
+            <div class="text-right">
+                @if($order->status === 'pending' || $order->payment_status === 'pending')
+                    @if($order->payment_token)
+                    <button id="pay-button" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition">
+                        Selesaikan Pembayaran
+                    </button>
+                    @else
+                        <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-primary">
+                                Lanjutkan Pembayaran
+                            </button>
+                        </form>
                     @endif
-                    <p>{{ $order->address->district }}, {{ $order->address->city }}</p>
-                    <p>{{ $order->address->province }}, {{ $order->address->postal_code }}</p>
-                </div>
-                @else
-                <p class="text-gray-500">Shipping information not available</p>
-                @endif
-                
-                @if($order->notes)
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <h3 class="text-base font-medium mb-2">Order Notes</h3>
-                    <p class="text-gray-600">{{ $order->notes }}</p>
-                </div>
                 @endif
             </div>
         </div>
-    </div>
-</div>
+        
+        @if($order->payment_details)
+            <div>
+                <p class="text-sm font-medium text-gray-900 mb-2">Detail Pembayaran:</p>
+                <div class="bg-gray-50 p-3 rounded">
+                    @php
+                        $paymentDetails = json_decode($order->payment_details, true);
+                        
+                        // Jika detail pembayaran ada, tampilkan dengan rapi
+                        if ($paymentDetails && is_array($paymentDetails)) {
+                            // Format informasi penting terlebih dahulu
+                            $importantInfo = [
+                                'Status Transaksi' => $paymentDetails['transaction_status'] ?? null,
+                                'Kode Status' => $paymentDetails['status_code'] ?? null,
+                                'Order ID' => $paymentDetails['order_id'] ?? null,
+                            ];
+                    @endphp
+                    
+                    <div class="space-y-1">
+                        @foreach($importantInfo as $key => $value)
+                            @if($value)
+                            <div class="flex justify-between">
+                                <span class="font-medium">{{ $key }}:</span>
+                                <span class="
+                                    @if($key == 'Status Transaksi')
+                                        @if($value == 'settlement' || $value == 'capture')
+                                            text-green-600 font-medium
+                                        @elseif($value == 'pending')
+                                            text-yellow-600 font-medium
+                                        @elseif($value == 'deny' || $value == 'cancel' || $value == 'expire')
+                                            text-red-600 font-medium
+                                        @endif
+                                    @endif
+                                ">
+                                    {{ ucfirst($value) }}
+                                </span>
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                        
+                    @php
+                        // Hapus yang sudah ditampilkan di atas untuk menghindari duplikasi
+                        unset($paymentDetails['transaction_status'], $paymentDetails['status_code'], $paymentDetails['order_id']);
+                        
+                        // Tampilkan detail tambahan jika ada
+                        if(!empty($paymentDetails)) {
+                    @endphp
+                    <div class="mt-2 pt-2 border-t border-gray-200">
+                        <p class="text-xs font-medium text-gray-700 mb-1">Informasi Tambahan:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-1 text-xs">
+                            @foreach($paymentDetails as $key => $value)
+                                @if(is_scalar($value) && !is_null($value) && $value !== '')
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">{{ str_replace('_', ' ', ucfirst($key)) }}:</span>
+                                    <span>{{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}</span>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @php
+                        }
+                    } else {
+                    @endphp
+                        <pre class="text-xs text-gray-600">{{ $order->payment_details }}</pre>
+                    @php
+                    }
+                    @endphp
+                </div>
+            </div>
+        @endif
+
+
+
+@endsection
+
+@section('scripts')
+@if($order->status === 'pending' || $order->payment_status === 'pending')
+    @if($order->payment_token)
+        <!-- Tambahkan Midtrans Snap.js -->
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+        <script>
+            document.getElementById('pay-button').onclick = function() {
+                // Simpan SnapToken ke variabel
+                var snapToken = '{{ $order->payment_token }}';
+                
+                // Memanggil snap.pay dan membuka popup pembayaran
+                snap.pay(snapToken, {
+                    onSuccess: function(result) {
+                        /* Anda dapat menyimpan hasil transaksi di sini, 
+                           atau cukup mengarahkan ke halaman terima kasih */
+                        window.location.href = '{{ route("payment.finish", $order->id) }}?' + 
+                            'transaction_status=' + result.transaction_status +
+                            '&status_code=' + result.status_code +
+                            '&order_id=' + result.order_id;
+                    },
+                    onPending: function(result) {
+                        window.location.href = '{{ route("payment.finish", $order->id) }}?' + 
+                            'transaction_status=' + result.transaction_status +
+                            '&status_code=' + result.status_code +
+                            '&order_id=' + result.order_id;
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal: ' + result.status_message);
+                        window.location.href = '{{ route("payment.finish", $order->id) }}?' + 
+                            'transaction_status=error' +
+                            '&status_code=' + result.status_code +
+                            '&status_message=' + result.status_message +
+                            '&order_id=' + result.order_id;
+                    },
+                    onClose: function() {
+                        alert('Anda menutup popup pembayaran tanpa menyelesaikan pembayaran');
+                    }
+                });
+            };
+        </script>
+    @endif
+@endif
 @endsection

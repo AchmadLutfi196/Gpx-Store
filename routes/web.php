@@ -62,17 +62,26 @@ Route::middleware(['auth'])->group(function () {
     
   
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/regenerate-payment', [App\Http\Controllers\OrderController::class, 'regeneratePayment'])->name('orders.regenerate-payment');
+    // Checkout routes
+    Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/payment/finish/{order}', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('payment.finish');
+    
+    // Promo code routes
+    Route::post('/coupon/apply', [App\Http\Controllers\PromoCodeController::class, 'apply'])->name('coupon.apply');
+    Route::post('/coupon/remove', [App\Http\Controllers\PromoCodeController::class, 'remove'])->name('coupon.remove');
 });
 
 
 // Checkout Routes
-Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
-Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-Route::post('/checkout/callback', [App\Http\Controllers\CheckoutController::class, 'callback'])->name('checkout.callback');
-Route::get('/checkout/finish', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('checkout.finish');
-Route::get('/checkout/unfinish', [App\Http\Controllers\CheckoutController::class, 'unfinish'])->name('checkout.unfinish');
-Route::get('/checkout/error', [App\Http\Controllers\CheckoutController::class, 'error'])->name('checkout.error');
+// Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
+// Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+// Route::post('/checkout/callback', [App\Http\Controllers\CheckoutController::class, 'callback'])->name('checkout.callback');
+// Route::get('/checkout/finish', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('checkout.finish');
+// Route::get('/checkout/unfinish', [App\Http\Controllers\CheckoutController::class, 'unfinish'])->name('checkout.unfinish');
+// Route::get('/checkout/error', [App\Http\Controllers\CheckoutController::class, 'error'])->name('checkout.error');
 
 // Route untuk mengecek status wishlist (tidak perlu auth)
 Route::get('/wishlist/check/{product}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');

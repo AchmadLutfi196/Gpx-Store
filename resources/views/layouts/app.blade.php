@@ -490,7 +490,7 @@
                     <ul class="space-y-2">
                         <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-white footer-link inline-block">Beranda</a></li>
                         <li><a href="{{ route('shop') }}" class="text-gray-300 hover:text-white footer-link inline-block">Shop</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white footer-link inline-block">Tentang Kami</a></li>
+                        <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-white footer-link inline-block">Tentang Kami</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-white footer-link inline-block">Kontak</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-white footer-link inline-block">FAQ</a></li>
                     </ul>

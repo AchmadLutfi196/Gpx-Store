@@ -185,7 +185,7 @@
             <div>
                 <div class="rounded-lg overflow-hidden shadow-lg h-full">
                     <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.6664463012777!2d106.8230203751979!3d-6.175729093828906!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d2e764b12d%3A0x3d2ad6e1e0e9bcc8!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1681653719146!5m2!1sen!2sid" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.382123456789!2d112.723083!3d-7.12775!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd803f3c3c3c3c3%3A0x3d2ad6e1e0e9bcc8!2sUniversitas%20Trunojoyo%20Madura!5e0!3m2!1sen!2sid!4v1681653719146!5m2!1sen!2sid"
                         width="100%" 
                         height="100%" 
                         style="border:0; min-height: 400px" 

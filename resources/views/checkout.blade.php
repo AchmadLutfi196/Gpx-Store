@@ -78,6 +78,25 @@
     .pulse-animation {
         animation: pulse-border 2s infinite;
     }
+    
+    /* Loading spinner */
+    .spinner {
+        @apply inline-block w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin;
+        border-top-color: transparent;
+    }
+    
+    /* Alert styles */
+    .alert {
+        @apply p-3 rounded-md text-sm mb-4;
+    }
+    
+    .alert-success {
+        @apply bg-green-100 text-green-700 border border-green-200;
+    }
+    
+    .alert-danger {
+        @apply bg-red-100 text-red-700 border border-red-200;
+    }
 </style>
 @endsection
 
@@ -178,7 +197,7 @@
             <div class="flex">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
                 <div class="ml-3">
@@ -518,12 +537,10 @@
                                 <span class="text-sm font-medium">Rp {{ number_format($tax, 0, ',', '.') }}</span>
                             </div>
                             
-                            @if($discount > 0)
-                                <div class="flex justify-between py-1">
-                                    <span class="text-sm text-gray-600">Discount</span>
-                                    <span class="text-sm font-medium text-red-600">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
-                                </div>
-                            @endif
+                            <div id="discount-row" class="flex justify-between py-1 {{ $discount > 0 ? 'block' : 'hidden' }}">
+                                <span class="text-sm text-gray-600">Discount</span>
+                                <span class="text-sm font-medium text-red-600" id="discount-amount">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
+                            </div>
                         </div>
                         
                         <div class="flex justify-between py-3 border-t border-gray-200 mt-2">
@@ -540,12 +557,24 @@
                                     class="flex-1 form-control rounded-r-none {{ isset($appliedPromo) ? 'bg-green-50 border-green-500' : '' }}"
                                     value="{{ $appliedPromo['code'] ?? '' }}"
                                     {{ isset($appliedPromo) ? 'readonly' : '' }}>
-                                <button type="button" id="apply-coupon" 
-                                    class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0"
-                                    {{ isset($appliedPromo) ? 'disabled' : '' }}>
-                                    {{ isset($appliedPromo) ? 'Applied' : 'Apply' }}
-                                </button>
+                                
+                                @if(isset($appliedPromo))
+                                    <button type="button" id="remove-coupon" 
+                                        class="btn-outline rounded-l-none text-red-600 hover:bg-red-50 border-l-0 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        Remove
+                                    </button>
+                                @else
+                                    <button type="button" id="apply-coupon" 
+                                        class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
+                                        Apply
+                                    </button>
+                                @endif
                             </div>
+                            
+                            <div id="promo-message" class="mt-2 text-sm hidden"></div>
                             
                             @if(isset($appliedPromo))
                                 <div class="mt-2 text-sm text-green-600 font-medium">
@@ -567,20 +596,10 @@
                         <!-- Payment Information -->
                         <div class="mt-6 border-t border-gray-200 pt-4">
                             <h3 class="text-sm font-medium text-gray-900 mb-2">Payment Information</h3>
-                            <p class="text-xs text-gray-500 mb-4">After clicking "Place Order", you will be redirected to our secure payment gateway to complete your payment. We accept various payment methods:</p>
-                            
-                            <div class="flex flex-wrap items-center mb-4">
-                                <img src="{{ asset('images/payment/visa.png') }}" alt="Visa" class="payment-card">
-                                <img src="{{ asset('images/payment/mastercard.png') }}" alt="Mastercard" class="payment-card">
-                                <img src="{{ asset('images/payment/bca.png') }}" alt="BCA" class="payment-card">
-                                <img src="{{ asset('images/payment/bni.png') }}" alt="BNI" class="payment-card">
-                                <img src="{{ asset('images/payment/mandiri.png') }}" alt="Mandiri" class="payment-card">
-                                <img src="{{ asset('images/payment/gopay.png') }}" alt="GoPay" class="payment-card">
-                                <img src="{{ asset('images/payment/ovo.png') }}" alt="OVO" class="payment-card">
-                            </div>
+                            <p class="text-xs text-gray-500 mb-4">After clicking "Place Order", you will be redirected to our secure payment gateway to complete your payment. We accept various payment methods.</p>
                         </div>
                         
-                        <button type="submit" id="place-order-button" class="w-full btn-primary bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-200 flex items-center justify-center">
+                        <button type="submit" id="place-order-button" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition mt-4">
                             <span>Place Order</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -599,6 +618,7 @@
 
 @section('scripts')
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize AOS
@@ -647,6 +667,224 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Apply Coupon Code
+    const applyCouponButton = document.getElementById('apply-coupon');
+    const removeCouponButton = document.getElementById('remove-coupon');
+    const couponCodeInput = document.getElementById('coupon_code');
+    const promoMessage = document.getElementById('promo-message');
+    const discountRow = document.getElementById('discount-row');
+    const discountAmount = document.getElementById('discount-amount');
+    const orderTotal = document.getElementById('order-total');
+    
+    if (applyCouponButton) {
+        applyCouponButton.addEventListener('click', function() {
+            const code = couponCodeInput.value.trim();
+            if (!code) {
+                showPromoMessage('Please enter a coupon code', 'danger');
+                return;
+            }
+            
+            // Show loading state
+            applyCouponButton.disabled = true;
+            applyCouponButton.innerHTML = '<span class="spinner mr-2"></span> Applying...';
+            
+            // Get subtotal from the page
+            const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
+            let subtotal = 0;
+            if (subtotalElement) {
+                subtotal = parseFloat(subtotalElement.textContent.replace('Rp ', '').replaceAll('.', ''));
+            }
+            
+            // Send AJAX request to apply coupon
+            axios.post('{{ route("coupon.apply") }}', {
+                coupon_code: code,
+                subtotal: subtotal,
+                _token: '{{ csrf_token() }}'
+            })
+            .then(function (response) {
+                const data = response.data;
+                if (data.success) {
+                    // Success - update UI
+                    showPromoMessage(data.message, 'success');
+                    
+                    // Make coupon field readonly and styled
+                    couponCodeInput.value = data.promo.code;
+                    couponCodeInput.readOnly = true;
+                    couponCodeInput.classList.add('bg-green-50', 'border-green-500');
+                    
+                    // Update discount row
+                    discountRow.classList.remove('hidden');
+                    discountAmount.textContent = '- ' + data.promo.formatted_discount;
+                    
+                                        // Replace apply button with remove button
+                                        applyCouponButton.parentNode.innerHTML = `
+                        <button type="button" id="remove-coupon" 
+                            class="btn-outline rounded-l-none text-red-600 hover:bg-red-50 border-l-0 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    `;
+                    
+                    // Add promo info message
+                    const promoInfoHtml = `
+                        <div class="mt-2 text-sm text-green-600 font-medium">
+                            <span class="inline-flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Promo "${data.promo.code}" applied: 
+                                ${data.promo.discount_type === 'percentage' 
+                                    ? data.promo.discount_value + '% off' 
+                                    : data.promo.formatted_discount + ' off'}
+                            </span>
+                        </div>
+                    `;
+                    promoMessage.insertAdjacentHTML('afterend', promoInfoHtml);
+                    
+                    // Recalculate total
+                    recalculateTotal();
+                    
+                    // Setup the new remove button event
+                    setupRemoveCouponEvent();
+                } else {
+                    // Error
+                    showPromoMessage(data.message, 'danger');
+                    applyCouponButton.disabled = false;
+                    applyCouponButton.textContent = 'Apply';
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                showPromoMessage('An error occurred while applying the coupon', 'danger');
+                applyCouponButton.disabled = false;
+                applyCouponButton.textContent = 'Apply';
+            });
+        });
+    }
+    
+    // Setup event handler for the remove coupon button
+    function setupRemoveCouponEvent() {
+        const removeCoupon = document.getElementById('remove-coupon');
+        if (removeCoupon) {
+            removeCoupon.addEventListener('click', function() {
+                // Show loading state
+                removeCoupon.disabled = true;
+                removeCoupon.innerHTML = '<span class="spinner mr-2"></span> Removing...';
+                
+                // Send AJAX request to remove coupon
+                axios.post('{{ route("coupon.remove") }}', {
+                    _token: '{{ csrf_token() }}'
+                })
+                .then(function(response) {
+                    const data = response.data;
+                    if (data.success) {
+                        // Reset coupon field
+                        couponCodeInput.value = '';
+                        couponCodeInput.readOnly = false;
+                        couponCodeInput.classList.remove('bg-green-50', 'border-green-500');
+                        
+                        // Hide discount row
+                        discountRow.classList.add('hidden');
+                        
+                        // Replace remove button with apply button
+                        removeCoupon.parentNode.innerHTML = `
+                            <button type="button" id="apply-coupon" 
+                                class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
+                                Apply
+                            </button>
+                        `;
+                        
+                        // Remove promo info message
+                        const promoInfo = document.querySelector('.text-green-600.font-medium');
+                        if (promoInfo) {
+                            promoInfo.remove();
+                        }
+                        
+                        // Clear any message
+                        promoMessage.textContent = '';
+                        promoMessage.classList.add('hidden');
+                        
+                        // Recalculate total
+                        recalculateTotal();
+                        
+                        // Setup the new apply button event
+                        const newApplyBtn = document.getElementById('apply-coupon');
+                        if (newApplyBtn) {
+                            newApplyBtn.addEventListener('click', applyCoupon);
+                        }
+                    } else {
+                        removeCoupon.disabled = false;
+                        removeCoupon.innerHTML = `
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Remove
+                        `;
+                        showPromoMessage('Failed to remove promo code', 'danger');
+                    }
+                })
+                .catch(function(error) {
+                    console.log(error);
+                    removeCoupon.disabled = false;
+                    removeCoupon.innerHTML = `
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Remove
+                    `;
+                    showPromoMessage('An error occurred while removing the coupon', 'danger');
+                });
+            });
+        }
+    }
+    
+    // If remove button exists on page load, set up its event listener
+    if (removeCouponButton) {
+        setupRemoveCouponEvent();
+    }
+    
+    // Helper function to show promo message
+    function showPromoMessage(message, type) {
+        promoMessage.textContent = message;
+        promoMessage.className = 'mt-2 text-sm';
+        promoMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
+        
+        if (type === 'success') {
+            promoMessage.classList.add('text-green-600');
+        } else if (type === 'danger') {
+            promoMessage.classList.add('text-red-600');
+        }
+        
+        promoMessage.classList.remove('hidden');
+    }
+    
+    // Helper function to recalculate the total
+    function recalculateTotal() {
+        // Get all the necessary elements
+        const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
+        const shippingElement = document.querySelector('#shipping-cost-display .text-sm.font-medium');
+        const taxElement = document.querySelector('.flex.justify-between.py-1:nth-child(3) .text-sm.font-medium');
+        const discountElement = document.querySelector('#discount-amount');
+        
+        // Parse values
+        let subtotal = parseFloat(subtotalElement.textContent.replace('Rp ', '').replaceAll('.', ''));
+        let shipping = parseFloat(shippingElement.textContent.replace('Rp ', '').replaceAll('.', ''));
+        let tax = parseFloat(taxElement.textContent.replace('Rp ', '').replaceAll('.', ''));
+        let discount = 0;
+        
+        if (!discountRow.classList.contains('hidden') && discountElement) {
+            discount = parseFloat(discountElement.textContent.replace('- Rp ', '').replaceAll('.', ''));
+        }
+        
+        // Calculate new total
+        const total = subtotal + shipping + tax - discount;
+        
+        // Update the total display
+        orderTotal.textContent = 'Rp ' + total.toLocaleString('id-ID');
+    }
+
     // Form submission handler
     const checkoutForm = document.getElementById('checkout-form');
     
@@ -655,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const button = document.getElementById('place-order-button');
             if (button) {
                 button.disabled = true;
-                button.innerText = 'Processing...';
+                button.innerHTML = '<span class="spinner mr-2"></span>Processing...';
                 button.classList.add('opacity-75', 'cursor-not-allowed');
             }
             
@@ -669,7 +907,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Re-enable the button
                 if (button) {
                     button.disabled = false;
-                    button.innerText = 'Place Order';
+                    button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
                     button.classList.remove('opacity-75', 'cursor-not-allowed');
                 }
                 return;
@@ -696,7 +934,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Re-enable the button
                     if (button) {
                         button.disabled = false;
-                        button.innerText = 'Place Order';
+                        button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
                         button.classList.remove('opacity-75', 'cursor-not-allowed');
                     }
                     return;
@@ -775,7 +1013,8 @@ function selectShippingMethod(element, method) {
     // Recalculate total
     const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
     const taxElement = document.querySelector('.flex.justify-between.py-1:nth-child(3) .text-sm.font-medium');
-    const discountElement = document.querySelector('.flex.justify-between.py-1:nth-child(4) .text-sm.font-medium.text-red-600');
+    const discountElement = document.querySelector('#discount-amount');
+    const discountRow = document.getElementById('discount-row');
     
     let subtotal = 0;
     let tax = 0;
@@ -789,7 +1028,7 @@ function selectShippingMethod(element, method) {
         tax = parseFloat(taxElement.textContent.replace('Rp ', '').replaceAll('.', ''));
     }
     
-    if (discountElement) {
+    if (!discountRow.classList.contains('hidden') && discountElement) {
         discount = parseFloat(discountElement.textContent.replace('- Rp ', '').replaceAll('.', ''));
     }
     

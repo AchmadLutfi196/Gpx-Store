@@ -227,66 +227,6 @@
                             </a>
                         </div>
                     </div>
-                    
-                    <!-- Promo Code -->
-                    <div class="px-6 py-4 border-t border-gray-200">
-                        <h3 class="text-sm font-medium text-gray-900 mb-3">Promo Code</h3>
-                        <form id="promo-form" class="flex">
-                            <input type="text" id="promo_code" class="flex-1 border border-gray-300 rounded-l-md py-2 px-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter promo code">
-                            <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-r-md focus:outline-none focus:ring-1 focus:ring-gray-500">
-                                Apply
-                            </button>
-                        </form>
-                    @if(isset($appliedPromo))
-                        <div class="mt-2 text-sm text-green-600">
-                            <span class="font-semibold">{{ $appliedPromo['code'] }}</span> diterapkan
-                        </div>
-                    @endif
-                </div>
-                    
-                    <!-- Shipping Method -->
-                    <div class="px-6 py-4 border-t border-gray-200">
-                        <h3 class="text-sm font-medium text-gray-900 mb-3">Shipping Method</h3>
-                        <div class="space-y-2">
-                            <label class="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="shipping_method" value="standard" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                <div class="ml-3">
-                                    <span class="block text-sm font-medium text-gray-900">Standard Shipping</span>
-                                    <span class="block text-sm text-gray-500">2-4 Business days</span>
-                                </div>
-                                <span class="ml-auto text-sm font-medium text-gray-900">Rp 10.000</span>
-                            </label>
-                            
-                            <label class="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="shipping_method" value="express" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                <div class="ml-3">
-                                    <span class="block text-sm font-medium text-gray-900">Express Shipping</span>
-                                    <span class="block text-sm text-gray-500">1-2 Business days</span>
-                                </div>
-                                <span class="ml-auto text-sm font-medium text-gray-900">Rp 25.000</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Payment Options -->
-                <div class="mt-4 bg-white rounded-lg shadow-sm p-6">
-                    <h3 class="text-sm font-medium text-gray-900 mb-3">We Accept</h3>
-                    <div class="grid grid-cols-4 gap-4 items-center">
-                        <div class="flex justify-center">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" class="h-6 object-contain">
-                        </div>
-                        <div class="flex justify-center">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" alt="MasterCard" class="h-6 object-contain">
-                        </div>
-                        <div class="flex justify-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQNLXl3jfcXtasbERHWaGpbc4tKs8sldzktA&s" alt="PayPal" class="h-6 object-contain">
-                        </div>
-                        <div class="flex justify-center">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/1200px-Bank_Central_Asia.svg.png" alt="BCA" class="h-6 object-contain">
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     @endif

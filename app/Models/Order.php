@@ -27,6 +27,7 @@ class Order extends Model
         'shipping_method',
         'payment_token',
         'payment_details',
+        'promo_code_id',
     ];
 
 
