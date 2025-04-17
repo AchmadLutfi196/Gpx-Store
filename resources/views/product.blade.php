@@ -310,8 +310,98 @@
         </div>
     </div>
     
-    <!-- Rest of the content remains unchanged -->
-    <!-- ... -->
+    <!-- Product Reviews Section -->
+    <div class="mt-12 border-t border-gray-200 pt-8">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Customer Reviews</h2>
+        </div>
+
+        <!-- Review Summary -->
+        <div class="flex flex-col md:flex-row gap-8 mb-8">
+            <!-- Rating Statistics -->
+            <div class="w-full md:w-1/3 bg-gray-50 rounded-lg p-6">
+                <div class="text-center">
+                    <div class="text-5xl font-bold text-gray-900 mb-2">{{ number_format($rating, 1) }}</div>
+                    <div class="flex justify-center text-yellow-400 mb-2">
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= floor($rating))
+                                <i class="fas fa-star"></i>
+                            @elseif ($i - 0.5 <= $rating)
+                                <i class="fas fa-star-half-alt"></i>
+                            @else
+                                <i class="far fa-star"></i>
+                            @endif
+                        @endfor
+                    </div>
+                    <div class="text-gray-500">Based on {{ $reviewCount }} reviews</div>
+                </div>
+
+                <!-- Rating Bars -->
+                <div class="mt-6 space-y-3">
+                    @php
+                        $ratingCounts = [0, 0, 0, 0, 0];
+                        foreach($product->reviews as $review) {
+                            if ($review->rating >= 1 && $review->rating <= 5) {
+                                $ratingCounts[$review->rating - 1]++;
+                            }
+                        }
+                    @endphp
+
+                    @for ($i = 5; $i >= 1; $i--)
+                        @php 
+                            $percentage = $reviewCount > 0 ? ($ratingCounts[$i - 1] / $reviewCount) * 100 : 0;
+                        @endphp
+                        <div class="flex items-center">
+                            <div class="flex items-center w-16">
+                                <span class="text-sm text-gray-600 mr-2">{{ $i }}</span>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 ml-2 mr-2">
+                                <div class="bg-yellow-400 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div>
+                            </div>
+                            <div class="w-10 text-right text-sm text-gray-600">{{ $ratingCounts[$i - 1] }}</div>
+                        </div>
+                    @endfor
+                </div>
+            </div>
+
+            
+
+        <!-- Review List -->
+        <div class="mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $reviewCount }} Reviews</h3>
+            
+            @if($product->reviews->count() > 0)
+                <div class="space-y-6">
+                    @foreach($product->reviews->sortByDesc('created_at') as $review)
+                        <div class="border-b border-gray-200 pb-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <div class="flex text-yellow-400">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= $review->rating)
+                                                <i class="fas fa-star"></i>
+                                            @else
+                                                <i class="far fa-star"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <h4 class="ml-3 font-medium text-gray-900">{{ $review->title }}</h4>
+                                </div>
+                                <span class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
+                            </div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">by {{ $review->user->name }}</p>
+                            <p class="text-gray-600">{{ $review->comment }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="bg-gray-50 rounded-lg p-6 text-center">
+                    <p class="text-gray-600">This product has no reviews yet. Be the first to review this product!</p>
+                </div>
+            @endif
+        </div>
+    </div>
 
 </div>
 @endsection
