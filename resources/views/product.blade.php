@@ -390,8 +390,8 @@
                                 </div>
                                 <span class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
                             </div>
-                            <p class="text-sm font-medium text-gray-500 mb-1">by {{ $review->user->name }}</p>
-                            <p class="text-gray-600">{{ $review->comment }}</p>
+                            <p class="text-xs font-medium text-gray-500 mb-1">by {{ $review->user->name }}</p>
+                            <p class="text-black-600">{{ $review->review }}</p>
                         </div>
                     @endforeach
                 </div>

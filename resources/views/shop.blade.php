@@ -249,26 +249,6 @@
                                     @endphp
                                     <span class="discount-badge">-{{ $discountPercentage }}%</span>
                                 @endif
-                                {{-- <button class="wishlist-btn">
-                                    <i class="far fa-heart"></i>
-                                </button> --}}
-                                @auth
-                                <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST" class="mt-3">
-                                    @csrf
-                                    @php
-                                        $inWishlist = App\Models\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
-                                    @endphp
-                                    <button type="submit" class="wishlist-btn {{ $inWishlist ? 'text-red-600' : 'text-gray-600 hover:text-red-600' }} transition-colors">
-                                        <i class="far fa-heart" fill="{{ $inWishlist ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor">
-                                        </i>
-                                        
-                                    </button>
-                                </form>
-                                @else
-                                <a href="{{ route('login') }}" class="wishlist-btn text-gray-600 hover:text-red-600 transition-colors">
-                                    <i class="far fa-heart"></i>
-                                </a>
-                                @endauth
                             </div>
                             <div class="p-4">
                                 <a href="{{ route('product', ['id' => $product->id]) }}">
@@ -315,21 +295,46 @@
                                         <span class="price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                                     @endif
                                     @auth
-                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors duration-300 add-to-cart-button">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                        @php
+                                            $inWishlist = App\Models\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
+                                        @endphp
+                                        <div class="flex space-x-2">
+                                            <!-- Wishlist Button -->
+                                            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" 
+                                                    class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full {{ $inWishlist ? 'text-red-500' : 'text-gray-600 hover:text-red-500' }} transition-colors duration-300"
+                                                    aria-label="Add to Wishlist">
+                                                    <svg class="w-5 h-5" fill="{{ $inWishlist ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+
+                                            <!-- Add to Cart Button -->
+                                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" 
+                                                    class="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors duration-300 add-to-cart-button"
+                                                    aria-label="Add to Cart">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
                                     @else
-                                        <a href="{{ route('login') }}" class="bg-gray-500 text-white p-2 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                                            <i class="fas fa-shopping-cart"></i>
+                                        <!-- Login Button -->
+                                        <a href="{{ route('login') }}" 
+                                            class="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-300"
+                                            aria-label="Login to Add to Cart">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h12"></path>
+                                            </svg>
                                         </a>
-                                    @endauth
+                                @endauth
                                 </div>
                             </div>
                         </div>
@@ -436,5 +441,26 @@
             });
         });
     });
+    // Add to Wishlist
+    const addToWishlistBtn = document.getElementById('add-to-wishlist');
+        
+        if (addToWishlistBtn) {
+            addToWishlistBtn.addEventListener('click', function() {
+                // You can implement wishlist functionality here with AJAX
+                
+                // SweetAlert notification
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: 'Added to Wishlist',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                
+                // Change button appearance
+                const icon = this.querySelector('svg');
+                icon.classList.add('text-red-600');
+            });
+        }
 </script>
 @endsection
