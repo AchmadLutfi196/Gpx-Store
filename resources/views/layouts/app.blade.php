@@ -250,7 +250,19 @@
                     <a href="{{ route('shop') }}" class="nav-link {{ request()->routeIs('shop') ? 'active' : '' }}">
                         Shop
                     </a>
-                    
+                    <!-- Brands Dropdown -->
+                    <div class="dropdown">
+                        <a href="#" class="nav-link flex items-center brand-dropdown-toggle">
+                            Brand <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </a>
+                        <div class="dropdown-menu" id="brand-dropdown-menu">
+                            @foreach(App\Models\Brand::all() as $brand)
+                                <a href="{{ route('shop', ['brand' => $brand->id]) }}" class="block px-4 py-2 hover:bg-gray-100">
+                                    {{ $brand->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                     <!-- Categories Dropdown -->
                     <div class="dropdown">
                         <a href="#" class="nav-link flex items-center category-dropdown-toggle">
@@ -266,7 +278,7 @@
                     </div>
                     
                     <a href="{{ route('about') }}" class="nav-link">Tentang Kami</a>
-                    <a href="#" class="nav-link">Kontak</a>
+
                 </div>
                 
                 <!-- User Actions -->
