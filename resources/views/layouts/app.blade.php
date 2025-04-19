@@ -278,6 +278,8 @@
                     </div>
                     
                     <a href="{{ route('about') }}" class="nav-link">Tentang Kami</a>
+                    <a href="{{ route('contact.index') }}" class="nav-link">CS</a>
+
 
                 </div>
                 
@@ -422,8 +424,8 @@
             <a href="{{ route('about') }}" class="block py-2 text-gray-800 hover:text-blue-600">
                 <i class="fas fa-info-circle mr-2"></i>Tentang Kami
             </a>
-            <a href="#" class="block py-2 text-gray-800 hover:text-blue-600">
-                <i class="fas fa-phone mr-2"></i>Kontak
+            <a href="{{ route('contact.index') }}" class="block py-2 text-gray-800 hover:text-blue-600">
+                <i class="fas fa-phone mr-2"></i>CS
             </a>
             <div class="border-t border-gray-200 pt-4 mt-4">
                 @auth
@@ -503,8 +505,12 @@
                         <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-white footer-link inline-block">Beranda</a></li>
                         <li><a href="{{ route('shop') }}" class="text-gray-300 hover:text-white footer-link inline-block">Shop</a></li>
                         <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-white footer-link inline-block">Tentang Kami</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white footer-link inline-block">Kontak</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white footer-link inline-block">FAQ</a></li>
+                        <li><a href="{{ route('contact.index') }}" class="text-gray-300 hover:text-white footer-link inline-block">Customor Service</a></li>
+                        <li>
+                            <a href="{{ route('message.check-status') }}" class="text-gray-300 hover:text-white transition">
+                                Cek Status Pesan
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 

@@ -30,6 +30,11 @@ Route::get('/product/{id}', [HomeController::class, 'product'])->name('product')
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::get('/tentang-kami', [App\Http\Controllers\AboutController::class, 'index'])->name('about');
 Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'allReviews'])->name('reviews.all');
+Route::get('/contact', [App\Http\Controllers\ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
+// Routes untuk cek status pesan
+Route::get('/check-message-status', [App\Http\Controllers\MessageController::class, 'checkStatus'])->name('message.check-status');
+Route::post('/check-message-status', [App\Http\Controllers\MessageController::class, 'viewStatus'])->name('message.view-status');
 
 // Cart Routes
 Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');
