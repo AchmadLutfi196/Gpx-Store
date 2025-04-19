@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Status Pesan #' . $message->id . ' - Gpx-Store')
+@section('title', 'Detail Pesan #' . $message->id . ' - Gpx-Store')
 
 @section('meta_description', 'Detail dan status pesan kontak #' . $message->id . ' di Gpx-Store.')
 
@@ -13,11 +13,11 @@
                 <p class="text-gray-600 mt-1">Dikirim pada: {{ $message->created_at->format('d M Y H:i') }}</p>
             </div>
             <div>
-                <a href="{{ route('message.check-status') }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Cek Pesan Lain
+                    Kembali ke Daftar
                 </a>
             </div>
         </div>
@@ -31,7 +31,7 @@
                         <p class="text-sm text-gray-500 mt-1">Dari: {{ $message->name }} ({{ $message->email }})</p>
                     </div>
                     <div>
-                        @if($message->response_sent)
+                        @if(!empty($message->admin_response))
                             <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -80,7 +80,7 @@
 
             <!-- Admin Response -->
             <div class="p-6">
-                @if($message->response_sent && $message->admin_response)
+                @if(!empty($message->admin_response))
                     <div class="mb-6">
                         <div class="flex items-center mb-4">
                             <div class="bg-blue-100 p-2 rounded-full mr-3">
@@ -153,23 +153,6 @@
                         </svg>
                         Cetak Percakapan
                     </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Related FAQs (Optional) -->
-        <div class="mt-12">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Pertanyaan yang Mungkin Terkait</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Bagaimana cara melacak pesanan?</h3>
-                    <p class="text-gray-600 mb-4">Setiap pesanan yang Anda lakukan akan diberikan nomor resi. Anda dapat menggunakan nomor tersebut untuk melacak status pengiriman pesanan Anda.</p>
-                    <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">Baca selengkapnya</a>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Berapa lama waktu pengiriman?</h3>
-                    <p class="text-gray-600 mb-4">Waktu pengiriman bervariasi tergantung lokasi. Untuk wilayah Jawa biasanya 2-4 hari kerja, sedangkan luar Jawa 4-7 hari kerja.</p>
-                    <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">Baca selengkapnya</a>
                 </div>
             </div>
         </div>

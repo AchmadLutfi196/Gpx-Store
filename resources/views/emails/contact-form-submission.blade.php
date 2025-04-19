@@ -7,15 +7,14 @@ Terima kasih telah menghubungi Gpx-Store. Pesan Anda dengan subjek **{{ $contact
 
 **ID Pesan Anda:** #{{ $contactMessage->id }}
 
-Tim customer service kami akan segera merespons pesan Anda. Anda dapat mengecek status pesan Anda kapan saja dengan mengklik tombol di bawah:
+Tim customer service kami akan segera merespons pesan Anda. Anda dapat mengecek status pesan Anda dan semua pesan yang pernah Anda kirim dengan mengklik tombol di bawah:
 
 @component('mail::button', ['url' => route('message.check-status')])
 Cek Status Pesan
 @endcomponent
 
-Saat mengecek status, Anda akan memerlukan:
+Saat mengecek status, Anda hanya perlu memasukkan:
 - Email: {{ $contactMessage->email }}
-- ID Pesan: {{ $contactMessage->id }}
 
 Salam,<br>
 Tim Customer Service {{ config('app.name') }}
