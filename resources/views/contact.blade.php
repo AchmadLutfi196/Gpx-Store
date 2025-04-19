@@ -222,7 +222,18 @@
                     </div>
                 </div>
             </div>
+        <!-- Di bawah form kontak, tambahkan: -->
+        <div class="mt-8 p-4 bg-blue-50 rounded-md">
+            <h3 class="text-lg font-semibold text-blue-800 mb-2">Sudah mengirim pesan sebelumnya?</h3>
+            <p class="text-blue-700 mb-3">Anda dapat mengecek status pesan dan balasan dari tim customer service kami.</p>
+            <a href="{{ route('message.check-status') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+                Cek Status Pesan
+            </a>
         </div>
+    </div>
 
         <!-- FAQ Section -->
         <div class="mt-16">
@@ -278,6 +289,7 @@
                         </div>
                     </div>
                     
+                    
                     <!-- FAQ Item 4 -->
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
                         <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
@@ -298,31 +310,19 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Di bawah form kontak, tambahkan: -->
-        <div class="mt-8 p-4 bg-blue-50 rounded-md">
-            <h3 class="text-lg font-semibold text-blue-800 mb-2">Sudah mengirim pesan sebelumnya?</h3>
-            <p class="text-blue-700 mb-3">Anda dapat mengecek status pesan dan balasan dari tim customer service kami.</p>
-            <a href="{{ route('message.check-status') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                </svg>
-                Cek Status Pesan
-            </a>
-        </div>
-
-        <!-- Map Section -->
-        <div class="mt-16">
-            <div class="rounded-lg overflow-hidden shadow-md">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2773226946512!2d106.82768931536993!3d-6.22968996288741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3bffbf44d8d%3A0xb4c14ce06c61066!2sJl.%20Sudirman%2C%20Daerah%20Khusus%20Ibukota%20Jakarta!5e0!3m2!1sid!2sid!4v1619023458189!5m2!1sid!2sid"
-                    width="100%"
-                    height="450"
-                    style="border:0;"
-                    allowfullscreen=""
-                    loading="lazy">
-                </iframe>
+                    <!-- Map Section -->
+                <div class="mt-16">
+                    <div class="rounded-lg overflow-hidden shadow-md">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2773226946512!2d106.82768931536993!3d-6.22968996288741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3bffbf44d8d%3A0xb4c14ce06c61066!2sJl.%20Sudirman%2C%20Daerah%20Khusus%20Ibukota%20Jakarta!5e0!3m2!1sid!2sid!4v1619023458189!5m2!1sid!2sid"
+                            width="100%"
+                            height="450"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
