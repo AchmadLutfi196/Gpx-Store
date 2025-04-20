@@ -18,7 +18,7 @@ class ContactMessagesOverview extends BaseWidget
                 
             Stat::make('Belum Dibaca', ContactMessage::where('is_read', false)->count())
                 ->description('Membutuhkan perhatian')
-                ->descriptionIcon('heroicon-o-exclamation')
+                ->descriptionIcon('heroicon-o-exclamation-circle')
                 ->color('danger'),
                 
             Stat::make('Pesan Hari Ini', ContactMessage::whereDate('created_at', now())->count())

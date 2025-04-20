@@ -2,6 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\LowStockAlert;
+use App\Filament\Widgets\OutOfStockProducts;
+use App\Filament\Widgets\SalesChart; 
+use App\Filament\Widgets\StoreStatsOverview;
+use App\Filament\Widgets\LatestOrders;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,6 +15,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -18,9 +24,16 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Gate;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+    public function boot()
+    {
+        FilamentIcon::register([
+            'heroicon-o-exclamation' => 'heroicon-o-exclamation-circle',
+        ]);
+    }
 
     public function panel(Panel $panel): Panel
     {
@@ -40,8 +53,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                StoreStatsOverview::class,
+                SalesChart::class,
+                LatestOrders::class,
+                LowStockAlert::class,
+                OutOfStockProducts::class,
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\FilamentInfoWidget::class, // Anda bisa menonaktifkan widget ini jika terlalu banyak
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -59,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                FilamentApexChartsPlugin::make(),
             ]);
-        }
+    }
 }

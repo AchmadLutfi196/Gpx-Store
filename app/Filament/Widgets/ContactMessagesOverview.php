@@ -7,6 +7,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ContactMessagesOverview extends BaseWidget
 {
+    
     protected function getStats(): array
     {
         return [

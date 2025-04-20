@@ -14,8 +14,10 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "leandrocfe/filament-apex-charts": "^3.2",
         "livewire/livewire": "^3.6",
         "midtrans/midtrans-php": "^2.6",
+        "nesbot/carbon": "^3.9",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-backup": "^9.2",
         "spatie/laravel-permission": "^6.16"

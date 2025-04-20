@@ -12,6 +12,8 @@ class RecentContactMessages extends BaseWidget
     protected static ?string $heading = 'Pesan Kontak Terbaru';
     
     protected static ?int $sort = 3;
+    protected int|string|array $columnSpan = 'full';
+
     
     protected function getTableQuery(): Builder
     {
@@ -35,16 +37,11 @@ class RecentContactMessages extends BaseWidget
                 ->label('Dikirim Pada')
                 ->dateTime('d M Y H:i'),
                 
-            Tables\Columns\BadgeColumn::make('is_read')
+            Tables\Columns\TextColumn::make('is_read')
                 ->label('Status')
-                ->enum([
-                    false => 'Belum Dibaca',
-                    true => 'Sudah Dibaca',
-                ])
-                ->colors([
-                    'danger' => false,
-                    'success' => true,
-                ]),
+                ->formatStateUsing(fn (bool $state): string => $state ? 'Sudah Dibaca' : 'Belum Dibaca')
+                ->badge()
+                ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
         ];
     }
     
@@ -54,7 +51,7 @@ class RecentContactMessages extends BaseWidget
             Tables\Actions\Action::make('view')
                 ->label('Lihat')
                 ->icon('heroicon-o-eye')
-                ->url(fn (ContactMessage $record): string => route('filament.resources.contact-messages.view', $record)),
+                ->url(fn (ContactMessage $record): string => route('filament.admin.resources.contact-messages.edit', $record)),
         ];
     }
 }

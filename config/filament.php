@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'icons' => [
+    'heroicons' => [
+        'path' => __DIR__.'/../vendor/blade-ui-kit/blade-heroicons/resources/svg',
+    ],
+    ],
     'auth' => [
         'guard' => env('FILAMENT_AUTH_GUARD', 'web'),
         'pages' => [
@@ -76,5 +81,6 @@ return [
     'panels' => [
     \App\Providers\Filament\AdminPanelProvider::class,
 ],
+
 
 ];
