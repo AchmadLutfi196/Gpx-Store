@@ -9,6 +9,9 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $reviewsCountCache = null;
+    protected $averageRatingCache = null;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -177,15 +180,24 @@ class Product extends Model
         return $this->hasMany(ProductReview::class);
     }
 
-    // Method untuk mendapatkan rating rata-rata
     public function getAverageRatingAttribute()
     {
-        return $this->reviews()->avg('rating') ?: 0;
+        if ($this->averageRatingCache === null) {
+            $this->averageRatingCache = $this->reviews()->avg('rating') ?: 0;
+        }
+        return $this->averageRatingCache;
     }
 
-    // Method untuk mendapatkan jumlah review
+    /**
+     * Get reviews count attribute dengan caching.
+     *
+     * @return int
+     */
     public function getReviewsCountAttribute()
     {
-        return $this->reviews()->count();
+        if ($this->reviewsCountCache === null) {
+            $this->reviewsCountCache = $this->reviews()->count();
+        }
+        return $this->reviewsCountCache;
     }
 }

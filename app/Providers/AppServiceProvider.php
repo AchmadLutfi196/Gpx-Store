@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Category;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,5 +29,21 @@ class AppServiceProvider extends ServiceProvider
                 }
             });
         }
+        // Global View Composer untuk kategori
+        View::composer(['app', 'home', 'partials.header', 'partials.footer'], function ($view) {
+            $categories = Cache::remember('all_categories', 60*60*24, function () {
+                return Category::all();
+            });
+            
+            $view->with('categories', $categories);
+        });
+        // Global View Composer untuk brand
+        View::composer(['*'], function ($view) {
+            $view->with('brandLookupCache', function ($brandId) {
+                return Cache::remember('brand_'.$brandId, 60*60*24, function () use ($brandId) {
+                    return \App\Models\Brand::find($brandId);
+                });
+            });
+        });
+        }
     }
-}

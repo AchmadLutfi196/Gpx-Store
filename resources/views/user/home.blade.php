@@ -484,12 +484,24 @@
                     </div>
                     
                     <div class="relative h-full" data-aos="fade-left">
-                        <img src="{{ asset('images/trending-collection.jpg') }}" alt="Trending Collection" class="w-full h-full object-cover object-center md:rounded-l-3xl" style="min-height: 400px;">
-                        <div class="absolute bottom-0 right-0 m-8 bg-white bg-opacity-90 backdrop-blur-sm p-4 rounded-lg shadow-lg">
+                        @if(isset($bestSellingProduct) && $bestSellingProduct)
+                            <div class="w-[320px] h-[320px] rounded-2xl overflow-hidden mx-auto my-8 drop-shadow-xl">
+                                <img src="{{ asset('storage/' . $bestSellingProduct->image) }}" 
+                                    alt="{{ $bestSellingProduct->name }}" 
+                                    class="w-full h-full object-cover" />
+                            </div>
+                        
+                        @else
+                            <img src="{{ asset('images/trending-collection.jpg') }}" 
+                                alt="Trending Collection" 
+                                class="w-[280px] h-[320px] object-contain rounded-lg mx-auto my-8 drop-shadow-xl" />
+                        @endif
+                    
+                        <div class="absolute bottom-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm p-4 rounded-lg shadow-lg">
                             <div class="text-sm font-semibold text-blue-800">Mulai dari</div>
                             <div class="text-3xl font-bold text-blue-600">Rp 299.000</div>
                         </div>
-                    </div>
+                    </div>                                     
                 </div>
             </div>
         </div>

@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\ProductReview;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -34,12 +36,48 @@ class HomeController extends Controller
             ->where('rating', '>=', 4) // Rating minimal 4
             ->latest()
             ->get();
-        
+            $categories = Cache::remember('home_categories', 60*30, function () {
+                return Category::all();
+            });
+            
+            // Menggunakan eager loading tapi berhati-hati dengan relasi
+            $latestProducts = Cache::remember('home_latest_products', 60*15, function () {
+                // Gunakan with(['brand', 'category']) bukan with(['brand', 'categories'])
+                // jika model menggunakan relasi one-to-many
+                return Product::with(['brand', 'category', 'reviews'])
+                    ->latest()
+                    ->take(8)
+                    ->get();
+            });
+            
+            $featuredProducts = Cache::remember('home_featured_products', 60*15, function () {
+                // Gunakan with(['brand', 'category']) bukan with(['brand', 'categories'])
+                return Product::with(['brand', 'category', 'reviews'])
+                    ->where('is_featured', true)
+                    ->take(4)
+                    ->get();
+            });
+            $bestSellingProduct = Product::withCount('orderItems')
+                    ->orderBy('order_items_count', 'desc')
+                    ->first();
+    
+
+            $bestReviews = Cache::remember('home_best_reviews', 60*15, function () {
+                return ProductReview::with(['product', 'user'])
+                    ->select('product_reviews.*')
+                    ->join('products', 'product_reviews.product_id', '=', 'products.id')
+                    ->whereNotNull('review')
+                    ->where('rating', '>=', 4)
+                    ->latest()
+                    ->take(4)
+                    ->get();
+            });
         return view('user.home', compact(
             'latestProducts', 
             'featuredProducts', 
             'categories',
-            'bestReviews'
+            'bestReviews',
+            'bestSellingProduct'
         ));
     }
     
@@ -205,4 +243,5 @@ class HomeController extends Controller
     {
         return view('wishlist');
     }
+
 }
