@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Category;
 
@@ -37,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
             
             $view->with('categories', $categories);
         });
-        // Global View Composer untuk brand
         View::composer(['*'], function ($view) {
             $view->with('brandLookupCache', function ($brandId) {
                 return Cache::remember('brand_'.$brandId, 60*60*24, function () use ($brandId) {
@@ -45,5 +45,12 @@ class AppServiceProvider extends ServiceProvider
                 });
             });
         });
-        }
+        
+        // google config
+        Config::set('services.google', [
+            'client_id' => env('GOOGLE_CLIENT_ID'),
+            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+            'redirect' => env('GOOGLE_REDIRECT_URI', 'http://127.0.0.1:8000/auth/google/callback'),
+        ]);
     }
+}

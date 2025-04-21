@@ -392,58 +392,68 @@
         
         // Function to update cart item (AJAX)
         function updateCartItem(itemId, quantity, cartItem) {
-            const priceElement = cartItem.querySelector('.price');
-            const subtotalElement = cartItem.querySelector('.item-subtotal');
-            const price = parseFloat(priceElement.getAttribute('data-price'));
-            
-            // Update the subtotal immediately for better UX
-            const newSubtotal = price * quantity;
-            subtotalElement.textContent = `Rp ${numberFormat(newSubtotal)}`;
-            
-            // Send AJAX request to update the item
-            fetch('{{ route('cart.update') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify({
-                    cart_item_id: itemId,
-                    quantity: quantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the cart total
-                    updateCartTotals();
-                    
-                    // Update cart count in navbar if it exists
-                    const cartCountElement = document.querySelector('.cart-count');
-                    if (cartCountElement && data.cart_count) {
-                        cartCountElement.textContent = data.cart_count;
-                    }
-                } else {
-                    // Show error
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.message || 'Failed to update cart.',
-                        icon: 'error',
-                        confirmButtonColor: '#3085d6',
-                    });
+        const priceElement = cartItem.querySelector('.price');
+        const subtotalElement = cartItem.querySelector('.item-subtotal');
+        const price = parseFloat(priceElement.getAttribute('data-price'));
+        
+        // Update the subtotal immediately for better UX
+        const newSubtotal = price * quantity;
+        subtotalElement.textContent = `Rp ${numberFormat(newSubtotal)}`;
+        
+        // Use FormData instead of JSON
+        const formData = new FormData();
+        formData.append('cart_item_id', itemId);
+        formData.append('quantity', quantity);
+        formData.append('_token', csrfToken);
+        
+        // Send AJAX request to update the item
+        fetch('{{ route('cart.update') }}', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Extract detailed error information
+                return response.json().then(errorData => {
+                    console.error('Server validation errors:', errorData);
+                    throw new Error(errorData.message || 'Validasi gagal');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Update the cart total
+                updateCartTotals();
+                
+                // Update cart count in navbar if it exists
+                const cartCountElement = document.querySelector('.cart-count');
+                if (cartCountElement && data.cart_count) {
+                    cartCountElement.textContent = data.cart_count;
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+            } else {
+                // Show error
                 Swal.fire({
                     title: 'Error',
-                    text: 'Something went wrong. Please try again.',
+                    text: data.message || 'Failed to update cart.',
                     icon: 'error',
                     confirmButtonColor: '#3085d6',
                 });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: error.message || 'Something went wrong. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
             });
-        }
+        });
+    }
         
         // Function to remove cart item (AJAX)
         function removeCartItem(itemId, cartItem) {

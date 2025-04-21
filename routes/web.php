@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Auth\SocialAuthController;
 
 
 
@@ -35,6 +36,10 @@ Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']
 Route::get('/check-message-status', [App\Http\Controllers\MessageController::class, 'checkStatus'])->name('message.check-status');
 Route::post('/check-message-status', [App\Http\Controllers\MessageController::class, 'viewStatus'])->name('message.view-status');
 Route::get('/messages/{id}', [App\Http\Controllers\MessageController::class, 'viewMessage'])->name('message.view');
+
+//social login routes
+Route::get('auth/{provider}', [SocialAuthController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
 
 // Cart Routes
 Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');

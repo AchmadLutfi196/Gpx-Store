@@ -111,83 +111,79 @@ class CartController extends Controller
     /**
      * Update cart item quantity
      */
-    public function update(Request $request)
-{
-    try {
-        // Validate request
-        $validator = Validator::make($request->all(), [
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+        public function updateCart(Request $request)
+        {
+            try {
+                // Validate request for cart_item_id
+                $validator = Validator::make($request->all(), [
+                    'cart_item_id' => 'required|exists:cart_items,id',
+                    'quantity' => 'required|integer|min:1',
+                ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
-        }
+                if ($validator->fails()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Validasi gagal',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
 
-        $productId = $request->input('product_id');
-        $quantity = (int) $request->input('quantity');
-        
-        // Get product to check stock
-        $product = \App\Models\Product::findOrFail($productId);
-        
-        // Validate against stock
-        if ($quantity > $product->stock) {
-            return response()->json([
-                'success' => false,
-                'message' => "Stok tidak cukup. Maksimal {$product->stock} item",
-                'available_stock' => $product->stock
-            ], 422);
-        }
-        
-        // Update cart
-        $cart = session('cart', []);
-        
-        if (isset($cart[$productId])) {
-            if ($quantity <= 0) {
-                // Remove from cart if quantity is 0 or negative
-                unset($cart[$productId]);
-            } else {
+                $cartItemId = $request->input('cart_item_id');
+                $quantity = (int) $request->input('quantity');
+                
+                // Find the cart item
+                $cartItem = CartItem::with('product')->findOrFail($cartItemId);
+                
+                // Verify the cart item belongs to the current user/session
+                if (!$this->verifyCartItemOwnership($cartItem)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unauthorized'
+                    ], 403);
+                }
+                
+                // Get product to check stock
+                $product = $cartItem->product;
+                
+                // Validate against stock
+                if ($product->stock && $quantity > $product->stock) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Stok tidak cukup. Maksimal {$product->stock} item",
+                        'available_stock' => $product->stock
+                    ], 422);
+                }
+                
                 // Update quantity
-                $cart[$productId]['quantity'] = $quantity;
+                $cartItem->quantity = $quantity;
+                $cartItem->save();
+                
+                // Get updated cart totals
+                $cartItems = $this->getCartItems();
+                $cartCount = $cartItems->sum('quantity');
+                $cartTotal = 0;
+                
+                foreach ($cartItems as $item) {
+                    $price = $item->product->discount_price ?? $item->product->price;
+                    $cartTotal += $price * $item->quantity;
+                }
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Keranjang berhasil diperbarui',
+                    'cart_count' => $cartCount,
+                    'cart_total' => $cartTotal,
+                    'cart_total_formatted' => 'Rp ' . number_format($cartTotal, 0, ',', '.')
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Cart Update Error', ['error' => $e->getMessage()]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage()
+                ], 500);
             }
-            
-            // Save updated cart
-            session(['cart' => $cart]);
-            
-            // Calculate cart total
-            $cartCount = array_sum(array_column($cart, 'quantity'));
-            $cartTotal = 0;
-            
-            foreach ($cart as $item) {
-                $cartTotal += $item['price'] * $item['quantity'];
-            }
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Keranjang berhasil diperbarui',
-                'cart_count' => $cartCount,
-                'cart_total' => $cartTotal,
-                'cart_total_formatted' => 'Rp ' . number_format($cartTotal, 0, ',', '.')
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Produk tidak ditemukan di keranjang'
-            ], 404);
         }
-    } catch (\Exception $e) {
-        Log::error('Cart Update Error', ['error' => $e->getMessage()]);
-        
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
-    }
-}
     
     /**
      * Remove an item from the cart
