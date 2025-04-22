@@ -31,6 +31,21 @@ class CheckoutController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Cek apakah user memiliki alamat
+        $hasAddress = $user->addresses()->exists();
+        
+        // Jika user belum memiliki alamat, redirect ke halaman pembuatan alamat
+        if (!$hasAddress) {
+            return redirect()->route('addresses.create', ['redirect_to_checkout' => 1])
+                ->with('sweetAlert', [
+                    'title' => 'Alamat Belum Ada',
+                    'text' => 'Silakan lengkapi alamat pengiriman Anda terlebih dahulu untuk melanjutkan checkout',
+                    'icon' => 'info',
+                    'confirmButtonText' => 'Oke, Saya Mengerti'
+                ]);
+        }
+        
         $addresses = Address::where('user_id', $user->id)->get();
         $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
         
@@ -59,6 +74,9 @@ class CheckoutController extends Controller
         
         $total = $subtotal + $shipping + $tax - $discount;
         
+        // Ambil alamat default atau alamat pertama user
+        $address = $user->addresses()->where('is_default', true)->first() ?? $user->addresses()->first();
+        
         return view('checkout', compact(
             'user', 
             'addresses', 
@@ -68,7 +86,8 @@ class CheckoutController extends Controller
             'tax', 
             'discount', 
             'total',
-            'appliedPromo'
+            'appliedPromo',
+            'address'
         ));
     }
     

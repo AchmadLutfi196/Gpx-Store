@@ -18,5 +18,11 @@ class Kernel extends HttpKernel
         // Other middleware entries...
         
     ];
+    protected $middlewareGroups = [
+        'web' => [
+            \App\Http\Middleware\SweetAlertMiddleware::class, // Tambahkan ini
+        ],
+    ];
+
     
 }

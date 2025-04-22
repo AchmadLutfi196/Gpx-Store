@@ -137,6 +137,17 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Address::class);
     }
+
+    /**
+     * Mendapatkan alamat default pengguna.
+     *
+     * @return \App\Models\Address|null
+     */
+    public function getDefaultAddressAttribute()
+    {
+        return $this->addresses()->where('is_default', true)->first() 
+               ?? $this->addresses()->first();
+    }
     public function socialAccounts()
     {
         return $this->hasMany(SocialAccount::class);

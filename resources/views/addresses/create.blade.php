@@ -161,3 +161,19 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+@if(session('sweetAlert'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: "{{ session('sweetAlert.title') }}",
+            text: "{{ session('sweetAlert.text') }}",
+            icon: "{{ session('sweetAlert.icon') }}",
+            confirmButtonText: "{{ session('sweetAlert.confirmButtonText') }}",
+            confirmButtonColor: '#3085d6'
+        });
+    });
+</script>
+@endif
+@endpush

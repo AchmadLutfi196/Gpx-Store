@@ -4,123 +4,65 @@
 @section('styles')
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <style>
-    .form-control {
-        @apply w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500;
-    }
-    
-    .form-label {
-        @apply block text-sm font-medium text-gray-700 mb-1;
-    }
-    
-    .section-title {
-        @apply text-lg font-semibold text-gray-900 mb-4;
-    }
-    
-    .address-card {
-        @apply border rounded-lg p-4 cursor-pointer transition-all duration-200;
-    }
-    
-    .address-card.selected {
-        @apply border-blue-500 bg-blue-50;
-    }
-    
-    .address-card:hover:not(.selected) {
-        @apply border-gray-400 bg-gray-50;
-    }
-    
-    .address-badge {
-        @apply inline-block px-2 py-1 text-xs rounded-full font-medium;
-    }
-    
-    .address-badge-primary {
-        @apply bg-blue-100 text-blue-800;
-    }
-    
-    .address-badge-secondary {
-        @apply bg-gray-100 text-gray-800;
-    }
-    
-    .shipping-method {
-        @apply flex items-center p-3 border rounded-md cursor-pointer transition-all duration-200;
-    }
-    
-    .shipping-method:hover {
-        @apply bg-gray-50;
-    }
-    
-    .shipping-method.selected {
-        @apply border-blue-500 bg-blue-50;
-    }
-    
-    .btn-primary {
-        @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-200;
-    }
-    
-    .btn-outline {
-        @apply border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition duration-200;
-    }
-    
-    .payment-card {
-        height: 32px;
-        margin-right: 8px;
-    }
-    
-    .animated-bg {
-        @apply absolute inset-0 bg-gradient-to-b from-blue-50 to-white -z-10;
-    }
-    
-    /* Custom animation for address selection */
-    @keyframes pulse-border {
-        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
-        70% { box-shadow: 0 0 0 5px rgba(59, 130, 246, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-    }
-    
-    .pulse-animation {
-        animation: pulse-border 2s infinite;
-    }
-    
-    /* Loading spinner */
-    .spinner {
-        @apply inline-block w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin;
-        border-top-color: transparent;
-    }
-    
-    /* Alert styles */
-    .alert {
-        @apply p-3 rounded-md text-sm mb-4;
-    }
-    
-    .alert-success {
-        @apply bg-green-100 text-green-700 border border-green-200;
-    }
-    
-    .alert-danger {
-        @apply bg-red-100 text-red-700 border border-red-200;
-    }
+    /* Form layout improvements */
+.form-section {
+    @apply mb-8;
+}
+
+.form-control {
+    @apply w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+}
+
+.form-group {
+    @apply mb-4;
+}
+
+.address-card {
+    @apply border rounded-lg p-5 cursor-pointer transition-all duration-200;
+}
+
+.section-title {
+    @apply text-lg font-semibold text-gray-900 mb-6;
+}
+
+/* Spacing consistency for sections */
+.checkout-section {
+    @apply bg-white rounded-lg shadow-sm p-6 mb-6;
+}
+
+/* Better form grid */
+.form-grid {
+    @apply grid gap-5;
+}
+
+.form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-5;
+}
+
+.form-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-5;
+}
+
+/* Better spacing for shipping methods */
+.shipping-method {
+    @apply flex items-center p-4 border rounded-md cursor-pointer transition-all duration-200 mb-3 last:mb-0;
+}
 </style>
 @endsection
 
 @section('content')
 <!-- Breadcrumb with nice background -->
-<div class="relative bg-gradient-to-r from-blue-600 to-indigo-700 py-6">
-    <div class="absolute inset-0 opacity-10">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <defs>
-                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5"/>
-                </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-    </div>
-    
-    <div class="container mx-auto px-4 relative">
+<div class="bg-gray-100 py-4">
+    <div class="container mx-auto px-4">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="text-blue-100 hover:text-white">
-                        <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <a href="{{ route('home') }}" class="text-gray-500 hover:text-blue-600">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                         </svg>
                         Home
@@ -128,24 +70,24 @@
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <a href="{{ route('cart') }}" class="ml-1 text-blue-100 md:ml-2 hover:text-white">Cart</a>
+                        <a href="{{ route('cart') }}" class="ml-1 text-gray-500 hover:text-blue-600 md:ml-2">Cart</a>
                     </div>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="ml-1 text-white font-medium md:ml-2">Checkout</span>
+                        <span class="ml-1 text-gray-900 font-medium md:ml-2">Checkout</span>
                     </div>
                 </li>
             </ol>
         </nav>
         
-        <h1 class="text-3xl font-bold text-white mt-4" data-aos="fade-up">Checkout</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mt-2">Checkout</h1>
     </div>
 </div>
 
@@ -234,45 +176,8 @@
     <form id="checkout-form" action="{{ route('checkout.process') }}" method="POST" class="relative">
         @csrf
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Customer Information and Shipping Details -->
+            <!-- Shipping Details -->
             <div class="w-full lg:w-2/3">
-                <!-- Customer Information -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6" data-aos="fade-up">
-                    <h2 class="section-title flex items-center">
-                        <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                        </span>
-                        Customer Information
-                    </h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control" required>
-                            @error('name')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <div>
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control" required>
-                            @error('email')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <div>
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control" placeholder="e.g. 08123456789" required>
-                            @error('phone')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
                 
                 <!-- Shipping Addresses -->
                 <div class="bg-white rounded-lg shadow-sm p-6 mb-6" data-aos="fade-up" data-aos-delay="100">
@@ -351,70 +256,68 @@
                                 </a>
                             </div>
                         @endif
-                        
+
                         <!-- New Address Form -->
-                        <div id="new-address-form" class="{{ count($addresses ?? []) > 0 ? 'hidden' : 'block' }}">
-                            <h3 class="font-medium text-gray-900 mb-3">New Shipping Address</h3>
+                        <div id="new-address-form" class="{{ count($addresses ?? []) > 0 ? 'hidden' : 'block' }} form-section">
+                            <h3 class="font-medium text-gray-900 mb-5">New Shipping Address</h3>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
+                            <div class="form-grid-2 mb-5">
+                                <div class="form-group">
                                     <label for="recipient_name" class="form-label">Recipient Name</label>
                                     <input type="text" id="recipient_name" name="recipient_name" class="form-control">
                                 </div>
                                 
-                                <div>
+                                <div class="form-group">
                                     <label for="recipient_phone" class="form-label">Recipient Phone</label>
                                     <input type="text" id="recipient_phone" name="recipient_phone" class="form-control">
                                 </div>
                             </div>
                             
-                            <div class="mb-4">
+                            <div class="form-group">
                                 <label for="address_line1" class="form-label">Street Address</label>
                                 <input type="text" id="address_line1" name="address_line1" class="form-control" placeholder="House number and street name">
                                 @error('address_line1')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                 @enderror
                             </div>
                             
-                            <div class="mb-4">
+                            <div class="form-group">
                                 <label for="address_line2" class="form-label">Address Line 2 (Optional)</label>
                                 <input type="text" id="address_line2" name="address_line2" class="form-control" placeholder="Apartment, suite, unit, etc.">
                             </div>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
+                            <div class="form-grid-3">
+                                <div class="form-group">
                                     <label for="city" class="form-label">City</label>
                                     <input type="text" id="city" name="city" class="form-control">
                                     @error('city')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 
-                                <div>
+                                <div class="form-group">
                                     <label for="province" class="form-label">Province</label>
                                     <input type="text" id="province" name="province" class="form-control">
                                     @error('province')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 
-                                <div>
+                                <div class="form-group">
                                     <label for="postal_code" class="form-label">Postal Code</label>
                                     <input type="text" id="postal_code" name="postal_code" class="form-control">
                                     @error('postal_code')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
                             
-                            <div class="mt-4">
+                            <div class="mt-5 space-y-3">
                                 <label class="flex items-center">
                                     <input type="checkbox" name="save_address" id="save_address" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                     <span class="ml-2 text-sm text-gray-700">Save this address to my address book</span>
                                 </label>
-                            </div>
-                            
-                            <div class="mt-2">
+                                
                                 <label class="flex items-center">
                                     <input type="checkbox" name="set_as_default" id="set_as_default" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                     <span class="ml-2 text-sm text-gray-700">Set as my default address</span>
@@ -422,8 +325,8 @@
                             </div>
                             
                             @if(count($addresses ?? []) > 0)
-                                <div class="mt-4">
-                                    <button type="button" id="cancel-new-address" class="text-sm text-gray-600 hover:text-gray-800">
+                                <div class="mt-5">
+                                    <button type="button" id="cancel-new-address" class="text-sm text-gray-600 hover:text-gray-800 font-medium">
                                         Cancel
                                     </button>
                                 </div>
@@ -433,7 +336,7 @@
                 </div>
                 
                 <!-- Shipping Method -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="checkout-section" data-aos="fade-up" data-aos-delay="200">
                     <h2 class="section-title flex items-center">
                         <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -443,7 +346,7 @@
                         Shipping Method
                     </h2>
                     
-                    <div class="space-y-3 mt-4">
+                    <div class="space-y-4 mt-5">
                         <div class="shipping-method selected" onclick="selectShippingMethod(this, 'regular')">
                             <input type="radio" name="shipping_method" value="regular" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                             <div class="ml-3 flex-grow">
@@ -451,7 +354,7 @@
                                     <span class="font-medium text-gray-900">Regular Shipping</span>
                                     <span class="font-medium text-blue-600">Rp 10.000</span>
                                 </div>
-                                <p class="text-sm text-gray-500">Estimated delivery: 2-4 business days</p>
+                                <p class="text-sm text-gray-500 mt-1">Estimated delivery: 2-4 business days</p>
                             </div>
                         </div>
                         
@@ -462,7 +365,7 @@
                                     <span class="font-medium text-gray-900">Express Shipping</span>
                                     <span class="font-medium text-blue-600">Rp 25.000</span>
                                 </div>
-                                <p class="text-sm text-gray-500">Estimated delivery: 1-2 business days</p>
+                                <p class="text-sm text-gray-500 mt-1">Estimated delivery: 1-2 business days</p>
                             </div>
                         </div>
                         
@@ -473,13 +376,13 @@
                                     <span class="font-medium text-gray-900">Same Day Delivery</span>
                                     <span class="font-medium text-blue-600">Rp 50.000</span>
                                 </div>
-                                <p class="text-sm text-gray-500">Available for selected cities only (Jakarta, Surabaya, Bandung)</p>
+                                <p class="text-sm text-gray-500 mt-1">Available for selected cities only (Jakarta, Surabaya, Bandung)</p>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Order Notes -->
-                    <div class="mt-6">
+                    <div class="mt-6 form-group">
                         <label for="notes" class="form-label">Order Notes (Optional)</label>
                         <textarea id="notes" name="notes" rows="3" class="form-control" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
                     </div>
@@ -493,12 +396,12 @@
                         <h2 class="text-lg font-semibold text-gray-900">Order Summary</h2>
                     </div>
                     
-                    <div class="px-6 py-4">
+                    <div class="p-6">
                         <!-- Order Items -->
-                        <div class="mb-4">
-                            <h3 class="text-sm font-medium text-gray-900 mb-2">Items in Your Order ({{ count($cartItems) }})</h3>
+                        <div class="mb-5">
+                            <h3 class="text-sm font-medium text-gray-900 mb-3">Items in Your Order ({{ count($cartItems) }})</h3>
                             
-                            <div class="max-h-60 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+                            <div class="max-h-60 overflow-y-auto pr-2 space-y-3" style="scrollbar-width: thin;">
                                 @foreach($cartItems as $item)
                                     <div class="flex items-center py-3 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
                                         <div class="flex-shrink-0 w-16 h-16 border border-gray-200 rounded overflow-hidden">
@@ -506,7 +409,7 @@
                                         </div>
                                         <div class="ml-3 flex-1">
                                             <h4 class="text-sm font-medium text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
-                                            <p class="text-xs text-gray-500">Qty: {{ $item->quantity }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">Qty: {{ $item->quantity }}</p>
                                         </div>
                                         <div class="ml-4 text-right">
                                             @if($item->product->discount_price && $item->product->discount_price < $item->product->price)
@@ -522,35 +425,35 @@
                         </div>
                         
                         <!-- Order Totals -->
-                        <div class="border-t border-gray-200 pt-4 pb-2 space-y-2">
-                            <div class="flex justify-between py-1">
+                        <div class="border-t border-gray-200 pt-4 pb-2 space-y-3">
+                            <div class="flex justify-between py-1.5">
                                 <span class="text-sm text-gray-600">Subtotal</span>
                                 <span class="text-sm font-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                             </div>
                             
-                            <div class="flex justify-between py-1" id="shipping-cost-display">
+                            <div class="flex justify-between py-1.5" id="shipping-cost-display">
                                 <span class="text-sm text-gray-600">Shipping</span>
                                 <span class="text-sm font-medium">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
                             </div>
                             
-                            <div class="flex justify-between py-1">
+                            <div class="flex justify-between py-1.5">
                                 <span class="text-sm text-gray-600">Tax (11%)</span>
                                 <span class="text-sm font-medium">Rp {{ number_format($tax, 0, ',', '.') }}</span>
                             </div>
                             
-                            <div id="discount-row" class="flex justify-between py-1 {{ $discount > 0 ? 'block' : 'hidden' }}">
+                            <div id="discount-row" class="flex justify-between py-1.5 {{ $discount > 0 ? 'block' : 'hidden' }}">
                                 <span class="text-sm text-gray-600">Discount</span>
                                 <span class="text-sm font-medium text-red-600" id="discount-amount">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                             </div>
                         </div>
                         
-                        <div class="flex justify-between py-3 border-t border-gray-200 mt-2">
+                        <div class="flex justify-between py-4 border-t border-gray-200 mt-3">
                             <span class="text-base font-semibold text-gray-900">Total</span>
                             <span class="text-lg font-bold text-blue-600" id="order-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         
                         <!-- Coupon Code -->
-                        <div class="mt-4 border-t border-gray-200 pt-4">
+                        <div class="mt-5 border-t border-gray-200 pt-5">
                             <label for="coupon_code" class="form-label">Coupon Code</label>
                             <div class="flex">
                                 <input type="text" id="coupon_code" name="coupon_code" 
@@ -562,7 +465,7 @@
                                 @if(isset($appliedPromo))
                                     <button type="button" id="remove-coupon" 
                                         class="btn-outline rounded-l-none text-red-600 hover:bg-red-50 border-l-0 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
                                         Remove
@@ -576,31 +479,10 @@
                             </div>
                             
                             <div id="promo-message" class="mt-2 text-sm hidden"></div>
-                            
-                            @if(isset($appliedPromo))
-                                <div class="mt-2 text-sm text-green-600 font-medium">
-                                    <span class="inline-flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        Promo "{{ $appliedPromo['code'] }}" applied: 
-                                        @if($appliedPromo['discount_type'] === 'percentage')
-                                            {{ $appliedPromo['discount_value'] }}% off
-                                        @else
-                                            Rp {{ number_format($appliedPromo['discount_value'], 0, ',', '.') }} off
-                                        @endif
-                                    </span>
-                                </div>
-                            @endif
                         </div>
                         
-                        <!-- Payment Information -->
-                        <div class="mt-6 border-t border-gray-200 pt-4">
-                            <h3 class="text-sm font-medium text-gray-900 mb-2">Payment Information</h3>
-                            <p class="text-xs text-gray-500 mb-4">After clicking "Place Order", you will be redirected to our secure payment gateway to complete your payment. We accept various payment methods.</p>
-                        </div>
-                        
-                        <button type="submit" id="place-order-button" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition mt-4">
+                        <!-- Place Order Button -->
+                        <button type="submit" id="place-order-button" class="w-full inline-flex items-center justify-center px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition mt-6">
                             <span>Place Order</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
