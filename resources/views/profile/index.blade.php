@@ -17,8 +17,13 @@
 <div class="flex flex-col md:flex-row">
     <div class="md:w-1/3 flex flex-col items-center">
         <div class="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-4">
-            <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('img/default-avatar.png') }}" 
-                 alt="{{ $user->name }}" class="w-full h-full object-cover">
+            @if($user->avatar)
+                <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+            @else
+                <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
+                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                </div>
+            @endif
         </div>
         <a href="{{ route('profile.edit') }}" class="text-blue-600 hover:underline text-sm flex items-center">
             <i class="fas fa-pencil-alt mr-1"></i> Edit Profile

@@ -31,8 +31,13 @@
                 <div class="p-6 bg-gray-50 border-b">
                     <div class="flex items-center">
                         <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                            <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('img/default-avatar.png') }}" 
-                                alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                            @if($user->avatar)
+                                <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </div>
+                            @endif
                         </div>
                         <div>
                             <h3 class="text-lg font-medium text-gray-900">{{ Auth::user()->name }}</h3>

@@ -49,22 +49,62 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
+
     public function update(Request $request)
     {
-        $user = Auth::user();
-        
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'birth_date' => ['nullable', 'date'],
-            'gender' => ['nullable', 'string', 'in:male,female,other'],
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'current_password' => 'nullable|required_with:password|string',
+            'password' => 'nullable|string|confirmed|min:8',
+            'remove_avatar' => 'nullable|boolean',
         ]);
-        
-        User::where('id', $user->id)->update($validated);
-        
-        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui');
+
+        // Handle avatar removal
+        if ($request->boolean('remove_avatar')) {
+            // Get current avatar path
+            $currentAvatar = Auth::user()->avatar;
+            
+            // Delete the file if it exists
+            if ($currentAvatar && Storage::disk('public')->exists($currentAvatar)) {
+                Storage::disk('public')->delete($currentAvatar);
+            }
+            
+            // Set avatar to null in data array
+            $data['avatar'] = null;
+        }
+        // Handle avatar upload (only if not removing)
+        elseif ($request->hasFile('avatar')) {
+            // Get current avatar path
+            $currentAvatar = Auth::user()->avatar;
+            
+            // Delete the old file if it exists
+            if ($currentAvatar && Storage::disk('public')->exists($currentAvatar)) {
+                Storage::disk('public')->delete($currentAvatar);
+            }
+            
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        // Handle password change
+        if (!empty($data['password'])) {
+            if (!Hash::check($data['current_password'], Auth::user()->password)) {
+                return back()->withErrors(['current_password' => 'Kata sandi saat ini tidak cocok.']);
+            }
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        // Remove fields that shouldn't be updated directly
+        unset($data['current_password']);
+        unset($data['remove_avatar']); // Remove from data array to avoid DB errors
+
+        User::where('id', Auth::id())->update($data);
+
+        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui.');
     }
 
     /**

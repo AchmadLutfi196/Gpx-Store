@@ -322,7 +322,17 @@
                     <!-- User Account -->
                     <div class="dropdown ml-1" id="user-dropdown">
                         <button class="p-2 text-gray-600 hover:text-blue-600" id="user-dropdown-toggle">
-                            <i class="far fa-user-circle text-lg"></i>
+                            @auth
+                                @if(Auth::user()->avatar)
+                                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-8 w-8 rounded-full object-cover border border-gray-200">
+                                @else
+                                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            @else
+                                <i class="far fa-user-circle text-lg"></i>
+                            @endauth
                         </button>
                         <div class="dropdown-menu" id="user-dropdown-menu">
                             @auth

@@ -422,10 +422,95 @@
     </div>
     @endif
 
+    <div class="border-t mt-8 pt-6 flex justify-end">
+        <button
+            id="print-invoice-button"
+            type="button"
+            class="inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow transition-colors"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5h4m16 0v5a2 2 0 01-2 2h-2m-8 4h4m-4 0v-4m4 4v-4" />
+            </svg>
+            Cetak Faktur
+        </button>
+    </div>
+
 </div>
 @endsection
 
 @section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const printBtn = document.getElementById('print-invoice-button')
+        if (!printBtn) return
+
+        printBtn.addEventListener('click', () => {
+            const style = document.createElement('style')
+            style.textContent = `
+                @page {
+                    size: A4 portrait;
+                    margin: 1cm;
+                }
+                @media print {
+                    /* hide interactive and footer elements */
+                    footer,
+                    .btn-primary,
+                    .btn-secondary,
+                    #print-invoice-button,
+                    #pay-button,
+                    form,
+                    a { display: none !important; }
+
+                    /* full–width container */
+                    .container {
+                        max-width: 100% !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+
+                    /* remove all backgrounds and shadows, force black text */
+                    *,
+                    *::before,
+                    *::after {
+                        background: none !important;
+                        box-shadow: none !important;
+                        -webkit-print-color-adjust: exact;
+                        color: #000 !important;
+                    }
+
+                    /* table styling */
+                    table {
+                        width: 100% !important;
+                        border-collapse: collapse !important;
+                    }
+                    th, td {
+                        border: 1px solid #333 !important;
+                        padding: 0.3em !important;
+                        page-break-inside: avoid !important;
+                    }
+
+                    /* avoid splitting sections across pages */
+                    .detail-section,
+                    .table-responsive,
+                    .info-row,
+                    thead,
+                    tbody {
+                        page-break-inside: avoid !important;
+                    }
+
+                    /* optional: reduce base font-size for fitting one page */
+                    body {
+                        font-size: 12px !important;
+                    }
+                }
+            `
+            document.head.appendChild(style)
+            window.print()
+        })
+    })
+    
+  </script>
 @if($order->status === 'pending' || $order->payment_status === 'pending')
     @if($order->payment_token)
         <!-- Tambahkan Midtrans Snap.js -->
