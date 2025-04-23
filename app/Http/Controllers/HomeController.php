@@ -19,59 +19,44 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Fetch categories to display in the home page
-        $categories = Category::all();
+        // Use cached data with proper eager loading
+        $categories = Cache::remember('home_categories', 60*30, function () {
+            return Category::all();
+        });
         
-        // Fetch latest products
-        $latestProducts = Product::latest()->take(8)->get();
+        $latestProducts = Cache::remember('home_latest_products', 60*15, function () {
+            return Product::with(['brand', 'category', 'reviews'])
+                ->latest()
+                ->take(8)
+                ->get();
+        });
         
-        // You may also want to get other data like featured products
-        $featuredProducts = Product::where('is_featured', true)->take(4)->get();
+        $featuredProducts = Cache::remember('home_featured_products', 60*15, function () {
+            return Product::with(['brand', 'category', 'reviews'])
+                ->where('is_featured', true)
+                ->take(4)
+                ->get();
+        });
         
-        // Reviews terbaik (rating tertinggi)
-        $bestReviews = ProductReview::with(['product', 'user'])
-            ->select('product_reviews.*')
-            ->join('products', 'product_reviews.product_id', '=', 'products.id')
-            ->whereNotNull('review') // Hanya yang ada deskripsi review
-            ->where('rating', '>=', 4) // Rating minimal 4
-            ->latest()
-            ->get();
-            $categories = Cache::remember('home_categories', 60*30, function () {
-                return Category::all();
-            });
-            
-            // Menggunakan eager loading tapi berhati-hati dengan relasi
-            $latestProducts = Cache::remember('home_latest_products', 60*15, function () {
-                // Gunakan with(['brand', 'category']) bukan with(['brand', 'categories'])
-                // jika model menggunakan relasi one-to-many
-                return Product::with(['brand', 'category', 'reviews'])
-                    ->latest()
-                    ->take(8)
-                    ->get();
-            });
-            
-            $featuredProducts = Cache::remember('home_featured_products', 60*15, function () {
-                // Gunakan with(['brand', 'category']) bukan with(['brand', 'categories'])
-                return Product::with(['brand', 'category', 'reviews'])
-                    ->where('is_featured', true)
-                    ->take(4)
-                    ->get();
-            });
-            $bestSellingProduct = Product::withCount('orderItems')
-                    ->orderBy('order_items_count', 'desc')
-                    ->first();
-    
+        // Fix N+1 for best selling product
+        $bestSellingProduct = Cache::remember('best_selling_product', 60*30, function () {
+            return Product::with(['brand', 'category', 'reviews'])
+                ->withCount('orderItems')
+                ->orderBy('order_items_count', 'desc')
+                ->first();
+        });
+        
+        $bestReviews = Cache::remember('home_best_reviews', 60*15, function () {
+            return ProductReview::with(['product.brand', 'product.category', 'user'])
+                ->select('product_reviews.*')
+                ->join('products', 'product_reviews.product_id', '=', 'products.id')
+                ->whereNotNull('review')
+                ->where('rating', '>=', 4)
+                ->latest()
+                ->take(4)
+                ->get();
+        });
 
-            $bestReviews = Cache::remember('home_best_reviews', 60*15, function () {
-                return ProductReview::with(['product', 'user'])
-                    ->select('product_reviews.*')
-                    ->join('products', 'product_reviews.product_id', '=', 'products.id')
-                    ->whereNotNull('review')
-                    ->where('rating', '>=', 4)
-                    ->latest()
-                    ->take(4)
-                    ->get();
-            });
         return view('user.home', compact(
             'latestProducts', 
             'featuredProducts', 
@@ -95,21 +80,23 @@ class HomeController extends Controller
         $priceMin = $request->query('price_min');
         $priceMax = $request->query('price_max');
         
-        // Fetch categories for sidebar filtering
-        $categories = Category::all();
+        // Cache common lookup data
+        $categories = Cache::remember('shop_categories', 60*30, function () {
+            return Category::all();
+        });
         
-        // Fetch brands for filtering
-        $brands = Brand::all();
+        $brands = Cache::remember('shop_brands', 60*30, function () {
+            return Brand::all();
+        });
         
-        // Build the products query
-        $productsQuery = Product::query();
+        // Build the products query with eager loading
+        $productsQuery = Product::with(['brand', 'category', 'reviews']);
         
-        // Apply category filter
+        // Apply filters and sorting
         if ($categoryId) {
             $productsQuery->where('category_id', $categoryId);
         }
         
-        // Apply search filter
         if ($search) {
             $productsQuery->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
@@ -118,7 +105,6 @@ class HomeController extends Controller
             });
         }
         
-        // Apply brand filter if it exists in the request
         if ($request->has('brand')) {
             $brandIds = $request->query('brand');
             if (is_array($brandIds)) {
@@ -128,7 +114,6 @@ class HomeController extends Controller
             }
         }
         
-        // Apply price range filter
         if ($priceMin) {
             $productsQuery->where('price', '>=', $priceMin);
         }
@@ -189,21 +174,18 @@ class HomeController extends Controller
      */
     public function product($id)
     {
-        // Try to find product by ID first
-        $product = Product::find($id);
+        // Try to find product by ID or slug with eager loading
+        $product = Product::with(['brand', 'category', 'reviews.user'])
+            ->when(is_numeric($id), function($query) use ($id) {
+                return $query->where('id', $id);
+            }, function($query) use ($id) {
+                return $query->where('slug', $id);
+            })
+            ->firstOrFail();
         
-        // If not found by ID and ID is not numeric, try to find by slug
-        if (!$product && !is_numeric($id)) {
-            $product = Product::where('slug', $id)->first();
-        }
-        
-        // If product still not found, return 404
-        if (!$product) {
-            abort(404);
-        }
-        
-        // Get related products in the same category
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        // Get related products with eager loading
+        $relatedProducts = Product::with(['brand', 'category', 'reviews'])
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(4)
             ->get();
@@ -243,5 +225,4 @@ class HomeController extends Controller
     {
         return view('wishlist');
     }
-
 }

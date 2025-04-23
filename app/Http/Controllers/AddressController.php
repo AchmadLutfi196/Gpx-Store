@@ -153,27 +153,27 @@ class AddressController extends Controller
                          ->with('success', 'Address has been deleted successfully.');
     }
 
-    /**
-     * Set the specified address as default.
+        /**
+     * Set an address as default.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Address  $address
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function setDefault($id)
+    public function setDefault(Address $address)
     {
-        $address = Address::where('user_id', Auth::id())
-                          ->findOrFail($id);
+        // Ensure the address belongs to the authenticated user
+        if ($address->user_id !== Auth::id()) {
+            return redirect()->route('addresses.index')->with('error', 'Unauthorized action.');
+        }
         
-        // Remove default status from all addresses
-        Auth::user()->addresses()->update(['is_default' => false]);
+        // First, reset all addresses to non-default
+        Address::where('user_id', Auth::id())->update(['is_default' => false]);
         
         // Set the selected address as default
         $address->update(['is_default' => true]);
         
-        return redirect()->route('addresses.index')
-                         ->with('success', 'Default address has been updated.');
+        return redirect()->route('addresses.index')->with('success', 'Default address has been updated.');
     }
-
     /**
      * Get list of provinces for select input.
      *

@@ -37,22 +37,51 @@ class SocialAuthController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function redirectToProvider($provider)
-{
-    // Validasi provider yang didukung
-    if (! in_array($provider, $this->supportedProviders)) {
-        return redirect()->route('login')
-            ->withErrors(['error' => 'Provider login tidak didukung.']);
+    {
+        try {
+            Log::info('Starting redirect to provider', ['provider' => $provider]);
+            
+            // Validasi provider yang didukung
+            if (! in_array($provider, $this->supportedProviders)) {
+                Log::warning('Unsupported provider', ['provider' => $provider]);
+                return redirect()->route('login')
+                    ->withErrors(['error' => 'Provider login tidak didukung.']);
+            }
+    
+            // Coba memuat driver socialite
+            try {
+                $driver = Socialite::driver($provider);
+                Log::info('Socialite driver loaded successfully', ['provider' => $provider]);
+            } catch (Exception $e) {
+                Log::error('Failed to load Socialite driver', [
+                    'provider' => $provider,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+    
+            if ($provider === 'github') {
+                $driver->scopes(['read:user', 'user:email']);
+            }
+    
+            // Tampilkan informasi redirect URL untuk debugging
+            $redirectUrl = $driver->redirect()->getTargetUrl();
+            Log::info('Redirect URL generated', ['url' => $redirectUrl]);
+            
+            return $driver->redirect();
+        } catch (Exception $e) {
+            Log::error('Exception in redirectToProvider', [
+                'provider' => $provider,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('login')
+                ->withErrors(['error' => 'Terjadi kesalahan saat redirect ke ' . ucfirst($provider) . ': ' . $e->getMessage()]);
+        }
     }
-
-        /** @var AbstractProvider $driver */
-    $driver = Socialite::driver($provider);
-
-    if ($provider === 'github') {
-    $driver->scopes(['read:user','user:email']);
-    }
-
-    return $driver->redirect();
-}
 
     /**
      * Mendapatkan informasi user dari provider.
@@ -74,7 +103,6 @@ class SocialAuthController extends Controller
             $user = $this->socialAuthService->findOrCreateUser($socialUser, $provider);
             
             Auth::login($user);
-            
             return redirect()->intended('/profile')
                 ->with('success', 'Berhasil login menggunakan ' . ucfirst($provider));
             
@@ -87,5 +115,6 @@ class SocialAuthController extends Controller
             return redirect()->route('login')
                 ->withErrors(['error' => 'Terjadi kesalahan saat login dengan ' . ucfirst($provider) . '. Silakan coba lagi.']);
         }
+
     }
 }
