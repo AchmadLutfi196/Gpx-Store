@@ -25,6 +25,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Gate;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+use Nuxtifyts\DashStackTheme\DashStackThemePlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -78,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 FilamentApexChartsPlugin::make(),
+                DashStackThemePlugin::make()
             ]);
     }
 }

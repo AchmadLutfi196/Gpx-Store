@@ -55,10 +55,16 @@ class User extends Authenticatable implements MustVerifyEmail
     
     // All other methods remain the same...
     
-    
-    
     /**
-     * Get the user's orders.
+     * Get the addresses for the user.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Get the orders for the user.
      */
     public function orders()
     {
@@ -131,11 +137,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function reviews()
     {
         return $this->hasMany(Review::class);
-    }
-
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
     }
 
     /**

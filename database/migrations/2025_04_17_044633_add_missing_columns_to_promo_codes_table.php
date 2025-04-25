@@ -22,6 +22,11 @@ return new class extends Migration
                 $table->enum('discount_type', ['percentage', 'fixed'])->default('percentage')->after('description');
             }
             
+            // Setelah discount_type ada, baru tambahkan discount_value
+            if (!Schema::hasColumn('promo_codes', 'discount_value')) {
+                $table->decimal('discount_value', 10, 2)->default(0)->after('discount_type');
+            }
+            
             // Periksa apakah kolom minimum_order belum ada
             if (!Schema::hasColumn('promo_codes', 'minimum_order')) {
                 $table->decimal('minimum_order', 10, 2)->default(0)->after('discount_value');
@@ -65,6 +70,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('promo_codes', function (Blueprint $table) {
+            if (Schema::hasColumn('promo_codes', 'discount_value')) {
+                $table->dropColumn('discount_value');
+            }
             // Karena ini migrasi untuk menambahkan kolom yang belum ada,
             // jika perlu di-rollback, kita bisa drop kolom-kolom tersebut
             $columns = [

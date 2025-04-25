@@ -1,4 +1,5 @@
 <?php
+// filepath: c:\laragon\www\gpx-store\database\migrations\2025_04_17_045019_add_promo_code_id_to_orders_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,23 +13,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Cek jika tabel orders ada
         if (Schema::hasTable('orders')) {
-            // Dapatkan informasi kolom yang ada
-            $columns = DB::select("PRAGMA table_info(orders)");
-            $columnNames = array_map(function ($column) {
-                return $column->name;
-            }, $columns);
-            
-            // Tambahkan kolom promo_code_id jika belum ada
-            if (!in_array('promo_code_id', $columnNames)) {
-                DB::statement("ALTER TABLE orders ADD COLUMN promo_code_id INTEGER NULL");
-            }
-            
-            // Pastikan kolom discount_amount ada
-            if (!in_array('discount_amount', $columnNames)) {
-                DB::statement("ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(10,2) DEFAULT 0");
-            }
+            // Use Laravel's Schema builder instead of raw SQL
+            Schema::table('orders', function (Blueprint $table) {
+                if (!Schema::hasColumn('orders', 'promo_code_id')) {
+                    $table->unsignedBigInteger('promo_code_id')->nullable();
+                    
+                    // Add foreign key constraint if promo_codes table exists
+                    if (Schema::hasTable('promo_codes')) {
+                        $table->foreign('promo_code_id')
+                              ->references('id')
+                              ->on('promo_codes')
+                              ->onDelete('set null');
+                    }
+                }
+                
+                if (!Schema::hasColumn('orders', 'discount_amount')) {
+                    $table->decimal('discount_amount', 10, 2)->default(0);
+                }
+            });
         }
     }
 
@@ -37,6 +40,18 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // SQLite tidak mendukung drop column
+        Schema::table('orders', function (Blueprint $table) {
+            // Drop foreign key constraint if it exists
+            // For MySQL, we can use dropForeignIfExists instead of checking via Doctrine
+            if (Schema::hasColumn('orders', 'promo_code_id')) {
+                // The constraint name is likely to follow Laravel's naming convention
+                $table->dropForeignIfExists(['promo_code_id']);
+                $table->dropColumn('promo_code_id');
+            }
+            
+            if (Schema::hasColumn('orders', 'discount_amount')) {
+                $table->dropColumn('discount_amount');
+            }
+        });
     }
 };
