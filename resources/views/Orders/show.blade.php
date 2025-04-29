@@ -310,13 +310,23 @@
                             Selesaikan Pembayaran
                         </button>
                         @else
-                            <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST">
+                            <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST" class="inline-block">
                                 @csrf
                                 <button type="submit" class="btn-primary">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                     </svg>
                                     Lanjutkan Pembayaran
+                                </button>
+                            </form>
+                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-secondary">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Batalkan Pesanan
                                 </button>
                             </form>
                         @endif
@@ -440,6 +450,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const printBtn = document.getElementById('print-invoice-button')
@@ -508,9 +519,31 @@
             document.head.appendChild(style)
             window.print()
         })
+
+        // SweetAlert untuk konfirmasi pembatalan pesanan
+        const cancelForm = document.querySelector('form[action*="cancel"]');
+        if (cancelForm) {
+            cancelForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Batalkan Pesanan?',
+                    text: "Apakah Anda yakin ingin membatalkan pesanan ini?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Batalkan',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                })
+            });
+        }
     })
-    
-  </script>
+</script>
 @if($order->status === 'pending' || $order->payment_status === 'pending')
     @if($order->payment_token)
         <!-- Tambahkan Midtrans Snap.js -->

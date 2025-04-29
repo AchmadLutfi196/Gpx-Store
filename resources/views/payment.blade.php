@@ -31,6 +31,35 @@
         justify-content: space-between;
         padding: 8px 0;
     }
+
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 @endsection
 
@@ -80,40 +109,93 @@
         </div>
     </div>
 </div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Processing payment, please wait...</p>
+</div>
 @endsection
 
 @section('scripts')
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ $client_key }}"></script>
+<!-- Make sure to use the correct Midtrans environment -->
+@if(config('app.env') === 'production')
+<script src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@else
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@endif
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const payButton = document.getElementById('pay-button');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        // Function to show loading overlay
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+        }
+        
+        // Function to hide loading overlay
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+        
+        // Check if snap token exists
+        const snapToken = '{{ $snapToken ?? "" }}';
+        
+        if (!snapToken) {
+            console.error('Snap token is missing');
+            payButton.disabled = true;
+            payButton.classList.add('bg-gray-400');
+            payButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            alert('Payment initialization failed. Please contact support.');
+        }
         
         payButton.addEventListener('click', function() {
-            // Trigger snap popup
-            window.snap.pay('{{ $snapToken }}', {
-                onSuccess: function(result) {
-                    /* You can post the result to your backend here */
-                    window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=settlement';
-                },
-                onPending: function(result) {
-                    /* Payment is pending */
-                    window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=pending';
-                },
-                onError: function(result) {
-                    /* Error handling */
-                    window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=deny';
-                },
-                onClose: function() {
-                    /* Customer closed the popup without finishing payment */
-                    alert('Payment cancelled. Please complete your payment to process the order.');
+            showLoading();
+            
+            try {
+                // Make sure snap is loaded
+                if (typeof window.snap === 'undefined') {
+                    console.error('Snap.js is not loaded properly');
+                    hideLoading();
+                    alert('Payment system is not available. Please try again later.');
+                    return;
                 }
-            });
+                
+                // Trigger snap popup
+                window.snap.pay(snapToken, {
+                    onSuccess: function(result) {
+                        console.log('Payment success:', result);
+                        window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=settlement&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
+                    },
+                    onPending: function(result) {
+                        console.log('Payment pending:', result);
+                        window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=pending&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
+                    },
+                    onError: function(result) {
+                        console.error('Payment error:', result);
+                        hideLoading();
+                        alert('Payment failed: ' + (result.message || 'Unknown error'));
+                        window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=deny&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
+                    },
+                    onClose: function() {
+                        console.log('Customer closed the payment window');
+                        hideLoading();
+                        alert('Payment cancelled. Please complete your payment to process the order.');
+                    }
+                });
+            } catch (error) {
+                console.error('Error initiating payment:', error);
+                hideLoading();
+                alert('Failed to initialize payment. Please try again or contact support.');
+            }
         });
         
-        // Optional: Auto trigger payment popup for better UX
-        // setTimeout(function() {
-        //     payButton.click();
-        // }, 1000);
+        // Auto trigger payment popup after a short delay for better UX
+        setTimeout(function() {
+            payButton.click();
+        }, 1500);
     });
 </script>
 @endsection

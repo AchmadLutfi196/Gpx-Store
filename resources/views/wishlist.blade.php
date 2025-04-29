@@ -3,12 +3,32 @@
 @section('styles')
 <style>
     .product-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.4s ease;
+        will-change: transform;
     }
     
     .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-12px);
+    }
+    
+    .product-card .quick-view {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+    
+    .product-card:hover .quick-view {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .product-card .product-img {
+        transform: scale(1);
+        transition: transform 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    
+    .product-card:hover .product-img {
+        transform: scale(1.08);
     }
     
     .wishlist-remove {
@@ -79,10 +99,10 @@
         <h1 class="text-2xl font-bold text-gray-900">My Wishlist</h1>
         
         @if($wishlists->count() > 0)
-            <form action="{{ route('wishlist.clear') }}" method="POST" class="inline">
+            <form action="{{ route('wishlist.clear') }}" method="POST" class="inline" id="clear-wishlist-form">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="text-red-600 hover:text-red-800 font-medium text-sm" onclick="return confirm('Are you sure you want to clear your wishlist?')">
+                <button type="button" class="text-red-600 hover:text-red-800 font-medium text-sm" onclick="confirmClearWishlist()">
                     Clear All
                 </button>
             </form>
@@ -104,11 +124,11 @@
     @if($wishlists->count() > 0)
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             @foreach($wishlists as $index => $wishlist)
-                <div class="product-card bg-white rounded-xl shadow-md overflow-hidden relative" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+            <div class="product-card bg-white rounded-xl shadow-md overflow-hidden" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                     <form action="{{ route('wishlist.remove', $wishlist->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="wishlist-remove">
+                        <button type="submit" class="wishlist-remove" onclick="confirmRemove(event, '{{ $wishlist->product->name }}')">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
@@ -154,15 +174,16 @@
                                 <span class="text-blue-600 font-bold text-lg">Rp {{ number_format($wishlist->product->price, 0, ',', '.') }}</span>
                             @endif
                             
-                            <form action="{{ route('cart.add', $wishlist->product->id) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors duration-300">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                </button>
-                            </form>
+                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $wishlist->product->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors duration-300 add-to-cart-button">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                        </svg>
+                                    </button>
+                                </form>
                         </div>
                     </div>
                 </div>
@@ -233,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'success',
                         title: 'Removed!',
-                        text: data.message || 'Item has been removed from your wishlist',
+                        text: data.message || 'Item telah dihapus dari wishlist.',
                         timer: 2000,
                         showConfirmButton: false
                     });
@@ -252,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops!',
-                        text: data.message || 'Failed to remove item from wishlist.'
+                        text: data.message || 'gagal menghapus dari wishlist.'
                     });
                 }
             })
@@ -269,6 +290,76 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw {status: response.status, data: errorData};
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Produk berhasil ditambahkan ke keranjang',
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                let errorMessage = 'Gagal menambahkan produk ke keranjang';
+                
+                if (error.status === 422) {
+                    errorMessage = 'Stok produk tidak tersedia';
+                    if (error.data && error.data.message) {
+                        errorMessage = error.data.message;
+                    }
+                }
+                
+                Swal.fire({
+                    title: 'Oops!',
+                    text: errorMessage,
+                    icon: 'error',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            });
+        });
+    });
 });
+// Confirm remove item from wishlist
+    function confirmClearWishlist() {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Anda tidak dapat mengembalikan tindakan ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, hapus semua!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('clear-wishlist-form').submit();
+            }
+        });
+    }
 </script>
 @endsection

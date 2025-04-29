@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/regenerate-payment', [App\Http\Controllers\OrderController::class, 'regeneratePayment'])->name('orders.regenerate-payment');
     Route::post('/orders/{order}/complete', [App\Http\Controllers\OrderController::class, 'completeOrder'])->name('orders.complete');
+    Route::delete('/orders/{order}/cancel', [App\Http\Controllers\OrderController::class, 'cancel'])->name('orders.cancel');
     // Checkout routes
     Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');

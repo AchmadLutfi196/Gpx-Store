@@ -17,11 +17,11 @@
 <div class="flex flex-col md:flex-row">
     <div class="md:w-1/3 flex flex-col items-center">
         <div class="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-4">
-            @if($user->avatar)
-                <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+            @if(Auth::user()->avatar)
+                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
             @else
                 <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
             @endif
         </div>
@@ -34,22 +34,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-1">Full Name</h3>
-                <p class="text-base text-gray-900">{{ $user->name }}</p>
+                <p class="text-base text-gray-900">{{ Auth::user()->name }}</p>
             </div>
             
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-1">Email Address</h3>
-                <p class="text-base text-gray-900">{{ $user->email }}</p>
+                <p class="text-base text-gray-900">{{ Auth::user()->email }}</p>
             </div>
             
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-1">Phone Number</h3>
-                <p class="text-base text-gray-900">{{ $user->phone ?? 'Not provided' }}</p>
+                <p class="text-base text-gray-900">{{ Auth::user()->phone ?? 'Not provided' }}</p>
             </div>
             
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-1">Member Since</h3>
-                <p class="text-base text-gray-900">{{ $user->created_at->format('F d, Y') }}</p>
+                <p class="text-base text-gray-900">{{ Auth::user()->created_at->format('F d, Y') }}</p>
             </div>
         </div>
         
@@ -57,22 +57,22 @@
             <h3 class="font-medium text-lg mb-4">Your Activity</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">{{ $user->orders()->count() }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ Auth::user()->orders()->count() }}</div>
                     <div class="text-sm text-gray-600">Orders</div>
                 </div>
                 
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">{{ $user->reviews()->count() }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ Auth::user()->reviews()->count() }}</div>
                     <div class="text-sm text-gray-600">Reviews</div>
                 </div>
                 
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">{{ $user->wishlist()->count() }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ Auth::user()->wishlist()->count() }}</div>
                     <div class="text-sm text-gray-600">Wishlist</div>
                 </div>
                 
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">{{ $user->addresses()->count() }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ Auth::user()->addresses()->count() }}</div>
                     <div class="text-sm text-gray-600">Addresses</div>
                 </div>
             </div>

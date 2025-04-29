@@ -58,7 +58,7 @@ class PromoCodeController extends Controller
                 'discount_type' => $promoCode->discount_type,
                 'discount_value' => $promoCode->discount_value,
                 'discount_amount' => $discount,
-                'formatted_discount' => 'Rp ' . number_format($discount, 0, ',', '.'),
+                'formatted_discount' => number_format($discount, 0, ',', '.'),
             ]
         ]);
     }
