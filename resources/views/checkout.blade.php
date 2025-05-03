@@ -103,49 +103,31 @@
 
 @section('content')
 <!-- Breadcrumb with nice background -->
-<div class="relative bg-gradient-to-r from-blue-600 to-indigo-700 py-6">
-    <div class="absolute inset-0 opacity-10">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <defs>
-                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5"/>
-                </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-    </div>
-    
-    <div class="container mx-auto px-4 relative">
+<div class="bg-gray-100 py-4">
+    <div class="container mx-auto px-4">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="text-blue-100 hover:text-white">
-                        <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                        </svg>
-                        Home
-                    </a>
+                    <a href="{{ route('home') }}" class="text-gray-500 hover:text-blue-600">Home</a>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <a href="{{ route('cart') }}" class="ml-1 text-blue-100 md:ml-2 hover:text-white">Cart</a>
+                        <a href="{{ route('cart') }}" class="ml-1 text-gray-500 md:ml-2 hover:text-blue-600">Cart</a>
                     </div>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="ml-1 text-white font-medium md:ml-2">Checkout</span>
+                        <span class="ml-1 text-gray-800 font-medium md:ml-2">Checkout</span>
                     </div>
                 </li>
             </ol>
         </nav>
-        
-        <h1 class="text-3xl font-bold text-white mt-4" data-aos="fade-up">Checkout</h1>
     </div>
 </div>
 
@@ -247,6 +229,19 @@
                         Customer Information
                     </h2>
                     
+                    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 rounded-r-md">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm">Informasi ini akan digunakan untuk keperluan pengiriman dan konfirmasi pesanan.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="name" class="form-label">Full Name</label>
@@ -271,6 +266,11 @@
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <div>
+                            <label for="alt_phone" class="form-label">Alternative Phone (Optional)</label>
+                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control" placeholder="e.g. 08123456789">
+                        </div>
                     </div>
                 </div>
                 
@@ -287,148 +287,60 @@
                     </h2>
                     
                     <div class="mb-4">
-                        <p class="text-sm text-gray-600">Choose a delivery address from your address book or create a new one.</p>
+                        <p class="text-sm text-gray-600">Alamat pengiriman yang dipilih:</p>
                     </div>
 
                     <!-- Address Selection -->
                     <div class="space-y-3 mb-6">
                         <!-- Saved Addresses -->
                         @if(count($addresses ?? []) > 0)
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border rounded-lg p-4 bg-blue-50 border-blue-200">
                                 @foreach($addresses as $address)
-                                <div class="address-card {{ $address->is_default ? 'selected pulse-animation' : '' }}" 
-                                     data-address-id="{{ $address->id }}" 
-                                     onclick="selectAddress(this, {{ $address->id }})">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="text-sm font-semibold text-gray-900">{{ $address->name }}</h4>
-                                            <p class="text-sm text-gray-600 mt-1">{{ $address->phone }}</p>
-                                        </div>
-                                        <div>
-                                            @if($address->is_default)
+                                    @if($address->is_default)
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h4 class="text-sm font-semibold text-gray-900">{{ $address->name }}</h4>
+                                                <p class="text-sm text-gray-600 mt-1">{{ $address->phone }}</p>
+                                            </div>
+                                            <div>
                                                 <span class="address-badge address-badge-primary">Default</span>
-                                            @else
-                                                <span class="address-badge address-badge-secondary">Saved</span>
-                                            @endif
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="mt-3 text-sm text-gray-700">
-                                        <p>{{ $address->address_line1 }}</p>
-                                        <p>{{ $address->city }}, {{ $address->province }} {{ $address->postal_code }}</p>
-                                    </div>
-                                    
-                                    <input type="radio" name="address_id" value="{{ $address->id }}" class="hidden address-radio" {{ $address->is_default ? 'checked' : '' }}>
-                                </div>
+                                        
+                                        <div class="mt-3 text-sm text-gray-700">
+                                            <p>{{ $address->address_line1 }}</p>
+                                            @if($address->address_line2)
+                                                <p>{{ $address->address_line2 }}</p>
+                                            @endif
+                                            <p>{{ $address->city }}, {{ $address->province }} {{ $address->postal_code }}</p>
+                                            <p>{{ $address->country }}</p>
+                                        </div>
+                                        
+                                        <input type="hidden" name="address_id" value="{{ $address->id }}">
+                                    @endif
                                 @endforeach
-                            </div>
 
-                            <div class="mt-4 text-center">
-                                <a href="{{ route('profile.addresses') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Kelola Alamat
-                                </a>
+                                <div class="mt-4 text-center">
+                                    <a href="{{ route('profile.addresses') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        Ubah Alamat
+                                    </a>
+                                </div>
                             </div>
-
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-gray-600">or</span>
-                                <button type="button" id="show-new-address-form" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                    Add New Address
-                                </button>
-                            </div>
-                            
-                            <div class="border-t border-gray-200 my-4"></div>
                         @else
-                            <div class="p-6 text-center">
-                                <p class="text-gray-600 mb-4">Anda belum memiliki alamat tersimpan.</p>
+                            <div class="p-6 text-center border rounded-lg bg-yellow-50 border-yellow-200">
+                                <svg class="mx-auto h-12 w-12 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Anda belum memiliki alamat tersimpan.</h3>
+                                <p class="mt-1 text-gray-500 mb-4">Silahkan tambahkan alamat terlebih dahulu untuk melanjutkan.</p>
                                 <a href="{{ route('addresses.create') }}" class="btn-primary inline-block">
                                     Tambahkan Alamat Baru
                                 </a>
                             </div>
                         @endif
-                        
-                        <!-- New Address Form -->
-                        <div id="new-address-form" class="{{ count($addresses ?? []) > 0 ? 'hidden' : 'block' }}">
-                            <h3 class="font-medium text-gray-900 mb-3">New Shipping Address</h3>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label for="recipient_name" class="form-label">Recipient Name</label>
-                                    <input type="text" id="recipient_name" name="recipient_name" class="form-control">
-                                </div>
-                                
-                                <div>
-                                    <label for="recipient_phone" class="form-label">Recipient Phone</label>
-                                    <input type="text" id="recipient_phone" name="recipient_phone" class="form-control">
-                                </div>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="address_line1" class="form-label">Street Address</label>
-                                <input type="text" id="address_line1" name="address_line1" class="form-control" placeholder="House number and street name">
-                                @error('address_line1')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="address_line2" class="form-label">Address Line 2 (Optional)</label>
-                                <input type="text" id="address_line2" name="address_line2" class="form-control" placeholder="Apartment, suite, unit, etc.">
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label for="city" class="form-label">City</label>
-                                    <input type="text" id="city" name="city" class="form-control">
-                                    @error('city')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                
-                                <div>
-                                    <label for="province" class="form-label">Province</label>
-                                    <input type="text" id="province" name="province" class="form-control">
-                                    @error('province')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                
-                                <div>
-                                    <label for="postal_code" class="form-label">Postal Code</label>
-                                    <input type="text" id="postal_code" name="postal_code" class="form-control">
-                                    @error('postal_code')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <label class="flex items-center">
-                                    <input type="checkbox" name="save_address" id="save_address" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <span class="ml-2 text-sm text-gray-700">Save this address to my address book</span>
-                                </label>
-                            </div>
-                            
-                            <div class="mt-2">
-                                <label class="flex items-center">
-                                    <input type="checkbox" name="set_as_default" id="set_as_default" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <span class="ml-2 text-sm text-gray-700">Set as my default address</span>
-                                </label>
-                            </div>
-                            
-                            @if(count($addresses ?? []) > 0)
-                                <div class="mt-4">
-                                    <button type="button" id="cancel-new-address" class="text-sm text-gray-600 hover:text-gray-800">
-                                        Cancel
-                                    </button>
-                                </div>
-                            @endif
-                        </div>
                     </div>
                 </div>
                 
@@ -629,48 +541,43 @@ document.addEventListener('DOMContentLoaded', function() {
         offset: 100
     });
     
-    // Address form toggle
-    const showNewAddressFormButton = document.getElementById('show-new-address-form');
-    const cancelNewAddressButton = document.getElementById('cancel-new-address');
-    const newAddressForm = document.getElementById('new-address-form');
+    // Form submission handler
+    const checkoutForm = document.getElementById('checkout-form');
     
-    if (showNewAddressFormButton) {
-        showNewAddressFormButton.addEventListener('click', function() {
-            newAddressForm.classList.remove('hidden');
-            showNewAddressFormButton.classList.add('hidden');
-            
-            // Uncheck all address radio buttons
-            const addressRadios = document.querySelectorAll('.address-radio');
-            addressRadios.forEach(radio => {
-                radio.checked = false;
-            });
-            
-            // Remove selected class from all address cards
-            const addressCards = document.querySelectorAll('.address-card');
-            addressCards.forEach(card => {
-                card.classList.remove('selected');
-                card.classList.remove('pulse-animation');
-            });
-        });
-    }
-    
-    if (cancelNewAddressButton) {
-        cancelNewAddressButton.addEventListener('click', function() {
-            newAddressForm.classList.add('hidden');
-            showNewAddressFormButton.classList.remove('hidden');
-            
-            // Select the default address if available
-            const defaultAddressRadio = document.querySelector('.address-card[data-address-id="1"] .address-radio');
-            if (defaultAddressRadio) {
-                defaultAddressRadio.checked = true;
-                document.querySelector('.address-card[data-address-id="1"]').classList.add('selected');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            const button = document.getElementById('place-order-button');
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<span class="spinner mr-2"></span>Processing...';
+                button.classList.add('opacity-75', 'cursor-not-allowed');
             }
+            
+            @if(count($addresses ?? []) == 0)
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'No Shipping Address',
+                text: 'Please add a shipping address before proceeding with your order.',
+                confirmButtonText: 'Add Address',
+                showCancelButton: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('addresses.create') }}";
+                } else {
+                    if (button) {
+                        button.disabled = false;
+                        button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
+                        button.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }
+                }
+            });
+            @endif
         });
     }
-
+    
     // Helper functions for currency handling
     function parseCurrency(currencyStr) {
-        // Remove currency symbol and thousand separators
         return parseFloat(currencyStr.replace('Rp ', '').replaceAll('.', '').trim()) || 0;
     }
     
@@ -679,7 +586,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function recalculateTotal() {
-        // Get all the necessary elements
         const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
         const shippingElement = document.querySelector('#shipping-cost-display .text-sm.font-medium');
         const taxElement = document.querySelector('.flex.justify-between.py-1:nth-child(3) .text-sm.font-medium');
@@ -687,7 +593,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const discountRow = document.getElementById('discount-row');
         const orderTotal = document.getElementById('order-total');
         
-        // Parse values
         let subtotal = parseCurrency(subtotalElement.textContent);
         let shipping = parseCurrency(shippingElement.textContent);
         let tax = parseCurrency(taxElement.textContent);
@@ -697,14 +602,10 @@ document.addEventListener('DOMContentLoaded', function() {
             discount = parseCurrency(discountElement.textContent.replace('- ', ''));
         }
         
-        // Calculate new total
         const total = subtotal + shipping + tax - discount;
-        
-        // Update the total display
         orderTotal.textContent = formatCurrency(total);
     }
 
-    // Event handlers
     const applyCouponButton = document.getElementById('apply-coupon');
     const removeCouponButton = document.getElementById('remove-coupon');
     const couponCodeInput = document.getElementById('coupon_code');
@@ -721,18 +622,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Show loading state
             applyCouponButton.disabled = true;
             applyCouponButton.innerHTML = '<span class="spinner mr-2"></span> Applying...';
             
-            // Get subtotal from the page
             const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
             let subtotal = 0;
             if (subtotalElement) {
                 subtotal = parseCurrency(subtotalElement.textContent);
             }
             
-            // Send AJAX request to apply coupon
             axios.post('{{ route("coupon.apply") }}', {
                 coupon_code: code,
                 subtotal: subtotal,
@@ -754,34 +652,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const removeCoupon = document.getElementById('remove-coupon');
         if (removeCoupon) {
             removeCoupon.addEventListener('click', function() {
-                // Store the current code before removal
                 const currentCode = couponCodeInput.value;
                 
-                // Show loading state
                 removeCoupon.disabled = true;
                 removeCoupon.innerHTML = '<span class="spinner mr-2"></span> Removing...';
                 
-                // Send AJAX request to remove coupon
                 axios.post('{{ route("coupon.remove") }}', {
                     _token: '{{ csrf_token() }}'
                 })
                 .then(function(response) {
                     const data = response.data;
                     if (data.success) {
-                        // Make coupon field editable but keep the value
                         couponCodeInput.readOnly = false;
                         couponCodeInput.classList.remove('bg-green-50', 'border-green-500');
                         
-                        // Ensure the input value is preserved
                         setTimeout(() => {
                             couponCodeInput.value = currentCode;
                             couponCodeInput.focus();
                         }, 50);
                         
-                        // Hide discount row
                         discountRow.classList.add('hidden');
                         
-                        // Replace remove button with apply button
                         removeCoupon.parentNode.innerHTML = `
                             <button type="button" id="apply-coupon" 
                                 class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
@@ -789,20 +680,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             </button>
                         `;
                         
-                        // Remove promo info message
                         const promoInfo = document.querySelector('.text-green-600.font-medium');
                         if (promoInfo) {
                             promoInfo.remove();
                         }
                         
-                        // Clear any message
                         promoMessage.textContent = '';
                         promoMessage.classList.add('hidden');
                         
-                        // Recalculate total
                         recalculateTotal();
                         
-                        // Setup the new apply button event
                         const newApplyBtn = document.getElementById('apply-coupon');
                         if (newApplyBtn) {
                             newApplyBtn.addEventListener('click', function() {
@@ -812,25 +699,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return;
                                 }
                                 
-                                // Show loading state
                                 this.disabled = true;
                                 this.innerHTML = '<span class="spinner mr-2"></span> Applying...';
                                 
-                                // Get subtotal from the page
                                 const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
                                 let subtotal = 0;
                                 if (subtotalElement) {
                                     subtotal = parseCurrency(subtotalElement.textContent);
                                 }
                                 
-                                // Send AJAX request to apply coupon
                                 axios.post('{{ route("coupon.apply") }}', {
                                     coupon_code: code,
                                     subtotal: subtotal,
                                     _token: '{{ csrf_token() }}'
                                 })
                                 .then(function (response) {
-                                    // Handle success response
                                     handleCouponResponse(response);
                                 })
                                 .catch(function (error) {
@@ -867,12 +750,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // If remove button exists on page load, set up its event listener
     if (removeCouponButton) {
         setupRemoveCouponEvent();
     }
     
-    // Helper function to show promo message
     function showPromoMessage(message, type) {
         promoMessage.textContent = message;
         promoMessage.className = 'mt-2 text-sm';
@@ -887,29 +768,22 @@ document.addEventListener('DOMContentLoaded', function() {
         promoMessage.classList.remove('hidden');
     }
 
-    // Extract the coupon response handling to a reusable function
     function handleCouponResponse(response) {
         const data = response.data;
         if (data.success) {
-            // Success - update UI
             showPromoMessage(data.message, 'success');
             
-            // Store the applied code before making any DOM changes
             const appliedCode = data.promo.code;
             
-            // Make coupon field readonly and styled
-            // Set the value before changing other attributes
             if (couponCodeInput) {
                 couponCodeInput.value = appliedCode;
                 couponCodeInput.readOnly = true;
                 couponCodeInput.classList.add('bg-green-50', 'border-green-500');
             }
             
-            // Update discount row
             discountRow.classList.remove('hidden');
             discountAmount.textContent = '- ' + data.promo.formatted_discount;
             
-            // Replace apply button with remove button
             const applyButton = document.getElementById('apply-coupon');
             if (applyButton) {
                 applyButton.parentNode.innerHTML = `
@@ -923,7 +797,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
             
-            // Add promo info message
             const promoInfoHtml = `
                 <div class="mt-2 text-sm text-green-600 font-medium">
                     <span class="inline-flex items-center">
@@ -939,15 +812,12 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             promoMessage.insertAdjacentHTML('afterend', promoInfoHtml);
             
-            // Recalculate total
             recalculateTotal();
             
-            // Setup the new remove button event - without trying to modify the input again
             setTimeout(() => {
                 setupRemoveCouponEvent();
             }, 50);
         } else {
-            // Error
             showPromoMessage(data.message, 'danger');
             const applyButton = document.getElementById('apply-coupon');
             if (applyButton) {
@@ -956,116 +826,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
-    // Form submission handler
-    const checkoutForm = document.getElementById('checkout-form');
-    
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            const button = document.getElementById('place-order-button');
-            if (button) {
-                button.disabled = true;
-                button.innerHTML = '<span class="spinner mr-2"></span>Processing...';
-                button.classList.add('opacity-75', 'cursor-not-allowed');
-            }
-            
-            // Check if at least one address is selected or new address form is visible
-            const selectedAddress = document.querySelector('.address-radio:checked');
-            const newAddressVisible = !newAddressForm.classList.contains('hidden');
-            
-            if (!selectedAddress && !newAddressVisible) {
-                e.preventDefault();
-                alert('Please select a shipping address or add a new one.');
-                // Re-enable the button
-                if (button) {
-                    button.disabled = false;
-                    button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
-                    button.classList.remove('opacity-75', 'cursor-not-allowed');
-                }
-                return;
-            }
-            
-            // If new address form is visible, validate required fields
-            if (newAddressVisible) {
-                const requiredFields = ['recipient_name', 'recipient_phone', 'address_line1', 'city', 'province', 'postal_code'];
-                let hasError = false;
-                
-                requiredFields.forEach(field => {
-                    const input = document.getElementById(field);
-                    if (input && !input.value.trim()) {
-                        hasError = true;
-                        input.classList.add('border-red-500');
-                    } else if (input) {
-                        input.classList.remove('border-red-500');
-                    }
-                });
-                
-                if (hasError) {
-                    e.preventDefault();
-                    alert('Please fill in all required address fields.');
-                    // Re-enable the button
-                    if (button) {
-                        button.disabled = false;
-                        button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
-                        button.classList.remove('opacity-75', 'cursor-not-allowed');
-                    }
-                    return;
-                }
-            }
-        });
-    }
 });
-
-// Function to select address
-function selectAddress(element, addressId) {
-    // Remove selected class from all address cards
-    const addressCards = document.querySelectorAll('.address-card');
-    addressCards.forEach(card => {
-        card.classList.remove('selected');
-        card.classList.remove('pulse-animation');
-    });
-    
-    // Add selected class to clicked address card
-    element.classList.add('selected');
-    
-    // Check the radio button
-    const radio = element.querySelector('.address-radio');
-    if (radio) {
-        radio.checked = true;
-    }
-    
-    // Hide the new address form
-    const newAddressForm = document.getElementById('new-address-form');
-    if (newAddressForm) {
-        newAddressForm.classList.add('hidden');
-    }
-    
-    // Show the "Add New Address" button
-    const showNewAddressFormButton = document.getElementById('show-new-address-form');
-    if (showNewAddressFormButton) {
-        showNewAddressFormButton.classList.remove('hidden');
-    }
-}
 
 // Function to select shipping method
 function selectShippingMethod(element, method) {
-    // Remove selected class from all shipping methods
     const shippingMethods = document.querySelectorAll('.shipping-method');
     shippingMethods.forEach(method => {
         method.classList.remove('selected');
     });
     
-    // Add selected class to clicked shipping method
     element.classList.add('selected');
     
-    // Check the radio button
     const radio = element.querySelector('input[type="radio"]');
     if (radio) {
         radio.checked = true;
     }
     
-    // Update the shipping cost and total
-    let shippingCost = 10000; // Default: Regular shipping
+    let shippingCost = 10000;
     
     if (method === 'express') {
         shippingCost = 25000;
@@ -1073,7 +850,6 @@ function selectShippingMethod(element, method) {
         shippingCost = 50000;
     }
     
-    // Update the displayed shipping cost
     const shippingDisplay = document.getElementById('shipping-cost-display');
     if (shippingDisplay) {
         const shippingText = shippingDisplay.querySelector('.text-sm.font-medium');
@@ -1082,18 +858,14 @@ function selectShippingMethod(element, method) {
         }
     }
     
-    // Recalculate total
     recalculateTotal();
 }
 
-// Make formatCurrency globally available for selectShippingMethod
 function formatCurrency(number) {
     return 'Rp ' + number.toLocaleString('id-ID');
 }
 
-// Make recalculateTotal globally available for selectShippingMethod
 function recalculateTotal() {
-    // Get all the necessary elements
     const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
     const shippingElement = document.querySelector('#shipping-cost-display .text-sm.font-medium');
     const taxElement = document.querySelector('.flex.justify-between.py-1:nth-child(3) .text-sm.font-medium');
@@ -1101,7 +873,6 @@ function recalculateTotal() {
     const discountRow = document.getElementById('discount-row');
     const orderTotal = document.getElementById('order-total');
     
-    // Parse values
     let subtotal = parseCurrency(subtotalElement.textContent);
     let shipping = parseCurrency(shippingElement.textContent);
     let tax = parseCurrency(taxElement.textContent);
@@ -1111,16 +882,11 @@ function recalculateTotal() {
         discount = parseCurrency(discountElement.textContent.replace('- ', ''));
     }
     
-    // Calculate new total
     const total = subtotal + shipping + tax - discount;
-    
-    // Update the total display
     orderTotal.textContent = formatCurrency(total);
 }
 
-// Make parseCurrency globally available for recalculateTotal
 function parseCurrency(currencyStr) {
-    // Remove currency symbol and thousand separators
     return parseFloat(currencyStr.replace('Rp ', '').replaceAll('.', '').trim()) || 0;
 }
 </script>
