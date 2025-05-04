@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
@@ -321,7 +322,17 @@
                     <!-- User Account -->
                     <div class="dropdown ml-1" id="user-dropdown">
                         <button class="p-2 text-gray-600 hover:text-blue-600" id="user-dropdown-toggle">
-                            <i class="far fa-user-circle text-lg"></i>
+                            @auth
+                                @if(Auth::user()->avatar)
+                                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="h-8 w-8 rounded-full object-cover border border-gray-200">
+                                @else
+                                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            @else
+                                <i class="far fa-user-circle text-lg"></i>
+                            @endauth
                         </button>
                         <div class="dropdown-menu" id="user-dropdown-menu">
                             @auth
@@ -347,26 +358,6 @@
                             @endauth
                         </div>
                     </div>
-
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                    <script>
-                        document.getElementById('logout-button').addEventListener('click', function () {
-                            Swal.fire({
-                                title: 'Are you sure?',
-                                text: "You will be logged out!",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Yes, logout!'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    document.getElementById('logout-form').submit();
-                                }
-                            });
-                        });
-                    </script>
-                    
                     <!-- Mobile Menu Button -->
                     <button id="mobile-menu-button" class="ml-2 p-2 text-gray-600 hover:text-blue-600 md:hidden">
                         <i class="fas fa-bars text-lg"></i>
@@ -447,31 +438,6 @@
                     </a>
                 @endauth
             </div>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const mobileLogoutButton = document.getElementById('mobile-logout-button');
-                    const mobileLogoutForm = document.getElementById('mobile-logout-form');
-
-                    if (mobileLogoutButton && mobileLogoutForm) {
-                        mobileLogoutButton.addEventListener('click', function () {
-                            Swal.fire({
-                                title: 'Are you sure?',
-                                text: "You will be logged out!",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Yes, logout!'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    mobileLogoutForm.submit();
-                                }
-                            });
-                        });
-                    }
-                });
-            </script>
         </div>
     </div>
     
@@ -570,6 +536,7 @@
 
     @livewireScripts
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle
@@ -668,8 +635,50 @@
                 });
             });
         });
-    </script>
-    
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Desktop logout
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Kamu yakin?',
+                        text: "Kamu akan keluar!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, logout!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('logout-form').submit();
+                        }
+                    });
+                });
+            }
+        });
+
+                // Mobile logout
+                const mobileLogoutButton = document.getElementById('mobile-logout-button');
+                const mobileLogoutForm   = document.getElementById('mobile-logout-form');
+                if (mobileLogoutButton && mobileLogoutForm) {
+                    mobileLogoutButton.addEventListener('click', function () {
+                        Swal.fire({
+                            title: 'Kamu yakin?',
+                            text: "Kamu akan keluar!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Ya, logout!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                mobileLogoutForm.submit();
+                            }
+                        });
+                    });
+                }
+            </script>
     @yield('scripts')
 </body>
 </html>

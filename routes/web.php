@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Auth\SocialAuthController;
 
 
 
@@ -35,6 +36,10 @@ Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']
 Route::get('/check-message-status', [App\Http\Controllers\MessageController::class, 'checkStatus'])->name('message.check-status');
 Route::post('/check-message-status', [App\Http\Controllers\MessageController::class, 'viewStatus'])->name('message.view-status');
 Route::get('/messages/{id}', [App\Http\Controllers\MessageController::class, 'viewMessage'])->name('message.view');
+
+//social login routes
+Route::get('auth/{provider}', [SocialAuthController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
 
 // Cart Routes
 Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart');
@@ -71,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/regenerate-payment', [App\Http\Controllers\OrderController::class, 'regeneratePayment'])->name('orders.regenerate-payment');
     Route::post('/orders/{order}/complete', [App\Http\Controllers\OrderController::class, 'completeOrder'])->name('orders.complete');
+    Route::delete('/orders/{order}/cancel', [App\Http\Controllers\OrderController::class, 'cancel'])->name('orders.cancel');
     // Checkout routes
     Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
@@ -145,6 +151,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/addresses/{address}', [App\Http\Controllers\AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/addresses/{address}', [App\Http\Controllers\AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::post('/addresses/{address}/default', [App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.default');
+    Route::put('/addresses/{address}/set-default', [App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
 
 // Checkout routes

@@ -1,31 +1,26 @@
-@extends('layouts.app')
+@extends('profile.layout')
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Ulasan Saya</h1>
-    
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    @endif
-    
+@section('breadcrumb')
+<li>
+    <div class="flex items-center">
+        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="ml-1 text-gray-500 md:ml-2">My Reviews</span>
+    </div>
+</li>
+@endsection
+
+@section('title', 'Ulasan Saya')
+
+@section('profile-content')
     <!-- Pesanan yang belum direview -->
     @if($completedOrders->count() > 0)
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4">Pesanan yang Menunggu Ulasan</h2>
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Pesanan yang Menunggu Ulasan</h2>
             <div class="space-y-4">
                 @foreach($completedOrders as $order)
-                    <div class="border rounded-lg p-4 flex justify-between items-center">
+                    <div class="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div>
                             <p class="font-medium">Order #{{ $order->order_number }}</p>
                             <p class="text-sm text-gray-600">{{ $order->created_at->format('d M Y') }}</p>
@@ -43,28 +38,30 @@
     @endif
     
     <!-- Ulasan yang sudah ditulis -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <h2 class="text-xl font-semibold mb-4">Ulasan Saya</h2>
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="mb-4">
+            <h3 class="text-lg font-semibold">Ulasan Saya</h3>
+        </div>
         
         @if($reviews->count() > 0)
-            <div class="space-y-6">
+            <div class="space-y-4">
                 @foreach($reviews as $review)
                     <div class="border rounded-lg p-4">
-                        <div class="flex justify-between items-start">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                             <div class="flex-shrink-0">
                                 @if($review->product->image)
-                                    <img src="{{ asset('storage/' . $review->product->image) }}" alt="{{ $review->product->name }}" class="w-16 h-16 object-cover rounded">
+                                    <img src="{{ asset('storage/' . $review->product->image) }}" alt="{{ $review->product->name }}" class="w-14 h-14 object-cover rounded">
                                 @else
-                                    <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded">
-                                        <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-14 h-14 bg-gray-200 flex items-center justify-center rounded">
+                                        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
                                     </div>
                                 @endif
                             </div>
                             
-                            <div class="ml-4 flex-1">
-                                <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row justify-between items-start">
                                     <div>
                                         <h3 class="font-medium text-gray-900">{{ $review->product->name }}</h3>
                                         <div class="flex items-center mt-1">
@@ -77,7 +74,7 @@
                                         <p class="text-gray-600 text-sm mt-2">{{ $review->created_at->format('d M Y, H:i') }}</p>
                                     </div>
                                     
-                                    <div class="flex space-x-2">
+                                    <div class="flex space-x-2 mt-2 sm:mt-0">
                                         <a href="{{ route('reviews.edit', $review->id) }}" class="text-blue-600 hover:text-blue-800">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -97,10 +94,10 @@
                                 </div>
                                 
                                 <div class="mt-3">
-                                    <p class="text-gray-700">{{ $review->review }}</p>
+                                    <p class="text-gray-700 text-sm">{{ $review->review }}</p>
                                 </div>
                                 
-                                <div class="mt-3 text-xs text-gray-500">
+                                <div class="mt-2 text-xs text-gray-500">
                                     <p>Order #{{ $review->order->order_number }}</p>
                                 </div>
                             </div>
@@ -124,5 +121,4 @@
             </div>
         @endif
     </div>
-</div>
 @endsection

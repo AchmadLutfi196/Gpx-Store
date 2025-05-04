@@ -16,15 +16,14 @@ class Address extends Model
      */
     protected $fillable = [
         'user_id',
-        'name',
-        'phone',
-        'address_line1',
-        'address_line2',
+        'address_line',
         'city',
-        'postal_code',
         'province',
-        'country',
+        'postal_code',
         'is_default',
+        'type',
+        'phone_number',
+        'notes',
     ];
 
     /**
@@ -42,26 +41,5 @@ class Address extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the full address as a string.
-     *
-     * @return string
-     */
-    public function getFullAddressAttribute()
-    {
-        $address = $this->address_line1;
-        
-        if (!empty($this->address_line2)) {
-            $address .= ', ' . $this->address_line2;
-        }
-        
-        $address .= ', ' . $this->city;
-        $address .= ', ' . $this->province;
-        $address .= ' ' . $this->postal_code;
-        $address .= ', ' . $this->country;
-        
-        return $address;
     }
 }

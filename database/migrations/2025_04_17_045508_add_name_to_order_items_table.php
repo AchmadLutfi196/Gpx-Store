@@ -12,16 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Cek jika kolom name sudah ada di tabel order_items
-        $columns = DB::select("PRAGMA table_info(order_items)");
-        $columnNames = array_map(function ($column) {
-            return $column->name;
-        }, $columns);
-        
-        // Jika kolom name belum ada, tambahkan
-        if (!in_array('name', $columnNames)) {
-            DB::statement("ALTER TABLE order_items ADD COLUMN name VARCHAR NULL");
-        }
+        Schema::table('order_items', function (Blueprint $table) {
+            // Check if column exists before adding it
+            if (!Schema::hasColumn('order_items', 'name')) {
+                $table->string('name')->nullable()->after('id');
+            }
+        });
     }
 
     /**
@@ -29,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // SQLite tidak mendukung drop column
+        Schema::table('order_items', function (Blueprint $table) {
+            if (Schema::hasColumn('order_items', 'name')) {
+                $table->dropColumn('name');
+            }
+        });
     }
 };

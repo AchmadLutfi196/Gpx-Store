@@ -39,16 +39,15 @@
                 </div>
                 
                 <div class="mt-2 sm:mt-0">
-                    <span class="px-3 py-1 rounded-full text-xs font-medium 
-                        @if($order->status == 'completed') bg-green-100 text-green-800
-                        @elseif($order->status == 'processing') bg-blue-100 text-blue-800
-                        @elseif($order->status == 'cancelled') bg-red-100 text-red-800
-                        @elseif($order->status == 'pending') bg-yellow-100 text-yellow-800
-                        @else bg-red-300 text-red-800 @endif">
+                    <span class="px-3 py-1 rounded-full text-xs font-medium
+                        {{ $order->status == 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                        {{ $order->status == 'processing' ? 'bg-blue-100 text-blue-800' : '' }}
+                        {{ $order->status == 'cancelled' ? 'bg-red-100 text-red-800' : '' }}
+                        {{ $order->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                        {{ !in_array($order->status, ['completed', 'processing', 'cancelled', 'pending']) ? 'bg-red-300 text-red-800' : '' }}">
                         {{ ucfirst($order->status) }}
                     </span>
-                </div>
-                
+                </div>                
                 <div class="w-full sm:w-auto mt-2 sm:mt-0">
                     <a href="{{ route('orders.show', $order->id) }}" class="text-blue-600 hover:underline text-sm">
                         View Details
@@ -97,6 +96,7 @@
                         </button>
                     </form>
                     @elseif($order->status === 'pending' || $order->payment_status === 'pending')
+                        <div class="flex space-x-2">
                             <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center justify-center px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out shadow-sm">
@@ -106,6 +106,17 @@
                                     Lanjutkan Pembayaran
                                 </button>
                             </form>
+                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" id="cancelForm-{{ $order->id }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" onclick="confirmCancel({{ $order->id }})" class="inline-flex items-center justify-center px-5 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out shadow-sm">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Batalkan Pesanan
+                                </button>
+                            </form>
+                        </div>
                     @endif
                     
                     @if($order->status === 'completed')
@@ -138,4 +149,22 @@
     @endif
 @endsection
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmCancel(orderId) {
+        Swal.fire({
+            title: 'Konfirmasi Pembatalan',
+            text: 'Apakah Anda yakin ingin membatalkan pesanan ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Batalkan',
+            cancelButtonText: 'Tidak'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('cancelForm-' + orderId).submit();
+            }
+        });
+    }
+    </script>

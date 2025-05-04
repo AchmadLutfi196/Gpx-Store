@@ -99,6 +99,13 @@ class PromoResource extends Resource
                                     ->helperText('Number of times this code can be used. 0 means unlimited.')
                                     ->default(0),
                             ]),
+                            // Add this new toggle for homepage display
+                        Forms\Components\Toggle::make('show_on_homepage')
+                        ->label('Show on Homepage')
+                        ->helperText('Display this promo in the homepage banner section')
+                        ->default(false)
+                        ->onColor('success')
+                        ->offColor('danger'),
                     ])
                     ->columns(1),
             ]);
@@ -153,6 +160,9 @@ class PromoResource extends Resource
                     ->label('Limit')
                     ->formatStateUsing(fn ($state) => $state > 0 ? $state : '∞')
                     ->sortable(),
+                Tables\Columns\IconColumn::make('show_on_homepage')
+                    ->label('On Homepage')
+                    ->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('is_active')

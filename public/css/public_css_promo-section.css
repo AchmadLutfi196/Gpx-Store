@@ -1,0 +1,29 @@
+/* Promo section specific styles */
+#promo-section {
+    position: relative;
+    overflow: hidden;
+}
+
+#promo-section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/img/promo-bg-pattern.svg');
+    background-repeat: repeat;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+#promo-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    #promo-section .grid {
+        grid-template-columns: 1fr;
+    }
+}

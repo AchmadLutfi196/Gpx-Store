@@ -1,37 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-12">
-    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6">
-            <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Payment Failed</h3>
-                <div class="mt-3">
-                    <p class="text-sm text-gray-500">We couldn't process your payment. Please try again or contact our customer support for assistance.</p>
-                </div>
-                
-                <div class="mt-6">
-                    <div class="text-sm text-gray-600 border-t border-b border-gray-200 py-4">
-                        <p>Order ID: {{ $order_id }}</p>
-                        <p>Status: {{ $transaction_status }}</p>
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+    <div class="bg-white rounded-lg shadow-md p-8 text-center mb-8">
+        <div class="flex flex-col items-center">
+            <!-- Error Icon -->
+            <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+            
+            <!-- Error Message -->
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Payment Error</h1>
+            <p class="text-lg text-gray-700 mb-8">{{ $errorMessage }}</p>
+            
+            <!-- Order Details -->
+            <div class="w-full max-w-md p-6 bg-gray-50 rounded-lg mb-8">
+                <h2 class="text-xl font-medium text-gray-800 mb-4">Order Summary</h2>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Order Number:</span>
+                        <span class="font-medium">{{ $order->order_number }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Date:</span>
+                        <span>{{ $order->created_at->format('M d, Y') }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Total Amount:</span>
+                        <span class="font-medium">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Payment Failed
+                        </span>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Retry Button -->
+            <div class="flex flex-col space-y-4 w-full max-w-xs">
+                <a href="{{ route('order.retry-payment', $order) }}" class="btn-primary w-full flex justify-center items-center py-3">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Retry Payment
+                </a>
                 
-                <div class="mt-6 flex justify-center gap-4">
-                    <a href="{{ route('checkout') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                        Try Again
-                    </a>
-                    <a href="{{ route('shop') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        Continue Shopping
-                    </a>
-                </div>
+                <a href="{{ route('orders') }}" class="text-blue-600 hover:text-blue-800 text-center">
+                    View Order History
+                </a>
+                
+                <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-800 text-center">
+                    Return to Home Page
+                </a>
             </div>
         </div>
+    </div>
+    
+    <!-- Customer Support Information -->
+    <div class="text-center">
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Need Help?</h3>
+        <p class="text-gray-600 mb-2">Contact our customer support team</p>
+        <p class="text-blue-600">support@gpxstore.com</p>
+        <p class="text-blue-600">+62 812-3456-7890</p>
     </div>
 </div>
 @endsection

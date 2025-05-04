@@ -188,6 +188,7 @@
         opacity: 0.2;
         mix-blend-mode: multiply;
     }
+    
     /* Hide scrollbar for all browsers */
     .scrollbar-hide {
         -ms-overflow-style: none; /* IE and Edge */
@@ -208,114 +209,82 @@
     #testimonial-swiper {
         overflow: hidden !important;
     }
-    /* Swiper Navigation - Hidden by default, visible on hover */
-    #testimonial-swiper .swiper-button-next,
-    #testimonial-swiper .swiper-button-prev {
-        opacity: 0;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-        background-color: rgba(255, 255, 255, 0.8);
-        width: 40px !important;
-        height: 40px !important;
-        border-radius: 50%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    #testimonial-swiper .swiper-button-next:after,
-    #testimonial-swiper .swiper-button-prev:after {
-        font-size: 18px !important;
-        color: #4f46e5;
-    }
-
-    /* Show navigation arrows on hover */
-    #testimonial-swiper:hover .swiper-button-next,
-    #testimonial-swiper:hover .swiper-button-prev {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    /* Additional hover effect for buttons */
-    #testimonial-swiper .swiper-button-next:hover,
-    #testimonial-swiper .swiper-button-prev:hover {
-        background-color: #ffffff;
-        transform: scale(1.1);
+    
+    /* Promo Banner Styles */
+    .promo-banner {
+        position: relative;
+        overflow: hidden;
+        border-radius: 0.5rem;
     }
     
-    /* Scroll appearance animation */
-    .scroll-appear {
-        opacity: 0;
-        transform: translateY(30px);
+    .promo-banner-bg {
+        background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+        position: relative;
     }
     
-    /* Wave animation */
-    .wave-container {
+    .promo-pattern {
         position: absolute;
-        bottom: 0;
+        top: 0;
         left: 0;
         width: 100%;
-        overflow: hidden;
-        line-height: 0;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.6;
     }
     
-    .wave {
+    .promo-code {
         position: relative;
-        width: 100%;
-        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px dashed rgba(255, 255, 255, 0.4);
+        border-radius: 0.375rem;
+        transition: all 0.3s;
     }
     
-    .wave-path {
-        animation: wave 20s linear infinite;
+    .promo-code:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.03);
     }
     
-    @keyframes wave {
-        0% { transform: translateX(0); }
-        50% { transform: translateX(-50%); }
-        100% { transform: translateX(0); }
-    }
-    
-    /* Benefit cards */
-    .benefit-card {
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    .benefit-card:hover {
-        transform: translateY(-10px) scale(1.03);
-    }
-    
-    .benefit-icon {
-        transition: all 0.3s ease;
-    }
-    
-    .benefit-card:hover .benefit-icon {
-        transform: rotateY(180deg);
-    }
-    
-    /* Testimonial card effects */
-    .testimonial-card {
-        position: relative;
-        transition: all 0.3s ease;
-    }
-    
-    .testimonial-card::after {
-        content: '\201C';
+    .copy-button {
         position: absolute;
-        top: 20px;
-        left: 20px;
-        font-size: 5rem;
-        color: #f3f4f6;
-        font-family: 'Georgia', serif;
-        line-height: 1;
-        opacity: 0.3;
-        z-index: 0;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: all 0.2s;
     }
     
-    .testimonial-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    .copy-button:hover {
+        transform: translateY(-50%) scale(1.1);
     }
     
-    .float-button {
-        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+    .promo-countdown {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .countdown-item {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        border-radius: 0.375rem;
+        min-width: 3rem;
+        text-align: center;
+        padding: 0.5rem;
+    }
+    
+    @keyframes pulse-border {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        }
+    }
+    
+    .pulse-border {
+        animation: pulse-border 2s infinite;
     }
 </style>
 @endsection
@@ -416,6 +385,92 @@
             </div>
         </div>
     </div>
+
+    <!-- Promo Banner Section -->
+    @if(isset($homepagePromo))
+    <section class="py-12 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="promo-banner shadow-xl" data-aos="zoom-in">
+                <div class="promo-banner-bg p-8 md:p-10 relative overflow-hidden rounded-xl">
+                    <!-- Pattern overlay -->
+                    <div class="promo-pattern"></div>
+                    
+                    <!-- Content -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-center relative z-10">
+                        <!-- Left content -->
+                        <div class="md:col-span-3">
+                            <span class="inline-block px-4 py-1 bg-white bg-opacity-20 text-white text-sm font-semibold rounded-full mb-3">
+                                {{ $homepagePromo->promotion_tag ?? 'PENAWARAN TERBATAS' }}
+                            </span>
+                            <h3 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                                {{ $homepagePromo->promotion_title ?? ($homepagePromo->description ?? 'Diskon Spesial!') }}
+                            </h3>
+                            <p class="text-blue-100 mb-6 md:pr-16">
+                                {{ $homepagePromo->promotion_subtitle ?? 'Gunakan kode promo untuk mendapatkan diskon spesial. Tawaran berlaku untuk waktu terbatas.' }}
+                            </p>
+                            
+                            <!-- Countdown timer -->
+                            @if($homepagePromo->end_date)
+                            <div class="mb-8">
+                                <p class="text-white mb-2 font-medium">Berakhir dalam:</p>
+                                <div class="promo-countdown">
+                                    <div class="countdown-item">
+                                        <div class="text-2xl font-bold text-white countdown-days">{{ sprintf('%02d', $daysRemaining) }}</div>
+                                        <div class="text-xs text-blue-100">Hari</div>
+                                    </div>
+                                    <div class="countdown-item">
+                                        <div class="text-2xl font-bold text-white countdown-hours">{{ sprintf('%02d', $hoursRemaining) }}</div>
+                                        <div class="text-xs text-blue-100">Jam</div>
+                                    </div>
+                                    <div class="countdown-item">
+                                        <div class="text-2xl font-bold text-white countdown-minutes">{{ sprintf('%02d', $minutesRemaining) }}</div>
+                                        <div class="text-xs text-blue-100">Menit</div>
+                                    </div>
+                                    <div class="countdown-item">
+                                        <div class="text-2xl font-bold text-white" id="countdown-seconds">00</div>
+                                        <div class="text-xs text-blue-100">Detik</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            
+                            <a href="{{ route('shop') }}" class="inline-flex items-center px-6 py-3 bg-white text-blue-700 font-medium rounded-md hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                Belanja Sekarang
+                                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                </svg>
+                            </a>
+                        </div>
+                        
+                        <!-- Right content - Promo code -->
+                        <div class="md:col-span-2 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-20 pulse-border">
+                            <h4 class="text-xl font-semibold text-white mb-2">Gunakan Kode Promo:</h4>
+                            <p class="text-blue-100 mb-4 text-sm">Salin kode berikut untuk mendapatkan diskon {{ $homepagePromo->formatted_discount }}</p>
+                            
+                            <div class="relative promo-code py-3 px-4 mb-4">
+                                <span class="block text-xl font-mono font-bold text-white select-all" id="promo-code">{{ $homepagePromo->code }}</span>
+                                <button type="button" class="copy-button bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md p-2" id="copy-promo-button">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="text-center">
+                                <span class="text-xs text-blue-100">
+                                    {{ $homepagePromo->promotion_note ?? 
+                                      ($homepagePromo->minimum_order > 0 ? 
+                                      '*Minimum transaksi Rp ' . number_format($homepagePromo->minimum_order, 0, ',', '.') : 
+                                      '*Syarat dan ketentuan berlaku') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
 
     <!-- Featured Categories with Staggered Animation -->
     <section id="featured" class="py-24 bg-gray-50">
@@ -567,14 +622,10 @@
                         
                         {{-- Rating Produk --}}
                         @php
-                            // Calculate average rating from product reviews
-                            $rating = 0;
-                            if ($product->reviews->count() > 0) {
-                                $rating = $product->reviews->avg('rating');
-                            } else {
-                                $rating = 0; // Default rating if no reviews
-                            }
-                            $reviewCount = $product->reviews->count();
+                            // Get the proper rating from the withAvg relationship
+                            $rating = $product->reviews_avg_rating ?? 0;
+                            
+                            // Get the proper count from the withCount relationship
                             $reviewCount = $product->reviews_count ?? 0;
                         @endphp
                         <div class="flex items-center mb-2">
@@ -640,6 +691,7 @@
         </div>
     </section>
 
+
     <!-- Stats Counter -->
     <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
@@ -664,7 +716,7 @@
                                 $stat['icon'] === 'users' ? 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' : 
                                 ($stat['icon'] === 'collection' ? 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' : 
                                 ($stat['icon'] === 'clock' ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' : 
-                                'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z')) }}">
+                                'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z')) }}">
                             </path>
                         </svg>
                     </div>
@@ -890,6 +942,7 @@
         });
     });
     
+    // cart
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.add-to-cart-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -945,6 +998,170 @@
         });
     });
 
+        document.getElementById('copy-promo-button').addEventListener('click', function() {
+            var promoCode = document.getElementById('promo-code').innerText;
+            
+            navigator.clipboard.writeText(promoCode).then(function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Kode promo berhasil disalin ke clipboard.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }).catch(function(error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Gagal menyalin kode promo. Silakan coba lagi.',
+                });
+                console.error(error);
+            });
+        });
     
 </script>
+@push('scripts')
+@if(isset($homepagePromo))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add event listener to copy button
+        const copyButton = document.getElementById('copy-promo-button');
+        if (copyButton) {
+            copyButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                copyPromoCode();
+            });
+        }
+        
+        function copyPromoCode() {
+            const promoCode = document.getElementById('promo-code').innerText;
+            
+            try {
+                // Try the modern clipboard API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(promoCode)
+                        .then(() => {
+                            showCopySuccessMessage(promoCode);
+                        })
+                        .catch(err => {
+                            console.error('Clipboard API failed: ', err);
+                            fallbackCopyMethod(promoCode);
+                        });
+                } else {
+                    // If Clipboard API not available, use the fallback method
+                    fallbackCopyMethod(promoCode);
+                }
+            } catch (error) {
+                console.error('Copy failed: ', error);
+                fallbackCopyMethod(promoCode);
+            }
+        }
+        
+        function fallbackCopyMethod(text) {
+            // Create temporary element
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";  // Avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccessMessage(text);
+                } else {
+                    console.error('Fallback: Unable to copy');
+                    showCopyErrorMessage();
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showCopyErrorMessage();
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        function showCopySuccessMessage(promoCode) {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Kode promo ' + promoCode + ' telah disalin!',
+                icon: 'success',
+                timer: 2000,
+                position: 'top-end',
+                showConfirmButton: false,
+                toast: true
+            });
+        }
+        
+        function showCopyErrorMessage() {
+            Swal.fire({
+                title: 'Gagal Menyalin',
+                text: 'Silakan salin kode secara manual',
+                icon: 'error',
+                timer: 2000,
+                position: 'top-end',
+                showConfirmButton: false,
+                toast: true
+            });
+        }
+    });
+    
+    
+    // Enhanced countdown script
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.querySelector('.countdown-seconds')) {
+            const secondsElement = document.querySelector('.countdown-seconds');
+            const minutesElement = document.querySelector('.countdown-minutes');
+            const hoursElement = document.querySelector('.countdown-hours');
+            const daysElement = document.querySelector('.countdown-days');
+            
+            let days = parseInt(daysElement.innerText);
+            let hours = parseInt(hoursElement.innerText);
+            let minutes = parseInt(minutesElement.innerText);
+            let seconds = 0; // Start at 0 and it will immediately count down
+            
+            function updateCountdown() {
+                seconds--;
+                
+                if (seconds < 0) {
+                    seconds = 59;
+                    minutes--;
+                    
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                        
+                        if (hours < 0) {
+                            hours = 23;
+                            days--;
+                            
+                            if (days < 0) {
+                                // Timer completed
+                                days = hours = minutes = seconds = 0;
+                                clearInterval(countdownInterval);
+                            } else {
+                                daysElement.innerText = days < 10 ? '0' + days : days;
+                            }
+                        }
+                        
+                        hoursElement.innerText = hours < 10 ? '0' + hours : hours;
+                    }
+                    
+                    minutesElement.innerText = minutes < 10 ? '0' + minutes : minutes;
+                }
+                
+                secondsElement.innerText = seconds < 10 ? '0' + seconds : seconds;
+            }
+            
+            // Update immediately to avoid delay
+            updateCountdown();
+            
+            // Set the interval
+            const countdownInterval = setInterval(updateCountdown, 1000);
+        }
+    });
+</script>
+@endif
+@endpush
 @endsection

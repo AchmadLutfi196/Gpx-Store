@@ -31,8 +31,13 @@
                 <div class="p-6 bg-gray-50 border-b">
                     <div class="flex items-center">
                         <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                            <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('img/default-avatar.png') }}" 
-                                alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                            @if(Auth::user()->avatar)
+                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                            @endif
                         </div>
                         <div>
                             <h3 class="text-lg font-medium text-gray-900">{{ Auth::user()->name }}</h3>
@@ -57,24 +62,27 @@
                         </li>
                         <li>
                             <a href="{{ route('wishlist') }}" 
-                               class="block px-4 py-2 rounded-md {{ request()->routeIs('profile.wishlist') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 text-gray-700' }}">
+                               class="block px-4 py-2 rounded-md {{ request()->routeIs('wishlist') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 text-gray-700' }}">
                                 <i class="fas fa-heart mr-2"></i> My Wishlist
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('reviews.index') }}"
-                                class="block px-4 py-2 rounded-md {{ request()->routeIs('reviews.index') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 text-gray-700' }}">
-                                    <i class="fas fa-star mr-2"></i> My Reviews
+                               class="block px-4 py-2 rounded-md {{ request()->routeIs('reviews.*') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 text-gray-700' }}">
+                                <i class="fas fa-star mr-2"></i> My Reviews
                             </a>
                         </li>
                         <!-- Update your sidebar menu to include addresses -->
-                        <a href="{{ route('profile.addresses') }}" class="flex items-center px-4 py-2 {{ request()->routeIs('profile.addresses*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }} rounded-md">
-                            <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            Alamat Saya
-                        </a>
+                        <li>
+                            <a href="{{ route('profile.addresses') }}" 
+                               class="block px-4 py-2 rounded-md {{ request()->routeIs('profile.addresses*') || request()->routeIs('addresses.*') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 text-gray-700' }}">
+                                <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Alamat Saya
+                            </a>
+                        </li>
                         <li class="border-t my-2 pt-2">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -101,6 +109,7 @@
                     <span class="block sm:inline">{{ session('error') }}</span>
                 </div>
             @endif
+            
             
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="p-6 bg-gray-50 border-b">

@@ -22,12 +22,14 @@ class PromoCode extends Model
         'is_active',
         'usage_limit',
         'used_count',
+        'show_on_homepage',
     ];
     
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'is_active' => 'boolean',
+        'show_on_homepage' => 'boolean',
     ];
     
     public function isValid($orderTotal = null)
@@ -99,5 +101,13 @@ class PromoCode extends Model
     {
         $this->used_count += 1;
         $this->save();
+    }
+    public function getFormattedDiscountAttribute()
+    {
+        if ($this->discount_type === 'percentage') {
+            return $this->discount_value . '%';
+        } else {
+            return 'Rp ' . number_format($this->discount_value, 0, ',', '.');
+        }
     }
 }

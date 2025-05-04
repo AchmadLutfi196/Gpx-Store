@@ -67,6 +67,7 @@ php artisan make:filament-user
 
 ## konfigurasi filament shield
 ```sh
+php artisan shield:super-admin
 php artisan shield:generate --all
 ```
 
