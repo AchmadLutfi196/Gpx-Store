@@ -28,6 +28,18 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         
+        // Check if user just verified their email but no success message is set
+        if (Schema::hasColumn('users', 'email_verified_at') && 
+            $user->email_verified_at !== null && 
+            !session('verification_success') && 
+            !session('status') && 
+            session('verified') === null) {
+            session()->flash('verification_success', 'Email Anda telah terverifikasi!');
+        }
+        
+        // Mark that verification success has been displayed
+        session(['verified' => true]);
+        
         return view('profile.index', compact('user'));
     }
 
