@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CartItem;
@@ -31,6 +32,12 @@ class CheckoutController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Check if email verification is required and if the email is not verified
+        if (Schema::hasColumn('users', 'email_verified_at') && $user->email_verified_at === null) {
+            return redirect()->route('cart')->with('verificationNeeded', true);
+        }
+        
         $addresses = Address::where('user_id', $user->id)->get();
         $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
         
@@ -82,6 +89,12 @@ class CheckoutController extends Controller
         ]);
         
         $user = Auth::user();
+        
+        // Check if email verification is required and if the email is not verified
+        if (Schema::hasColumn('users', 'email_verified_at') && $user->email_verified_at === null) {
+            return redirect()->route('cart')->with('verificationNeeded', true);
+        }
+        
         $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
         
         if($cartItems->count() == 0) {

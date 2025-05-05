@@ -3,35 +3,19 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\SocialAuthService;
-use Exception;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\SocialAccount;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
+use Exception;
 
 class SocialAuthController extends Controller
 {
-    protected $socialAuthService;
-    protected $supportedProviders = ['github','google']; // Hanya menggunakan GitHub
-    
-    public function __construct(SocialAuthService $socialAuthService)
-    {
-        $this->socialAuthService = $socialAuthService;
-    }
-    
     /**
-     * Get the middleware assigned to the controller.
-     *
-     * @return array
-     */
-    protected function middleware()
-    {
-        return ['guest'];
-    }
-
-    /**
-     * Redirect user ke halaman authentication provider.
+     * Redirect the user to the provider authentication page.
      *
      * @param string $provider
      * @return \Illuminate\Http\RedirectResponse
@@ -39,52 +23,16 @@ class SocialAuthController extends Controller
     public function redirectToProvider($provider)
     {
         try {
-            Log::info('Starting redirect to provider', ['provider' => $provider]);
-            
-            // Validasi provider yang didukung
-            if (! in_array($provider, $this->supportedProviders)) {
-                Log::warning('Unsupported provider', ['provider' => $provider]);
-                return redirect()->route('login')
-                    ->withErrors(['error' => 'Provider login tidak didukung.']);
-            }
-    
-            // Coba memuat driver socialite
-            try {
-                $driver = Socialite::driver($provider);
-                Log::info('Socialite driver loaded successfully', ['provider' => $provider]);
-            } catch (Exception $e) {
-                Log::error('Failed to load Socialite driver', [
-                    'provider' => $provider,
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-    
-            if ($provider === 'github') {
-                $driver->scopes(['read:user', 'user:email']);
-            }
-    
-            // Tampilkan informasi redirect URL untuk debugging
-            $redirectUrl = $driver->redirect()->getTargetUrl();
-            Log::info('Redirect URL generated', ['url' => $redirectUrl]);
-            
-            return $driver->redirect();
+            return Socialite::driver($provider)->redirect();
         } catch (Exception $e) {
-            Log::error('Exception in redirectToProvider', [
-                'provider' => $provider,
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
+            Log::error('Social login redirect error: ' . $e->getMessage());
             return redirect()->route('login')
-                ->withErrors(['error' => 'Terjadi kesalahan saat redirect ke ' . ucfirst($provider) . ': ' . $e->getMessage()]);
+                ->with('error', 'Tidak dapat terhubung dengan ' . ucfirst($provider) . '. Silakan coba lagi.');
         }
     }
 
     /**
-     * Mendapatkan informasi user dari provider.
+     * Obtain the user information from provider.
      *
      * @param string $provider
      * @return \Illuminate\Http\RedirectResponse
@@ -92,29 +40,75 @@ class SocialAuthController extends Controller
     public function handleProviderCallback($provider)
     {
         try {
-            // Validasi provider yang didukung
-            if (!in_array($provider, $this->supportedProviders)) {
-                return redirect()->route('login')
-                    ->withErrors(['error' => 'Provider login tidak didukung.']);
-            }
-
             $socialUser = Socialite::driver($provider)->user();
             
-            $user = $this->socialAuthService->findOrCreateUser($socialUser, $provider);
-            
-            Auth::login($user);
-            return redirect()->intended('/profile')
-                ->with('success', 'Berhasil login menggunakan ' . ucfirst($provider));
-            
-        } catch (Exception $e) {
-            Log::error('Social login error: ' . $e->getMessage(), [
+            // Log the social user info for debugging
+            Log::info('Social user info:', [
+                'name' => $socialUser->getName(),
+                'email' => $socialUser->getEmail(),
                 'provider' => $provider,
-                'trace' => $e->getTraceAsString()
+                'provider_id' => $socialUser->getId()
+            ]);
+            
+            // Check if the social account exists
+            $socialAccount = SocialAccount::where('provider_name', $provider)
+                ->where('provider_id', $socialUser->getId())
+                ->first();
+                
+            if ($socialAccount) {
+                // Login the existing user
+                Auth::login($socialAccount->user);
+                return redirect()->route('profile.index')
+                    ->with('success', 'Berhasil login dengan ' . ucfirst($provider));
+            }
+            
+            // If email exists, associate the social account with the existing user
+            if ($socialUser->getEmail()) {
+                $user = User::where('email', $socialUser->getEmail())->first();
+                
+                if (!$user) {
+                    // Create a new user
+                    $user = User::create([
+                        'name' => $socialUser->getName(),
+                        'email' => $socialUser->getEmail(),
+                        // Social logins are automatically verified because the OAuth provider
+                        // has already verified the user's email address
+                        'email_verified_at' => now(),
+                        'password' => Hash::make(Str::random(16)), // Random password
+                    ]);
+                }
+                
+                // Create social account
+                $user->socialAccounts()->create([
+                    'provider_id' => $socialUser->getId(),
+                    'provider_name' => $provider,
+                    'provider_email' => $socialUser->getEmail(),
+                ]);
+                
+                // Login the user
+                Auth::login($user);
+                
+                // If the user's email is not verified, redirect to verification notice
+                if (!$user->hasVerifiedEmail()) {
+                    return redirect()->route('verification.notice')
+                        ->with('info', 'Silahkan verifikasi email Anda untuk mengakses semua fitur.');
+                }
+                
+                return redirect()->route('profile.index')
+                    ->with('success', 'Berhasil login dengan ' . ucfirst($provider));
+            } else {
+                // Provider did not return an email
+                return redirect()->route('login')
+                    ->with('error', 'Tidak dapat mengakses email dari akun ' . ucfirst($provider) . ' Anda. Email diperlukan untuk login.');
+            }
+                
+        } catch (Exception $e) {
+            Log::error('Social login callback error: ' . $e->getMessage(), [
+                'provider' => $provider,                'trace' => $e->getTraceAsString()
             ]);
             
             return redirect()->route('login')
-                ->withErrors(['error' => 'Terjadi kesalahan saat login dengan ' . ucfirst($provider) . '. Silakan coba lagi.']);
+                ->with('error', 'Terjadi kesalahan saat login dengan ' . ucfirst($provider) . '. Silakan coba lagi.');
         }
-
     }
 }

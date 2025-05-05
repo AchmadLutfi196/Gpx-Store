@@ -221,16 +221,30 @@
                             <span class="text-lg font-bold" id="cart-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         
-                        <div class="mt-4">
-                            <a href="{{ route('checkout') }}" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium transition-colors duration-200 text-center">
-                                Proceed to Checkout
+                        @if(Auth::check() && Schema::hasColumn('users', 'email_verified_at') && Auth::user()->email_verified_at === null)
+                            <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                                <p class="text-sm text-yellow-700">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    Anda perlu memverifikasi email sebelum dapat melakukan checkout.
+                                    <a href="{{ route('verification.notice') }}" class="underline text-blue-600 hover:text-blue-800">Verifikasi sekarang</a>
+                                </p>
+                            </div>
+                            <button type="button" class="mt-4 w-full bg-gray-300 text-gray-700 py-3 px-4 rounded-md cursor-not-allowed">
+                                Checkout (Verifikasi Email Diperlukan)
+                            </button>
+                        @else
+                            <a href="{{ route('checkout') }}" class="mt-4 block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md text-center transition duration-300">
+                                Lanjutkan ke Checkout
                             </a>
-                        </div>
+                        @endif
                     </div>
             </div>
         </div>
     @endif
 </div>
+
+
+
 @endsection
 
 @section('scripts')
@@ -620,5 +634,25 @@
             return new Intl.NumberFormat('id-ID').format(Math.round(number));
         }
     });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check for verification needed alert
+        @if(session('verificationNeeded'))
+            Swal.fire({
+                title: 'Verifikasi Email Diperlukan',
+                text: 'Anda harus memverifikasi email terlebih dahulu sebelum melakukan checkout.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Verifikasi Sekarang',
+                cancelButtonText: 'Nanti Saja'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{{ route("verification.notice") }}';
+                }
+            });
+        @endif
+    });
+
 </script>
 @endsection

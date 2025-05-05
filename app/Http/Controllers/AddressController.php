@@ -41,34 +41,48 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|string|max:20',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
+            'postal_code' => 'required|string|max:20',
             'province' => 'required|string|max:100',
+            'is_default' => 'nullable|boolean',
         ]);
         
-        // Add user_id to the validated data
-        $validated['user_id'] = Auth::id();
+        // Set is_default to false by default if not provided
+        $isDefault = $request->has('is_default');
         
-        // If this is the first address or if set_as_default is checked, make it default
-        if (Auth::user()->addresses()->count() === 0 || $request->has('set_as_default')) {
-            $validated['is_default'] = true;
-            
-            // If making this address default, remove default status from other addresses
-            if (Auth::user()->addresses()->count() > 0) {
-                Auth::user()->addresses()->update(['is_default' => false]);
-            }
+        // Create the address with all fields explicitly
+        $address = new \App\Models\Address;
+        $address->user_id = auth()->id();
+        $address->name = $validated['name'];
+        $address->phone = $validated['phone'];
+        $address->address_line1 = $validated['address_line1'];
+        $address->address_line2 = $validated['address_line2'] ?? null;
+        $address->city = $validated['city'];
+        $address->postal_code = $validated['postal_code'];
+        $address->province = $validated['province'];
+        $address->is_default = $isDefault;
+        $address->save();
+        
+        // If this is set as default, unset other defaults
+        if ($isDefault) {
+            \App\Models\Address::where('user_id', auth()->id())
+                ->where('id', '!=', $address->id)
+                ->update(['is_default' => false]);
         }
         
-        // Create the address
-        $address = Address::create($validated);
-        
         return redirect()->route('addresses.index')
-                         ->with('success', 'Address has been added successfully.');
+            ->with('sweetAlert', [
+                'title' => 'Success!',
+                'text' => 'Address has been added successfully.',
+                'icon' => 'success',
+                'confirmButtonText' => 'OK'
+            ]);
     }
 
     /**

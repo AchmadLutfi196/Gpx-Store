@@ -10,8 +10,10 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\SocialAuthController;
-
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +39,7 @@ Route::get('/check-message-status', [App\Http\Controllers\MessageController::cla
 Route::post('/check-message-status', [App\Http\Controllers\MessageController::class, 'viewStatus'])->name('message.view-status');
 Route::get('/messages/{id}', [App\Http\Controllers\MessageController::class, 'viewMessage'])->name('message.view');
 
-//social login routes
+// Social login routes
 Route::get('auth/{provider}', [SocialAuthController::class, 'redirectToProvider']);
 Route::get('auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
 
@@ -56,6 +58,33 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+// Email Verification Routes
+Route::get('/email/verify', function () {
+    // If the email is already verified, redirect to profile with success message
+    if (Schema::hasColumn('users', 'email_verified_at') && 
+            Auth::user()->email_verified_at !== null) {
+        return redirect()->route('profile.index')
+            ->with('success', 'Email Anda sudah terverifikasi.');
+    }
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+// Use the new controller for the verification route
+Route::get('/email/verify/{id}/{hash}', 
+    App\Http\Controllers\Auth\VerifyEmailController::class
+)->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    // Check if already verified
+    if ($request->user()->hasVerifiedEmail()) {
+        return redirect()->route('profile.index')
+            ->with('success', 'Email Anda sudah terverifikasi.');
+    }
+    
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 // Authenticated user routes
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -68,53 +97,39 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/wishlist/toggle/{productId}', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // Address routes
-     // This single line defines the main 'profile.addresses' route that's missing
     Route::get('/profile/addresses', [AddressController::class, 'index'])->name('profile.addresses');
     
-  
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/regenerate-payment', [App\Http\Controllers\OrderController::class, 'regeneratePayment'])->name('orders.regenerate-payment');
     Route::post('/orders/{order}/complete', [App\Http\Controllers\OrderController::class, 'completeOrder'])->name('orders.complete');
     Route::delete('/orders/{order}/cancel', [App\Http\Controllers\OrderController::class, 'cancel'])->name('orders.cancel');
-    // Checkout routes
+    
+    // Checkout routes - Replace the middleware approach with controller-based verification
     Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/payment/finish/{order}', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('payment.finish');
+    Route::get('/payment/{order}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment');
 
-    // review routes
-    Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'index'])
-        ->name('reviews.index');
-    Route::get('/orders/{order}/review', [App\Http\Controllers\ReviewController::class, 'create'])
-        ->name('reviews.create');
-    Route::post('/orders/{order}/review', [App\Http\Controllers\ReviewController::class, 'store'])
-        ->name('reviews.store');
-    Route::get('/reviews/{review}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])
-        ->name('reviews.edit');
-    Route::put('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'update'])
-        ->name('reviews.update');
-    Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])
-        ->name('reviews.destroy');
+    // Review routes
+    Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/orders/{order}/review', [App\Http\Controllers\ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/orders/{order}/review', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/reviews/{review}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
     
     // Promo code routes
     Route::post('/coupon/apply', [App\Http\Controllers\PromoCodeController::class, 'apply'])->name('coupon.apply');
     Route::post('/coupon/remove', [App\Http\Controllers\PromoCodeController::class, 'remove'])->name('coupon.remove');
+    Route::post('/cart/apply-promo', [CartController::class, 'applyPromo'])->name('cart.apply-promo');
 });
-
-
-// Checkout Routes
-// Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
-// Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-// Route::post('/checkout/callback', [App\Http\Controllers\CheckoutController::class, 'callback'])->name('checkout.callback');
-// Route::get('/checkout/finish', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('checkout.finish');
-// Route::get('/checkout/unfinish', [App\Http\Controllers\CheckoutController::class, 'unfinish'])->name('checkout.unfinish');
-// Route::get('/checkout/error', [App\Http\Controllers\CheckoutController::class, 'error'])->name('checkout.error');
 
 // Route untuk mengecek status wishlist (tidak perlu auth)
 Route::get('/wishlist/check/{product}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
 
 // Profile Routes
-Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
+Route::prefix('profile')->name('profile.')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('index');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
     Route::put('/update', [ProfileController::class, 'update'])->name('update');
@@ -141,7 +156,6 @@ Route::prefix('profile')->name('profile.')->middleware('auth')->group(function (
     Route::delete('/delete-account', [ProfileController::class, 'deleteAccount'])->name('delete-account');
 });
 
-
 // Address routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/addresses', [App\Http\Controllers\AddressController::class, 'index'])->name('addresses.index');
@@ -154,20 +168,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/addresses/{address}/set-default', [App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
 
-// Checkout routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/payment/finish/{orderId}', [App\Http\Controllers\CheckoutController::class, 'finish'])->name('payment.finish');
+// Protected routes that require email verification
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/home', function() {
+        return redirect()->route('profile.index')->with('verification_success', 'Email berhasil diverifikasi! Akun Anda sekarang aktif.');
+    })->name('user.home');
     
-    // Order routes
-    Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
-    
-    Route::post('/cart/apply-promo', [CartController::class, 'applyPromo'])->name('cart.apply-promo');
-
-    // Optional: Add route to re-initiate payment if needed
-    Route::get('/payment/{order}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment');
+    // Other protected routes...
 });
 
 // Midtrans notification webhook - no auth required

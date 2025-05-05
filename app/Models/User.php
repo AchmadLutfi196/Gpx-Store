@@ -14,7 +14,6 @@ use App\Models\Wishlist;
 use App\Models\Review;
 use Spatie\Permission\Traits\HasRoles;
 
-
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -27,8 +26,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
-        'phone',
         'password',
+        'provider',
+        'provider_id',
+        'email_verified_at',
+        'phone',
         'avatar',
         'role',
     ];
@@ -149,6 +151,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->addresses()->where('is_default', true)->first() 
                ?? $this->addresses()->first();
     }
+
+    /**
+     * Get the social accounts for the user.
+     */
     public function socialAccounts()
     {
         return $this->hasMany(SocialAccount::class);

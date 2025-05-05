@@ -366,7 +366,7 @@
                     ['icon' => 'check', 'title' => 'Kualitas Premium', 'desc' => 'Material terbaik', 'color' => 'blue', 'delay' => 0],
                     ['icon' => 'currency-dollar', 'title' => 'Harga Terbaik', 'desc' => 'Garansi harga termurah', 'color' => 'green', 'delay' => 100],
                     ['icon' => 'truck', 'title' => 'Gratis Ongkir', 'desc' => 'Min. pembelian 500k', 'color' => 'purple', 'delay' => 200],
-                    ['icon' => 'shield-check', 'title' => 'Garansi 1 Tahun', 'desc' => 'Tanpa ribet', 'color' => 'pink', 'delay' => 300]
+                    ['icon' => 'shield', 'title' => 'Garansi 1 Tahun', 'desc' => 'Tanpa ribet', 'color' => 'pink', 'delay' => 300]
                 ] as $benefit)
                 <div class="benefit-card bg-white p-6 rounded-xl shadow-lg" data-aos="fade-up" data-aos-delay="{{ $benefit['delay'] }}">
                     <div class="flex flex-col items-center text-center">
@@ -374,7 +374,8 @@
                             <svg class="h-8 w-8 text-{{ $benefit['color'] }}-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M{{ $benefit['icon'] === 'check' ? '5 13l4 4L19 7' : 
                                     ($benefit['icon'] === 'currency-dollar' ? '12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 
-                                    ($benefit['icon'] === 'truck' ? '20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' : 'shield-check')) }}"></path>
+                                    ($benefit['icon'] === 'truck' ? '20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' : 
+                                    '9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z')) }}"></path>
                             </svg>
                         </div>
                         <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $benefit['title'] }}</h3>
