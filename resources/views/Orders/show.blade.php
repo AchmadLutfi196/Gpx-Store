@@ -67,9 +67,9 @@
                 Order ID: <span class="font-medium ml-1">{{ $order->order_number }}</span>
             </p>
         </div>
-        <a href="{{ route('profile.orders') }}" class="btn-secondary text-sm">
+        <a href="{{ route('profile.orders') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-md hover:bg-gray-200 transition border border-gray-200 shadow-sm">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
             Kembali ke Daftar Pesanan
         </a>
@@ -383,19 +383,28 @@
                             // Hapus yang sudah ditampilkan di atas untuk menghindari duplikasi
                             unset($paymentDetails['transaction_status'], $paymentDetails['status_code'], $paymentDetails['order_id']);
                             
-                            // Tampilkan detail tambahan jika ada
+                            // Ensure payment details are properly formatted
+                            // Skip non-scalar values that might cause template errors
+                            $cleanDetails = [];
                             if(!empty($paymentDetails)) {
+                                foreach($paymentDetails as $key => $value) {
+                                    if(is_scalar($value) && !is_null($value) && $value !== '') {
+                                        $cleanDetails[$key] = $value;
+                                    }
+                                }
+                            }
+                            
+                            // Tampilkan detail tambahan jika ada
+                            if(!empty($cleanDetails)) {
                         @endphp
                         <div class="mt-5 pt-4 border-t border-gray-200">
                             <p class="text-xs font-medium text-gray-700 mb-3">Informasi Tambahan:</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                                @foreach($paymentDetails as $key => $value)
-                                    @if(is_scalar($value) && !is_null($value) && $value !== '')
+                                @foreach($cleanDetails as $key => $value)
                                     <div class="flex justify-between bg-white p-3 rounded border border-gray-100">
                                         <span class="text-gray-600">{{ str_replace('_', ' ', ucfirst($key)) }}:</span>
                                         <span class="font-medium">{{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}</span>
                                     </div>
-                                    @endif
                                 @endforeach
                             </div>
                         </div>
