@@ -26,11 +26,11 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Sidebar -->
-        <div class="w-full lg:w-1/4">
+        <div class="w-full lg:w-[31%]">
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="p-6 bg-gray-50 border-b">
                     <div class="flex items-center">
-                        <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                        <div class="w-full h-16 rounded-full overflow-hidden mr-4">
                             @if(Auth::user()->avatar)
                                 <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
                             @else
