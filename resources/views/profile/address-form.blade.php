@@ -21,7 +21,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="name" class="form-label">Nama Penerima <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" 
+                                <input type="text" class="form-control @error('name') is-invalid @enderror " id="name" name="name" 
                                        value="{{ $address->name ?? old('name') }}" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>

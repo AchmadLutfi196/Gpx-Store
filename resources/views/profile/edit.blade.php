@@ -136,10 +136,12 @@
 <script>
     // Fungsi preview gambar
     function previewImage() {
-        const file = document.getElementById('avatar').files[0];
+        const fileInput = document.getElementById('avatar');
+        const file = fileInput.files[0];
+
         if (file) {
-            // Cek ukuran file
             const maxSize = 2 * 1024 * 1024; // 2MB
+
             if (file.size > maxSize) {
                 Swal.fire({
                     title: 'File Terlalu Besar!',
@@ -148,18 +150,32 @@
                     timer: 3000,
                     showConfirmButton: false,
                 });
-                document.getElementById('avatar').value = '';
+                fileInput.value = '';
                 return;
             }
-            
-            // Tampilkan preview
+
             const reader = new FileReader();
             reader.onload = function(event) {
-                document.getElementById('avatar-preview').src = event.target.result;
+                const preview = document.getElementById('avatar-preview');
+
+                if (preview.tagName.toLowerCase() === 'img') {
+                    preview.src = event.target.result;
+                } else {
+                    // Replace div with img
+                    const img = document.createElement('img');
+                    img.id = 'avatar-preview';
+                    img.src = event.target.result;
+                    img.alt = 'Foto Profil';
+                    img.className = 'w-full h-full object-cover';
+
+                    preview.parentNode.replaceChild(img, preview);
+                }
             };
+
             reader.readAsDataURL(file);
         }
     }
+
 
     // Handler submit form
     document.querySelector('form').addEventListener('submit', function(e) {

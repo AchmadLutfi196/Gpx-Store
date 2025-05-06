@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'GPX Store' }}</title>
+    <link rel="icon" href="{{ asset('images/icon.png') }}" type="image/x-icon">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -454,8 +455,10 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <!-- About -->
                 <div>
-                    <h3 class="text-xl font-bold mb-4">GPX Store</h3>
-                    <p class="text-gray-300 mb-4">Toko tas premium dengan kualitas terbaik dan harga terjangkau. Menyediakan berbagai jenis tas untuk kebutuhan sehari-hari.</p>
+                    <a href="{{ route('home') }}" class="flex items-center">
+                        <img src="{{ asset('images/logoFooter.png') }}" alt="GPX Store" class=" w-32 mb-4">
+                    </a>
+                    <p class="text-gray-300 mb-4">Tas premium berkualitas dengan harga terjangkau, tersedia dalam berbagai model untuk semua kebutuhan Anda.</p>
                     <div class="flex space-x-4">
                         <a href="#" class="text-white hover:text-blue-400 transition-colors"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="text-white hover:text-blue-400 transition-colors"><i class="fab fa-instagram"></i></a>
