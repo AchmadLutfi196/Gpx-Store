@@ -8,15 +8,18 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CartItem;
 use App\Models\Address;
 use App\Models\PromoCode;
 use App\Models\Product;
+use App\Mail\PaymentConfirmation;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 use Illuminate\Support\Str;
+use App\Events\OrderPlaced;
 
 class CheckoutController extends Controller
 {
@@ -29,54 +32,93 @@ class CheckoutController extends Controller
         MidtransConfig::$is3ds = config('midtrans.is_3ds');
     }
 
+    /**
+     * Display checkout page
+     */
     public function index()
     {
+        $cartItems = CartItem::with('product')
+            ->where('user_id', Auth::id())
+            ->get();
+            
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart')->with('error', 'Your cart is empty.');
+        }
+        
+        // Calculate totals with the fixed function
+        $shippingCost = 10000; // Default shipping cost
+        $totals = $this->calculateOrderTotals($cartItems, $shippingCost);
+        
         $user = Auth::user();
+        $addresses = $user->addresses;
         
-        // Check if email verification is required and if the email is not verified
-        if (Schema::hasColumn('users', 'email_verified_at') && $user->email_verified_at === null) {
-            return redirect()->route('cart')->with('verificationNeeded', true);
-        }
+        // Pass properly calculated values to the view
+        return view('checkout', [
+            'user' => $user,
+            'addresses' => $addresses,
+            'cartItems' => $cartItems,
+            'subtotal' => $totals['subtotal'],
+            'shipping' => $totals['shipping'],
+            'tax' => $totals['tax'],
+            'discount' => $totals['discount'],
+            'total' => $totals['total'],
+            'appliedPromo' => session('applied_promo')
+        ]);
+    }
+    
+    /**
+     * Calculate order totals properly
+     */
+    private function calculateOrderTotals($cartItems, $shippingCost = 10000)
+    {
+        // Initialize variables
+        $subtotal = 0;
+        $tax = 0;
+        $discount = 0;
         
-        $addresses = Address::where('user_id', $user->id)->get();
-        $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
-        
-        if($cartItems->count() == 0) {
-            return redirect()->route('cart')->with('error', 'Keranjang Anda kosong');
-        }
-        
-        // Hitung subtotal
-        $subtotal = $cartItems->sum(function ($item) {
+        // Calculate subtotal from cart items
+        foreach ($cartItems as $item) {
+            // Get the correct price (discounted if available)
             $price = $item->product->discount_price && $item->product->discount_price < $item->product->price 
                 ? $item->product->discount_price 
                 : $item->product->price;
-            return $price * $item->quantity;
-        });
-        
-        $shipping = 10000; // Default shipping (Regular)
-        $tax = $subtotal * 0.11; // 11% tax
-        $discount = 0; // Default discount
-        $appliedPromo = null;
-        
-        // Jika ada kode kupon yang diterapkan, hitung diskon
-        if (Session::has('applied_promo')) {
-            $appliedPromo = Session::get('applied_promo');
-            $discount = $appliedPromo['discount_amount'];
+                
+            // Multiply by quantity
+            $itemTotal = $price * $item->quantity;
+            
+            // Add to subtotal
+            $subtotal += $itemTotal;
+            
+            // Log calculation step for debugging
+            Log::debug("Cart item calculation - Product: {$item->product->name}, Price: {$price}, Qty: {$item->quantity}, Item Total: {$itemTotal}, Running Subtotal: {$subtotal}");
         }
         
-        $total = $subtotal + $shipping + $tax - $discount;
+        // Calculate tax (11% of subtotal)
+        $tax = ceil($subtotal * 0.11);
         
-        return view('checkout', compact(
-            'user', 
-            'addresses', 
-            'cartItems', 
-            'subtotal', 
-            'shipping', 
-            'tax', 
-            'discount', 
-            'total',
-            'appliedPromo'
-        ));
+        // Get discount from session if available
+        $appliedPromo = session('applied_promo');
+        if ($appliedPromo) {
+            if ($appliedPromo['discount_type'] === 'percentage') {
+                $discount = ceil($subtotal * ($appliedPromo['discount_value'] / 100));
+            } else {
+                $discount = $appliedPromo['discount_value'];
+            }
+        }
+        
+        // Calculate final total
+        $total = $subtotal + $shippingCost + $tax - $discount;
+        
+        // Log final calculation for debugging
+        Log::debug("Order total calculation - Subtotal: {$subtotal}, Shipping: {$shippingCost}, Tax: {$tax}, Discount: {$discount}, Total: {$total}");
+        
+        return [
+            'subtotal' => $subtotal,
+            'shipping' => $shippingCost,
+            'tax' => $tax,
+            'discount' => $discount,
+            'total' => $total
+        ];
     }
     
     public function process(Request $request)
@@ -108,14 +150,6 @@ class CheckoutController extends Controller
             }
         }
         
-        // Hitung total seperti di method index
-        $subtotal = $cartItems->sum(function ($item) {
-            $price = $item->product->discount_price && $item->product->discount_price < $item->product->price 
-                ? $item->product->discount_price 
-                : $item->product->price;
-            return $price * $item->quantity;
-        });
-        
         // Ambil metode pengiriman yang dipilih
         $shipping_method = $request->shipping_method;
         
@@ -127,14 +161,19 @@ class CheckoutController extends Controller
             $shipping_cost = 50000;
         }
         
-        $tax = $subtotal * 0.11;
-        $discount = 0;
+        // Calculate totals with the fixed function
+        $totals = $this->calculateOrderTotals($cartItems, $shipping_cost);
+        
+        $subtotal = $totals['subtotal'];
+        $tax = $totals['tax'];
+        $discount = $totals['discount'];
+        $total = $totals['total'];
+        
         $promo_id = null;
         
         // Jika ada kode kupon yang diterapkan
         if (Session::has('applied_promo')) {
             $appliedPromo = Session::get('applied_promo');
-            $discount = $appliedPromo['discount_amount'];
             $promo_id = $appliedPromo['id'];
             
             // Increment usage pada promo code
@@ -143,8 +182,6 @@ class CheckoutController extends Controller
                 $promoCode->incrementUsage();
             }
         }
-        
-        $total = $subtotal + $shipping_cost + $tax - $discount;
         
         // Buat order baru
         $order = new Order();
@@ -229,6 +266,9 @@ class CheckoutController extends Controller
             $orderItem->subtotal = $price * $item->quantity; // Tambahkan subtotal
             $orderItem->save();
         }
+        
+        // Fire order placed event to trigger confirmation email
+        event(new OrderPlaced($order));
         
         // Set up Midtrans parameter
         $params = [
@@ -358,6 +398,38 @@ class CheckoutController extends Controller
                     Log::info("Stok dikurangi untuk produk ID {$product->id} ({$product->name}). Jumlah: -{$item->quantity}. Stok baru: {$product->stock}");
                 }
             });
+        }
+    }
+
+    /**
+     * Handle payment success (for direct payment methods or testing)
+     */
+    public function paymentSuccess($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        
+        // Update order status if needed
+        if ($order->payment_status !== 'paid') {
+            $order->payment_status = 'paid';
+            $order->status = 'processing';
+            $order->save();
+        }
+        
+        // Send payment confirmation email
+        try {
+            Log::info('Sending payment confirmation email directly to: ' . $order->email);
+            Mail::to($order->email)->send(new PaymentConfirmation($order));
+            return redirect()->route('orders.show', $order->id)
+                ->with('success', 'Payment successful! A confirmation email has been sent to your email address.');
+        } catch (\Exception $e) {
+            Log::error('Failed to send payment confirmation email: ' . $e->getMessage(), [
+                'exception' => $e,
+                'order_id' => $order->id
+            ]);
+            
+            return redirect()->route('orders.show', $order->id)
+                ->with('success', 'Payment successful!')
+                ->with('error', 'However, we encountered an issue sending your confirmation email.');
         }
     }
 }

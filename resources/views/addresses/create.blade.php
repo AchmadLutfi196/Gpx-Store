@@ -35,7 +35,7 @@
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-600">*</span></label>
             <input type="text" name="name" id="name" value="{{ old('name') }}" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required onchange="document.getElementById('hidden_name').value = this.value">
             @error('name')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -46,7 +46,7 @@
         <div>
             <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-600">*</span></label>
             <input type="text" name="phone" id="phone" value="{{ old('phone') }}" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required onchange="document.getElementById('hidden_phone').value = this.value">
             @error('phone')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -57,7 +57,7 @@
         <div class="md:col-span-2">
             <label for="address_line1" class="block text-sm font-medium text-gray-700 mb-1">Address Line 1 <span class="text-red-600">*</span></label>
             <input type="text" name="address_line1" id="address_line1" value="{{ old('address_line1') }}" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required onchange="document.getElementById('hidden_address_line1').value = this.value">
             @error('address_line1')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -68,7 +68,7 @@
         <div class="md:col-span-2">
             <label for="address_line2" class="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
             <input type="text" name="address_line2" id="address_line2" value="{{ old('address_line2') }}" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             @error('address_line2')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
@@ -78,7 +78,7 @@
         <div>
             <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City <span class="text-red-600">*</span></label>
             <input type="text" name="city" id="city" value="{{ old('city') }}" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required>
             @error('city')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -89,7 +89,7 @@
         <div>
             <label for="postal_code" class="block text-sm font-medium text-gray-700 mb-1">Postal Code <span class="text-red-600">*</span></label>
             <input type="text" name="postal_code" id="postal_code" value="{{ old('postal_code') }}" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required>
             @error('postal_code')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -100,7 +100,7 @@
         <div>
             <label for="province" class="block text-sm font-medium text-gray-700 mb-1">Province <span class="text-red-600">*</span></label>
             <select name="province" id="province" 
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required>
                 <option value="">Select Province</option>
                 @foreach($provinces as $province)

@@ -229,7 +229,7 @@
                         Customer Information
                     </h2>
                     
-                    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 rounded-r-md">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 mt-2 rounded-r-md">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
@@ -245,7 +245,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="name" class="form-label">Full Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control" required>
+                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             @error('name')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -253,7 +253,7 @@
                         
                         <div>
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control" required>
+                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             @error('email')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -261,7 +261,7 @@
                         
                         <div>
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control" placeholder="e.g. 08123456789" required>
+                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789" required>
                             @error('phone')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -269,7 +269,7 @@
 
                         <div>
                             <label for="alt_phone" class="form-label">Alternative Phone (Optional)</label>
-                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control" placeholder="e.g. 08123456789">
+                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789">
                         </div>
                     </div>
                 </div>
@@ -356,8 +356,8 @@
                     </h2>
                     
                     <div class="space-y-3 mt-4">
-                        <div class="shipping-method selected" onclick="selectShippingMethod(this, 'regular')">
-                            <input type="radio" name="shipping_method" value="regular" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <div class="shipping-method selected flex" onclick="selectShippingMethod(this, 'regular')">
+                            <input type="radio" name="shipping_method" value="regular" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
                             <div class="ml-3 flex-grow">
                                 <div class="flex justify-between items-center">
                                     <span class="font-medium text-gray-900">Regular Shipping</span>
@@ -367,8 +367,8 @@
                             </div>
                         </div>
                         
-                        <div class="shipping-method" onclick="selectShippingMethod(this, 'express')">
-                            <input type="radio" name="shipping_method" value="express" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <div class="shipping-method flex" onclick="selectShippingMethod(this, 'express')">
+                            <input type="radio" name="shipping_method" value="express" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
                             <div class="ml-3 flex-grow">
                                 <div class="flex justify-between items-center">
                                     <span class="font-medium text-gray-900">Express Shipping</span>
@@ -378,8 +378,8 @@
                             </div>
                         </div>
                         
-                        <div class="shipping-method" onclick="selectShippingMethod(this, 'same_day')">
-                            <input type="radio" name="shipping_method" value="same_day" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <div class="shipping-method flex" onclick="selectShippingMethod(this, 'same_day')">
+                            <input type="radio" name="shipping_method" value="same_day" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
                             <div class="ml-3 flex-grow">
                                 <div class="flex justify-between items-center">
                                     <span class="font-medium text-gray-900">Same Day Delivery</span>
@@ -391,9 +391,9 @@
                     </div>
                     
                     <!-- Order Notes -->
-                    <div class="mt-6">
-                        <label for="notes" class="form-label">Order Notes (Optional)</label>
-                        <textarea id="notes" name="notes" rows="3" class="form-control" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
+                    <div class="mt-6 flex">
+                        <label for="notes" class="form-label w-[40%]">Order Notes (Optional)</label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
                     </div>
                 </div>
             </div>
