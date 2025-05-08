@@ -183,3 +183,16 @@ Route::post('/payment/notification', [App\Http\Controllers\PaymentController::cl
 Route::middleware([Authenticate::class])->group(function () {
     // Route khusus admin Filament otomatis sudah diatur lewat AdminPanelProvider
 });
+
+// Add this route to your existing web.php file
+Route::get('/test-email', [App\Http\Controllers\TestEmailController::class, 'sendTestEmail']);
+
+// Add this route to your existing web.php file (admin only)
+Route::get('/debug-email-config', [App\Http\Controllers\EmailDebugController::class, 'debug'])
+    ->middleware(['auth', 'admin']);
+
+// Test route for payment success (only in development environment)
+if (app()->environment('local')) {
+    Route::get('/test-payment-success/{orderId}', [App\Http\Controllers\CheckoutController::class, 'paymentSuccess'])
+        ->name('test.payment.success');
+}
