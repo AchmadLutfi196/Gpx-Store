@@ -82,7 +82,7 @@
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input id="email" name="email" type="email" autocomplete="email" required 
-                           class="form-input @error('email') border-red-500 @enderror" 
+                           class="form-input @error('email') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            value="{{ old('email') }}" 
                            placeholder="name@example.com">
                 </div>
@@ -96,7 +96,7 @@
                     </div>
                     <div class="relative">
                         <input id="password" name="password" type="password" autocomplete="current-password" required 
-                               class="form-input @error('password') border-red-500 @enderror" 
+                               class="form-input @error('password') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Your password">
                         <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600">
                             <svg class="w-5 h-5" id="eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
