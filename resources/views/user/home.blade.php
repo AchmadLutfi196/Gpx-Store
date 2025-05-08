@@ -286,6 +286,52 @@
     .pulse-border {
         animation: pulse-border 2s infinite;
     }
+
+    /* animasi */
+
+    .ocean { 
+        height: 65%;
+        width:100%;
+        position:absolute;
+        bottom:0;
+        left:0;
+        background: #3730a3;
+
+    }
+
+    .wave {
+        background: url({{ asset('images/wave.svg') }}) repeat-x; 
+        position: absolute;
+        top: -198px;
+        width: 6400px;
+        height: 198px;
+        animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
+        transform: translate3d(0, 0, 0);
+    }
+
+    .wave:nth-of-type(2) {
+        top: -175px;
+        animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 7s ease -1.25s infinite;
+        opacity: 1;
+    }
+
+    @keyframes wave {
+    0% {
+        margin-left: 0;
+    }
+    100% {
+        margin-left: -1600px;
+    }
+    }
+
+    @keyframes swell {
+    0%, 100% {
+        transform: translate3d(0,-25px,0);
+    }
+    50% {
+        transform: translate3d(0,5px,0);
+    }
+    }
 </style>
 @endsection
 
@@ -800,12 +846,11 @@
 </section>
 
     <!-- CTA Section with Wave Background -->
-    <section class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-800 py-24">
+    <section class="relative py-24">
         <!-- Wave Background -->
-        <div class="absolute top-0 left-0 right-0 h-20 overflow-hidden">
-            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" class="absolute bottom-0 w-full h-20">
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#f9fafb"></path>
-            </svg>
+        <div class="ocean">
+            <div class="wave"></div>
+            <div class="wave"></div>
         </div>
         
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -852,6 +897,7 @@
             </svg>
         </a>
     </div>
+    
 @endsection
 
 @section('scripts')
