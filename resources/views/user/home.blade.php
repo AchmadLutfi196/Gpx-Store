@@ -345,20 +345,32 @@
 @section('content')
     <!-- Hero Section with Parallax Effect -->
     <div class="relative overflow-hidden h-screen">
-        <!-- Animated Background Elements -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-indigo-900 overflow-hidden ripple-bg">
-            <!-- Animated Blobs -->
-            <div class="hero-blob bg-blue-400 w-96 h-96 top-1/4 left-1/4 animate-blob animation-delay-2000"></div>
-            <div class="hero-blob bg-purple-500 w-96 h-96 top-1/3 right-1/4 animate-blob animation-delay-4000"></div>
-            <div class="hero-blob bg-pink-500 w-96 h-96 bottom-1/4 left-1/2 animate-blob"></div>
-            
-            <!-- Abstract Lines -->
-            <svg class="absolute w-full h-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <path d="M0,50 Q25,30 50,50 T100,50" stroke="white" stroke-width="0.5" fill="none"/>
-                <path d="M0,30 Q35,70 70,30 T100,30" stroke="white" stroke-width="0.5" fill="none"/>
-                <path d="M0,70 Q35,30 70,70 T100,70" stroke="white" stroke-width="0.5" fill="none"/>
-            </svg>
-        </div>
+        @if(isset($homeBanner) && $homeBanner->banner_image)
+            <!-- Banner Image Background -->
+            <div class="absolute inset-0 overflow-hidden">
+                <!-- Product Banner Image from Admin -->
+                <img src="{{ Storage::url($homeBanner->banner_image) }}" alt="{{ $homeBanner->banner_title ?? 'GPX Bags Collection' }}" 
+                     class="w-full h-full object-cover object-center">
+                
+                <!-- Gradient Overlay for better text readability -->
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-indigo-900/60"></div>
+            </div>
+        @else
+            <!-- Fallback to Original Animated Background Elements -->
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-indigo-900 overflow-hidden ripple-bg">
+                <!-- Animated Blobs -->
+                <div class="hero-blob bg-blue-400 w-96 h-96 top-1/4 left-1/4 animate-blob animation-delay-2000"></div>
+                <div class="hero-blob bg-purple-500 w-96 h-96 top-1/3 right-1/4 animate-blob animation-delay-4000"></div>
+                <div class="hero-blob bg-pink-500 w-96 h-96 bottom-1/4 left-1/2 animate-blob"></div>
+                
+                <!-- Abstract Lines -->
+                <svg class="absolute w-full h-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M0,50 Q25,30 50,50 T100,50" stroke="white" stroke-width="0.5" fill="none"/>
+                    <path d="M0,30 Q35,70 70,30 T100,30" stroke="white" stroke-width="0.5" fill="none"/>
+                    <path d="M0,70 Q35,30 70,70 T100,70" stroke="white" stroke-width="0.5" fill="none"/>
+                </svg>
+            </div>
+        @endif
 
         <div class="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-4xl" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">

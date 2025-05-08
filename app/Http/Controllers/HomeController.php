@@ -8,9 +8,7 @@ use App\Models\Product;
 use App\Models\Brand;
 use App\Models\PromoCode;
 use App\Models\ProductReview;
-
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use App\Models\HomeBanner;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -22,95 +20,65 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Use cached data but make sure rating information is loaded properly
-        $categories = Cache::remember('home_categories', 60*30, function () {
-            return Category::all();
-        });
+        // Get categories for the featured categories section
+        $categories = Category::all();
         
-        // Don't cache the latest products - this ensures reviews always show updated
-        // Or use a shorter cache time (1 minute) and include rating calculations
-        $latestProducts = Product::with(['brand', 'category'])
-            ->withCount('reviews')  // Count the number of reviews
-            ->withAvg('reviews', 'rating') // Calculate average rating
+        // Get latest products for the new arrivals section
+        $latestProducts = Product::with(['reviews', 'brand'])
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->latest()
             ->take(8)
             ->get();
             
-        // Similarly for featured products
-        $featuredProducts = Product::with(['brand', 'category'])
-            ->withCount('reviews')
-            ->withAvg('reviews', 'rating')
-            ->where('is_featured', true)
-            ->take(4)
-            ->get();
-        
-        // Fix N+1 for best selling product
-        $bestSellingProduct = Cache::remember('best_selling_product', 60*10, function () {
-            return Product::with(['brand', 'category'])
-                ->withCount('reviews')
-                ->withAvg('reviews', 'rating')
-                ->withCount('orderItems')
-                ->orderBy('order_items_count', 'desc')
-                ->first();
-        });
-        
-        // Don't cache reviews so they're always fresh
-        $bestReviews = ProductReview::with(['product.brand', 'product.category', 'user'])
-            ->select('product_reviews.*')
-            ->join('products', 'product_reviews.product_id', '=', 'products.id')
-            ->whereNotNull('product_reviews.review')
-            ->where('product_reviews.rating', '>=', 4)
-            ->orderBy('product_reviews.created_at', 'desc')
-            ->take(4)
-            ->get();
-
-        // Get a featured promo for the hero banner - priority to ones ending soon
-        $homepagePromo = PromoCode::where('is_active', true)
-            ->where('show_on_homepage', true)
-            ->where(function ($query) {
-                $now = Carbon::now();
-                $query->whereNull('start_date')
-                    ->orWhere('start_date', '<=', $now);
-            })
-            ->where(function ($query) {
-                $now = Carbon::now();
-                $query->whereNull('end_date')
-                    ->orWhere('end_date', '>=', $now);
-            })
-            ->where(function ($query) {
-                $query->where('usage_limit', 0)
-                    ->orWhereRaw('used_count < usage_limit');
-            })
-            ->orderBy('end_date', 'asc') // Show soonest expiring promo first
+        // Get the best selling product (example implementation)
+        $bestSellingProduct = Product::withCount('orderItems')
+            ->orderByDesc('order_items_count')
             ->first();
-        
-        // If we have a promo, calculate remaining days for countdown
-        $daysRemaining = 0;
-        $hoursRemaining = 0;
-        $minutesRemaining = 0;
+            
+        // Get active promotion for homepage promo section
+        $homepagePromo = PromoCode::where('is_active', true)
+            ->where(function($query) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>=', now());
+            })
+            ->first();
+            
+        // Calculate remaining time for the promotion if available
+        $daysRemaining = $hoursRemaining = $minutesRemaining = 0;
         
         if ($homepagePromo && $homepagePromo->end_date) {
+            $endDate = Carbon::parse($homepagePromo->end_date);
             $now = Carbon::now();
-            $endDate = $homepagePromo->end_date;
             
             if ($endDate->gt($now)) {
-                $interval = $now->diff($endDate);
-                $daysRemaining = $interval->d;
-                $hoursRemaining = $interval->h;
-                $minutesRemaining = $interval->i;
+                $diff = $endDate->diff($now);
+                $daysRemaining = $diff->d;
+                $hoursRemaining = $diff->h;
+                $minutesRemaining = $diff->i;
             }
         }
-
+        
+        // Get best reviews for testimonials section
+        $bestReviews = ProductReview::with(['user', 'product'])
+            ->where('rating', '>=', 4)
+            ->latest()
+            ->take(6)
+            ->get();
+            
+        // Get the active banner
+        $homeBanner = HomeBanner::where('is_active', true)->first();
+        
         return view('user.home', compact(
-            'categories',
-            'latestProducts',
-            'featuredProducts',
+            'categories', 
+            'latestProducts', 
             'bestSellingProduct',
-            'bestReviews',
             'homepagePromo',
             'daysRemaining',
             'hoursRemaining',
-            'minutesRemaining'
+            'minutesRemaining',
+            'bestReviews',
+            'homeBanner'
         ));
     }
     
