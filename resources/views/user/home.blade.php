@@ -4,7 +4,14 @@
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <style>
+    
+    body {
+        overflow-x: hidden;
+    }
+
     /* Custom Animation Styles */
+
+
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -290,13 +297,13 @@
     /* animasi */
 
     .ocean { 
-        height: 65%;
+        height: 70%;
         width:100%;
         position:absolute;
         bottom:0;
         left:0;
         background: #3730a3;
-
+        overflow: hidden;
     }
 
     .wave {
