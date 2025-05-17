@@ -97,11 +97,10 @@
                                 </button>
                             </form>
                             
-                           @if($order->payment_status !== 'completed')
-                                <form action="{{ route('orders.cancel', $order->id) }}" method="POST" id="cancelForm-{{ $order->id }}">
+                           @if($order->status !== 'cancelled' && $order->status !== 'completed')
+                                <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="button" onclick="confirmCancel({{ $order->id }})" class="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out">
+                                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -130,15 +129,14 @@
                                     Lanjutkan Pembayaran
                                 </button>
                             </form>
-                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" id="cancelForm-{{ $order->id }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" onclick="confirmCancel({{ $order->id }})" class="inline-flex items-center justify-center px-5 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out shadow-sm">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                    Batalkan Pesanan
-                                </button>
+                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        Batalkan Pesanan
+                                    </button>
                             </form>
                         </div>
                     @elseif($order->status === 'cancelled')

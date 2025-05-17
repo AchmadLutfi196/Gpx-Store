@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -152,44 +153,59 @@ public function completeOrder(Order $order)
         ->with('success', 'Pesanan telah diselesaikan. Terima kasih telah berbelanja!');
 }
 
-public function cancel($id)
+public function cancelOrder(Order $order)
 {
-    // Cari order berdasarkan ID
-    $order = Order::findOrFail($id);
-    
-    // Pastikan user hanya bisa membatalkan pesanannya sendiri
-    if ($order->user_id !== Auth::id()) {
-        abort(403, 'Unauthorized action.');
+    // Validasi apakah user yang login adalah pemilik pesanan
+    if (auth()->id() !== $order->user_id) {
+        return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk membatalkan pesanan ini.');
     }
     
-    // Pastikan pesanan masih dapat dibatalkan (hanya pending atau processing)
-    if (!in_array($order->status, ['pending', 'processing'])) {
-        return redirect()->route('orders.show', $order->id)
-            ->with('error', 'Pesanan dengan status ' . $order->status . ' tidak dapat dibatalkan.');
-    }
-    
-    // Ubah status pesanan menjadi cancelled
+    // Set status pesanan menjadi cancelled
     $order->status = 'cancelled';
-    // Juga ubah payment_status menjadi cancelled
-    $order->payment_status = 'cancelled';
+    $order->cancelled_at = now();
+
+    // PENTING: Cek status pembayaran sebelum mengembalikan stok
+    if ($order->payment_status === 'completed') {
+        // Jika sudah dibayar, kembalikan stok
+        foreach ($order->items as $item) {
+            $product = $item->product;
+            if ($product) {
+                // Log sebelum perubahan
+                Log::info('Mengembalikan stok - pesanan dibatalkan oleh user', [
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'old_stock' => $product->stock,
+                    'quantity_to_return' => $item->quantity
+                ]);
+                
+                // Tambah stok
+                $product->stock += $item->quantity;
+                $product->save();
+                
+                // Log setelah perubahan
+                Log::info('Stok berhasil dikembalikan', [
+                    'product_id' => $product->id,
+                    'new_stock' => $product->stock
+                ]);
+            }
+        }
+    } else {
+        // Jika belum dibayar, tidak perlu mengembalikan stok
+        Log::info('Pembatalan pesanan yang belum dibayar - stok tidak diubah', [
+            'order_id' => $order->id
+        ]);
+    }
     
-    // Jika kolom cancelled_at sudah ada di database
-    try {
-        $order->cancelled_at = now();
-    } catch (\Exception $e) {
-        // Jika kolom tidak ada, abaikan error
+    // Set status pembayaran menjadi cancelled jika belum completed
+    if ($order->payment_status !== 'completed') {
+        $order->payment_status = 'cancelled';
+    } else {
+        // Jika sudah completed, ubah menjadi refunded
+        $order->payment_status = 'refunded';
     }
     
     $order->save();
     
-    // Kembalikan stok produk
-    foreach ($order->items as $item) {
-        $product = $item->product;
-        $product->stock += $item->quantity;
-        $product->save();
-    }
-    
-    return redirect()->route('orders.show', $order->id)
-        ->with('success', 'Pesanan berhasil dibatalkan.');
+    return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
 }
 }
