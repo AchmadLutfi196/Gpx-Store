@@ -774,8 +774,8 @@
                     <div class="bg-white bg-opacity-20 rounded-full p-4 mb-4 backdrop-blur-sm animate-pulse-ring">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ 
-                                $stat['icon'] === 'users' ? 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' : 
-                                ($stat['icon'] === 'collection' ? 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' : 
+                                $stat['icon'] === 'users' ? 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0zM12 3a9 9 0 11-9 9 9 9 0 019-9z' : 
+                                ($stat['icon'] === 'collection' ? 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2M7 7h10' : 
                                 ($stat['icon'] === 'clock' ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' : 
                                 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z')) }}">
                             </path>
@@ -867,7 +867,7 @@
             <div class="wave"></div>
         </div>
         
-        <div class="relative max-w-7xl px-4 sm:px-6 lg:px-8 ">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <div class="text-center" data-aos="fade-up">
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-6">
                     Siap Memperbarui Koleksi Tas Anda?
@@ -877,18 +877,27 @@
                 </p>
                 <div class="mt-12 flex justify-center">
                     <div class="w-full max-w-md">
-                        <form class="sm:flex space-y-3 sm:space-y-0 sm:space-x-3">
+                        <form action="{{ route('newsletter.subscribe') }}" method="POST" id="newsletter-form" class="sm:flex space-y-3 sm:space-y-0 sm:space-x-3">
+                            @csrf
                             <div class="flex-grow">
                                 <label for="email-address" class="sr-only">Alamat Email</label>
                                 <input id="email-address" name="email" type="email" autocomplete="email" required 
                                        class="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-md shadow-lg transform transition-all duration-300 focus:scale-105"
                                        placeholder="Masukkan email Anda">
                             </div>
-                            <button type="submit" 
-                                    class="w-full sm:w-auto px-6 py-3 bg-white text-blue-700 font-medium rounded-md hover:bg-blue-50 focus:outline-none shadow-lg transform transition-all duration-300 hover:scale-105">
+                            <button type="submit" id="newsletter-submit"
+                                   class="w-full sm:w-auto px-6 py-3 bg-white text-blue-700 font-medium rounded-md hover:bg-blue-50 focus:outline-none shadow-lg transform transition-all duration-300 hover:scale-105">
                                 Daftar Sekarang
                             </button>
                         </form>
+                        <div id="confirm-subscription" class="hidden mt-4 bg-white bg-opacity-20 backdrop-blur-sm p-4 rounded-md">
+                            <p class="text-white mb-3" id="confirm-message"></p>
+                            <div class="flex justify-center space-x-3">
+                                <button id="confirm-yes" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Ya, Saya Ingin</button>
+                                <button id="confirm-no" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Tidak</button>
+                            </div>
+                        </div>
+                        <div id="newsletter-message" class="mt-3 text-sm text-white hidden"></div>
                     </div>
                 </div>
             </div>
@@ -1059,29 +1068,91 @@
         });
     });
 
-        document.getElementById('copy-promo-button').addEventListener('click', function() {
-            var promoCode = document.getElementById('promo-code').innerText;
-            
-            navigator.clipboard.writeText(promoCode).then(function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Kode promo berhasil disalin ke clipboard.',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }).catch(function(error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Gagal menyalin kode promo. Silakan coba lagi.',
-                });
-                console.error(error);
+    document.getElementById('copy-promo-button').addEventListener('click', function() {
+        var promoCode = document.getElementById('promo-code').innerText;
+        
+        navigator.clipboard.writeText(promoCode).then(function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Kode promo berhasil disalin ke clipboard.',
+                timer: 1500,
+                showConfirmButton: false
             });
+        }).catch(function(error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Gagal menyalin kode promo. Silakan coba lagi.',
+            });
+            console.error(error);
         });
-    
+    });
+
+    // Newsletter subscription functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const newsletterForm = document.getElementById('newsletter-form');
+        const newsletterMessage = document.getElementById('newsletter-message');
+        const submitButton = document.getElementById('newsletter-submit');
+
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Disable button and show loading state
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-700 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg> 
+                    Mendaftar...
+                `;
+
+                // Submit form using fetch API
+                fetch(newsletterForm.action, {
+                    method: 'POST',
+                    body: new FormData(newsletterForm),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display success message
+                    newsletterMessage.textContent = data.message;
+                    newsletterMessage.classList.remove('hidden', 'text-red-300');
+                    newsletterMessage.classList.add('text-green-300');
+                    
+                    // Reset form
+                    newsletterForm.reset();
+                    
+                    // Reset button
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Daftar Sekarang';
+                    
+                    // Hide message after 5 seconds
+                    setTimeout(() => {
+                        newsletterMessage.classList.add('hidden');
+                    }, 5000);
+                })
+                .catch(error => {
+                    // Display error message
+                    newsletterMessage.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+                    newsletterMessage.classList.remove('hidden', 'text-green-300');
+                    newsletterMessage.classList.add('text-red-300');
+                    
+                    // Reset button
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Daftar Sekarang';
+                    
+                    console.error('Error:', error);
+                });
+            });
+        }
+    });
 </script>
-@push('scripts')
+
 @if(isset($homepagePromo))
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1099,13 +1170,6 @@
             
             try {
                 // Try the modern clipboard API first
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(promoCode)
-                        .then(() => {
-                            showCopySuccessMessage(promoCode);
-                        })
-                        .catch(err => {
-                            console.error('Clipboard API failed: ', err);
                             fallbackCopyMethod(promoCode);
                         });
                 } else {
@@ -1120,6 +1184,7 @@
         
         function fallbackCopyMethod(text) {
             // Create temporary element
+           
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";  // Avoid scrolling to bottom
@@ -1224,5 +1289,4 @@
     });
 </script>
 @endif
-@endpush
 @endsection
