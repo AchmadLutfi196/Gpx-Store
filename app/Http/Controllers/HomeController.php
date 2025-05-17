@@ -32,9 +32,16 @@ class HomeController extends Controller
             ->get();
             
         // Get the best selling product (example implementation)
-        $bestSellingProduct = Product::withCount('orderItems')
-            ->orderByDesc('order_items_count')
-            ->first();
+        $bestSellingProduct = Product::withCount([
+            'orderItems' => function ($query) {
+                $query->whereHas('order', function ($subQuery) {
+                    $subQuery->whereNotIn('status', ['cancelled', 'failed', 'expired'])
+                            ->where('payment_status', '!=', 'cancelled');
+                });
+            }
+        ])
+    ->orderByDesc('order_items_count')
+    ->first();
             
         // Get active promotion for homepage promo section
         $homepagePromo = PromoCode::where('is_active', true)

@@ -167,12 +167,6 @@ public function cancel($id)
         return redirect()->route('orders.show', $order->id)
             ->with('error', 'Pesanan dengan status ' . $order->status . ' tidak dapat dibatalkan.');
     }
-
-    // Jika pesanan sudah memiliki pembayaran yang sukses, tampilkan pesan error
-    if ($order->payment_status === 'paid') {
-        return redirect()->route('orders.show', $order->id)
-            ->with('error', 'Pesanan yang sudah dibayar tidak dapat dibatalkan secara langsung. Silakan hubungi layanan pelanggan.');
-    }
     
     // Ubah status pesanan menjadi cancelled
     $order->status = 'cancelled';

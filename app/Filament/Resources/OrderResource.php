@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Carbon\Carbon;
 
 class OrderResource extends Resource
 {
@@ -44,15 +45,28 @@ class OrderResource extends Resource
                                 'cancelled' => 'Cancelled',
                                 'failed' => 'Failed',
                             ])
-                            ->required(),
+                            ->required()
+                            ->reactive() 
+                            ->afterStateUpdated(function ($state, $set, ?Order $record) {
+                                if ($state === 'cancelled' && $record && $record->status !== 'cancelled') {
+                                    $set('cancelled_at', Carbon::now());
+                                }
+                            }),
                         Forms\Components\Select::make('payment_status')
                             ->options([
                                 'pending' => 'Pending',
                                 'completed' => 'Completed',
                                 'failed' => 'Failed',
+                                'cancelled' => 'Cancelled',
                                 'refunded' => 'Refunded',
                             ])
-                            ->nullable(),
+                            ->nullable()
+                            ->reactive() 
+                            ->afterStateUpdated(function ($state, $set, ?Order $record) {
+                                if ($state === 'cancelled' && $record && $record->payment_status !== 'cancelled') {
+                                    $set('cancelled_at', Carbon::now());
+                                }
+                            }),
                         Forms\Components\TextInput::make('total_amount')
                             ->label('Total Pembayaran')
                             ->numeric()

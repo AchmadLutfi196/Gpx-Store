@@ -86,15 +86,39 @@
                 <div class="mt-4 border-t pt-4 flex justify-between items-center">
                     
                     @if($order->status === 'processing')
-                    <form action="{{ route('orders.complete', $order->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="inline-flex items-center justify-center px-5 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-150 ease-in-out shadow-sm">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Pesanan Diterima
-                        </button>
-                    </form>
+                    <div class="flex space-x-2">
+                            <form action="{{ route('orders.complete', $order->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center justify-center px-5 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-150 ease-in-out shadow-sm">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Pesanan Diterima
+                                </button>
+                            </form>
+                            
+                           @if($order->payment_status !== 'completed')
+                                <form action="{{ route('orders.cancel', $order->id) }}" method="POST" id="cancelForm-{{ $order->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" onclick="confirmCancel({{ $order->id }})" class="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        Batalkan Pesanan
+                                    </button>
+                                </form>
+                            @else
+                                <form>
+                                    <button type="button" onclick="showCsContactInfo()" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        Batalkan Pesanan
+                                    </button>
+                                </form>
+                                
+                            @endif
                     @elseif($order->status === 'pending' || $order->payment_status === 'pending' && $order->status !== 'cancelled')
                         <div class="flex space-x-2">
                             <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST">
@@ -185,4 +209,46 @@
             }
         });
     }
-    </script>
+</script>
+
+<script>
+    function confirmCancel(orderId) {
+        Swal.fire({
+            title: 'Konfirmasi Pembatalan',
+            text: 'Apakah Anda yakin ingin membatalkan pesanan ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Batalkan',
+            cancelButtonText: 'Tidak'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('cancelForm-' + orderId).submit();
+            }
+        });
+    }
+    
+    function showCsContactInfo() {
+    Swal.fire({
+        title: 'Hubungi Customer Service',
+        html: `
+            <div class="text-left">
+                <p class="text-center text-red-600">Pesanan yang sudah dibayar tidak dapat dibatalkan secara langsung.</p>
+                
+                <p class="mt-4 mb-2">Silakan hubungi Customer Service/CS dengan mencantumkan:</p>
+                <ul class="list-disc pl-5 mb-4">
+                    <li>Order ID: <strong>"#ORD-AS#########"</strong></li>
+                    <li>No. Rekening dan Nama Rekening Anda</li>
+                    <li>Alasan Pembatalan Order</li>
+                </ul>
+                
+                <strong class="text-center">untuk memudahkan CS dalam membantu Anda.</strong>
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Mengerti'
+    });
+}
+</script>

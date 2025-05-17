@@ -487,10 +487,10 @@
                                         <div class="text-2xl font-bold text-white countdown-minutes">{{ sprintf('%02d', $minutesRemaining) }}</div>
                                         <div class="text-xs text-blue-100">Menit</div>
                                     </div>
-                                    <div class="countdown-item">
+                                    {{-- <div class="countdown-item">
                                         <div class="text-2xl font-bold text-white" id="countdown-seconds">00</div>
                                         <div class="text-xs text-blue-100">Detik</div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             @endif
@@ -614,8 +614,8 @@
                         @endif
                     
                         <div class="absolute bottom-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm p-4 rounded-lg shadow-lg">
-                            <div class="text-sm font-semibold text-blue-800">Mulai dari</div>
-                            <div class="text-3xl font-bold text-blue-600">Rp 299.000</div>
+                            <div class="text-sm font-semibold text-blue-800">Harga Produk</div>
+                            <div class="text-3xl font-bold text-blue-600">{{'Rp ' . number_format($bestSellingProduct->price, 0, ',', '.')  }}</div>
                         </div>
                     </div>                                     
                 </div>
