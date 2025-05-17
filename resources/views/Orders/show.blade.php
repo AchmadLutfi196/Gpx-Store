@@ -112,7 +112,22 @@
             <div>
                 <div class="flex items-center mb-3">
                     <h2 class="text-xl font-bold text-gray-900 mr-4">Informasi Pesanan</h2>
-                    <span class="order-status {{ 'status-' . $order->status }}">
+                    
+                    @php
+                        $statusClasses = [
+                            'pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                            'processing' => 'bg-blue-100 text-blue-800 border-blue-200',
+                            'completed' => 'bg-green-100 text-green-800 border-green-200',
+                            'cancelled' => 'bg-red-100 text-red-800 border-red-200',
+                            'shipped' => 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                            'delivered' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                            'failed' => 'bg-gray-100 text-gray-800 border-gray-200',
+                        ];
+                        
+                        $statusClass = $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-800 border-gray-200';
+                    @endphp
+                    
+                    <span class="px-3 py-1 text-sm font-medium rounded-full border {{ $statusClass }}">
                         {{ ucfirst($order->status) }}
                     </span>
                 </div>
@@ -282,102 +297,154 @@
         </div>
         
         <!-- Payment Information -->
-        <div class="detail-section">
-            <h2 class="section-title flex items-center">
-                <svg class="w-5 h-5 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                </svg>
-                Status Pembayaran
-            </h2>
-            
-            <div class="flex items-center justify-between mb-7 pb-5 border-b">
-                <div>
-                    <p class="text-sm font-medium text-gray-700 mb-3">Status Saat Ini:</p>
-                    <div>
-                        <span class="order-status {{ 'status-' . ($order->payment_status ?? $order->status) }}">
-                            {{ ucfirst($order->payment_status ?? $order->status) }}
-                        </span>
-                    </div>
-                </div>
+<div class="detail-section">
+    <h2 class="section-title flex items-center">
+        <svg class="w-5 h-5 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+        </svg>
+        Status Pembayaran
+    </h2>
+    
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-7 pb-5 border-b">
+        <div>
+            <p class="text-sm font-medium text-gray-700 mb-3">Status Saat Ini:</p>
+            <div>
+                @php
+                    // Prioritaskan status pesanan jika status adalah 'cancelled'
+                    $currentStatus = $order->status === 'cancelled' ? 'cancelled' : ($order->payment_status ?? $order->status);
+                    
+                    $statusClasses = [
+                        // Status pesanan
+                        'pending' => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                        'processing' => 'bg-blue-100 text-blue-800 border border-blue-200',
+                        'completed' => 'bg-green-100 text-green-800 border border-green-200',
+                        'cancelled' => 'bg-red-100 text-red-800 border border-red-200',
+                        'shipped' => 'bg-indigo-100 text-indigo-800 border border-indigo-200',
+                        'delivered' => 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+                        'failed' => 'bg-gray-100 text-gray-800 border border-gray-200',
+                        
+                        // Status pembayaran
+                        'paid' => 'bg-green-100 text-green-800 border border-green-200',
+                        'unpaid' => 'bg-red-100 text-red-800 border border-red-200',
+                        'refunded' => 'bg-purple-100 text-purple-800 border border-purple-200',
+                        'expired' => 'bg-gray-100 text-gray-800 border border-gray-200',
+                    ];
+                    
+                    $statusClass = $statusClasses[$currentStatus] ?? 'bg-gray-100 text-gray-800 border border-gray-200';
+                    
+                    // Tampilkan status pembayaran yang sesuai jika status adalah 'cancelled'
+                    $paymentStatusText = $order->status === 'cancelled' ? 'Pembayaran Dibatalkan' : ucfirst($currentStatus);
+                @endphp
                 
-                <div class="text-right">
-                    @if($order->status === 'pending' || $order->payment_status === 'pending')
-                        @if($order->payment_token)
-                        <button id="pay-button" class="btn-primary">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Selesaikan Pembayaran
-                        </button>
-                        @else
-                            <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST" class="inline-block">
-                                @csrf
-                                <button type="submit" class="btn-primary">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                    </svg>
-                                    Lanjutkan Pembayaran
-                                </button>
-                            </form>
-                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-secondary">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span class="px-3 py-1 text-sm font-medium rounded-full inline-block {{ $statusClass }}">
+                    {{ $paymentStatusText }}
+                </span>
+            </div>
+        </div>
+
+        {{-- Tombol aksi pembayaran --}}
+        <div class="mt-4 md:mt-0">
+            @if(($order->status === 'pending' || $order->payment_status === 'pending') && $order->status !== 'cancelled')
+                @if($order->payment_token)
+                <button id="pay-button" class="inline-flex items-center px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Selesaikan Pembayaran
+                </button>
+                @else
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out shadow-sm w-full sm:w-auto justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Lanjutkan Pembayaran
+                            </button>
+                        </form>
+                        <form action="{{ route('orders.cancel', $order->id) }}" method="POST" id="cancelForm-{{ $order->id }}" class="inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" onclick="confirmCancel({{ $order->id }})" class="inline-flex items-center px-5 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out shadow-sm w-full sm:w-auto justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Batalkan Pesanan
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            @elseif($order->status === 'cancelled')
+                <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-100 text-red-700 w-full">
+                    <table class="w-full">
+                        <tr>
+                            <td>
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
-                                    Batalkan Pesanan
-                                </button>
-                            </form>
-                        @endif
-                    @endif
-                </div>
-            </div>
-            
-            @if($order->payment_details)
-                <div>
-                    <p class="text-sm font-medium text-gray-700 mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Detail Pembayaran:
-                    </p>
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        @php
-                            $paymentDetails = json_decode($order->payment_details, true);
-                            
-                            // Jika detail pembayaran ada, tampilkan dengan rapi
-                            if ($paymentDetails && is_array($paymentDetails)) {
-                                // Format informasi penting terlebih dahulu
-                                $importantInfo = [
-                                    'Status Transaksi' => $paymentDetails['transaction_status'] ?? null,
-                                    'Kode Status' => $paymentDetails['status_code'] ?? null,
-                                    'Order ID' => $paymentDetails['order_id'] ?? null,
-                                ];
-                        @endphp
-                        
-                        <div class="space-y-3">
-                            @foreach($importantInfo as $key => $value)
-                                @if($value)
-                                <div class="flex justify-between items-center py-2 px-4 rounded-md hover:bg-gray-100">
-                                    <span class="font-medium text-gray-700">{{ $key }}:</span>
-                                    <span class="
-                                        @if($key == 'Status Transaksi')
-                                            @if($value == 'settlement' || $value == 'capture')
-                                                payment-badge bg-green-100 text-green-800
-                                            @elseif($value == 'pending')
-                                                payment-badge bg-yellow-100 text-yellow-800
-                                            @elseif($value == 'deny' || $value == 'cancel' || $value == 'expire')
-                                                payment-badge bg-red-100 text-red-800
-                                            @endif
-                                        @endif
-                                    ">
-                                        {{ ucfirst($value) }}
-                                    </span>
+                                    <span class="font-medium">Pesanan ini telah dibatalkan</span>
                                 </div>
+                            </td>
+                            <td class="text-right">
+                                @if($order->cancelled_at)
+                                    <span class="text-sm whitespace-nowrap">
+                                        Dibatalkan pada: {{ \Carbon\Carbon::parse($order->cancelled_at)->format('d M Y, H:i') }}
+                                    </span>
                                 @endif
-                            @endforeach
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    @if($order->payment_details)
+        <div>
+            <p class="text-sm font-medium text-gray-700 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Detail Pembayaran:
+            </p>
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                @php
+                    $paymentDetails = json_decode($order->payment_details, true);
+                    
+                    // Jika detail pembayaran ada, tampilkan dengan rapi
+                    if ($paymentDetails && is_array($paymentDetails)) {
+                        // Format informasi penting terlebih dahulu
+                        $importantInfo = [
+                            'Status Transaksi' => $paymentDetails['transaction_status'] ?? null,
+                            'Kode Status' => $paymentDetails['status_code'] ?? null,
+                            'Order ID' => $paymentDetails['order_id'] ?? null,
+                        ];
+                @endphp
+                
+                <div class="space-y-3">
+                    @foreach($importantInfo as $key => $value)
+                        @if($value)
+                        <div class="flex justify-between items-center py-2 px-4 rounded-md hover:bg-gray-100">
+                            <span class="font-medium text-gray-700">{{ $key }}:</span>
+                            <span class="
+                                @if($key == 'Status Transaksi')
+                                    @if($value == 'settlement' || $value == 'capture')
+                                        payment-badge bg-green-100 text-green-800
+                                    @elseif($value == 'pending')
+                                        payment-badge bg-yellow-100 text-yellow-800
+                                    @elseif($value == 'deny' || $value == 'cancel' || $value == 'expire')
+                                        payment-badge bg-red-100 text-red-800
+                                    @endif
+                                @endif
+                            ">
+                                {{ ucfirst($value) }}
+                            </span>
                         </div>
+                        @endif
+                    @endforeach
+                </div>
                             
                         @php
                             // Hapus yang sudah ditampilkan di atas untuk menghindari duplikasi
@@ -441,19 +508,22 @@
     </div>
     @endif
 
-    <div class="border-t mt-8 pt-6 flex justify-end">
-        <button
-            id="print-invoice-button"
-            type="button"
-            class="inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow transition-colors"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5h4m16 0v5a2 2 0 01-2 2h-2m-8 4h4m-4 0v-4m4 4v-4" />
-            </svg>
-            Cetak Faktur
-        </button>
-    </div>
+    {{-- Tombol cetak faktur --}}
+    @if($order->status !== 'cancelled')
+        <div class="border-t mt-8 pt-6 flex justify-end">
+            <button
+                id="print-invoice-button"
+                type="button"
+                class="inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow transition-colors"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5h4m16 0v5a2 2 0 01-2 2h-2m-8 4h4m-4 0v-4m4 4v-4" />
+                </svg>
+                Cetak Faktur
+            </button>
+        </div>
+    @endif
 
 </div>
 @endsection

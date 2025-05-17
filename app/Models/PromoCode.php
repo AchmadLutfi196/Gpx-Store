@@ -12,6 +12,7 @@ class PromoCode extends Model
     
     protected $fillable = [
         'code',
+        'promotion_title',
         'description',
         'discount_type',
         'discount_value',
@@ -70,7 +71,15 @@ class PromoCode extends Model
         if ($orderTotal !== null && $this->minimum_order > 0 && $orderTotal < $this->minimum_order) {
             return [
                 'valid' => false,
-                'message' => 'Minimum pembelian Rp ' . number_format($this->minimum_order, 0, ',', '.') . ' untuk menggunakan kode promo ini.'
+                'message' => 'Minimum pembelian Rp ' . number_format($this->minimum_order, 0, ',', '.') . ' untuk menggunakan kode promo ini (tax dan ongkir tidak termasuk)'
+            ];
+        }
+
+        // Check maximum order
+        if ($orderTotal !== null && $this->maximum_discount > 0 && $orderTotal > $this->maximum_discount) {
+            return [
+                'valid' => false,
+                'message' => 'Kode promo hanya berlaku untuk pembelian maksimal Rp ' . number_format($this->maximum_discount, 0, ',', '.') . ' untuk menggunakan kode promo ini (tax dan ongkir tidak termasuk)'
             ];
         }
         

@@ -151,4 +151,51 @@ public function completeOrder(Order $order)
     return redirect()->route('orders.show', $order->id)
         ->with('success', 'Pesanan telah diselesaikan. Terima kasih telah berbelanja!');
 }
+
+public function cancel($id)
+{
+    // Cari order berdasarkan ID
+    $order = Order::findOrFail($id);
+    
+    // Pastikan user hanya bisa membatalkan pesanannya sendiri
+    if ($order->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
+    }
+    
+    // Pastikan pesanan masih dapat dibatalkan (hanya pending atau processing)
+    if (!in_array($order->status, ['pending', 'processing'])) {
+        return redirect()->route('orders.show', $order->id)
+            ->with('error', 'Pesanan dengan status ' . $order->status . ' tidak dapat dibatalkan.');
+    }
+
+    // Jika pesanan sudah memiliki pembayaran yang sukses, tampilkan pesan error
+    if ($order->payment_status === 'paid') {
+        return redirect()->route('orders.show', $order->id)
+            ->with('error', 'Pesanan yang sudah dibayar tidak dapat dibatalkan secara langsung. Silakan hubungi layanan pelanggan.');
+    }
+    
+    // Ubah status pesanan menjadi cancelled
+    $order->status = 'cancelled';
+    // Juga ubah payment_status menjadi cancelled
+    $order->payment_status = 'cancelled';
+    
+    // Jika kolom cancelled_at sudah ada di database
+    try {
+        $order->cancelled_at = now();
+    } catch (\Exception $e) {
+        // Jika kolom tidak ada, abaikan error
+    }
+    
+    $order->save();
+    
+    // Kembalikan stok produk
+    foreach ($order->items as $item) {
+        $product = $item->product;
+        $product->stock += $item->quantity;
+        $product->save();
+    }
+    
+    return redirect()->route('orders.show', $order->id)
+        ->with('success', 'Pesanan berhasil dibatalkan.');
+}
 }

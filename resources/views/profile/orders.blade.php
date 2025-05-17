@@ -95,7 +95,7 @@
                             Pesanan Diterima
                         </button>
                     </form>
-                    @elseif($order->status === 'pending' || $order->payment_status === 'pending')
+                    @elseif($order->status === 'pending' || $order->payment_status === 'pending' && $order->status !== 'cancelled')
                         <div class="flex space-x-2">
                             <form action="{{ route('orders.regenerate-payment', $order->id) }}" method="POST">
                                 @csrf
@@ -116,6 +116,24 @@
                                     Batalkan Pesanan
                                 </button>
                             </form>
+                        </div>
+                    @elseif($order->status === 'cancelled')
+                        <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-100 text-red-700 w-full">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    <span class="font-medium">Pesanan ini telah dibatalkan</span>
+                                </div>
+                                @if($order->cancelled_at)
+                                    <div class="mt-2 md:mt-0 md:text-right">
+                                        <span class="text-sm">
+                                            Dibatalkan pada: {{ \Carbon\Carbon::parse($order->cancelled_at)->format('d M Y, H:i') }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     @endif
                     

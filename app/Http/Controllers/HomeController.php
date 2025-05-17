@@ -38,14 +38,14 @@ class HomeController extends Controller
             
         // Get active promotion for homepage promo section
         $homepagePromo = PromoCode::where('is_active', true)
+            ->where('show_on_homepage', true) 
             ->where(function($query) {
                 $query->whereNull('end_date')
-                      ->orWhere('end_date', '>=', now());
+                    ->orWhere('end_date', '>=', now());
             })
             ->first();
-            
-        // Calculate remaining time for the promotion if available
-        $daysRemaining = $hoursRemaining = $minutesRemaining = 0;
+                // Calculate remaining time for the promotion if available
+                $daysRemaining = $hoursRemaining = $minutesRemaining = 0;
         
         if ($homepagePromo && $homepagePromo->end_date) {
             $endDate = Carbon::parse($homepagePromo->end_date);

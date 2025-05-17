@@ -464,10 +464,10 @@
                                 {{ $homepagePromo->promotion_tag ?? 'PENAWARAN TERBATAS' }}
                             </span>
                             <h3 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                                {{ $homepagePromo->promotion_title ?? ($homepagePromo->description ?? 'Diskon Spesial!') }}
+                                {{ $homepagePromo->promotion_title ?? 'Diskon Spesial!' }}
                             </h3>
                             <p class="text-blue-100 mb-6 md:pr-16">
-                                {{ $homepagePromo->promotion_subtitle ?? 'Gunakan kode promo untuk mendapatkan diskon spesial. Tawaran berlaku untuk waktu terbatas.' }}
+                                {{ $homepagePromo->description  ?? 'Gunakan kode promo untuk mendapatkan diskon spesial. Tawaran berlaku untuk waktu terbatas.' }}
                             </p>
                             
                             <!-- Countdown timer -->
