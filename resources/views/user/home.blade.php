@@ -4,10 +4,6 @@
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <style>
-    
-    body {
-        overflow-x: hidden;
-    }
 
     /* Custom Animation Styles */
 
@@ -297,13 +293,12 @@
     /* animasi */
 
     .ocean { 
-        height: 70%;
+        height: 60%;
         width:100%;
         position:absolute;
         bottom:0;
         left:0;
         background: #3730a3;
-        overflow: hidden;
     }
 
     .wave {
@@ -323,21 +318,21 @@
     }
 
     @keyframes wave {
-    0% {
-        margin-left: 0;
-    }
-    100% {
-        margin-left: -1600px;
-    }
+        0% {
+            margin-left: 0;
+        }
+        100% {
+            margin-left: -1600px;
+        }
     }
 
     @keyframes swell {
-    0%, 100% {
-        transform: translate3d(0,-25px,0);
-    }
-    50% {
-        transform: translate3d(0,5px,0);
-    }
+        0%, 100% {
+            transform: translate3d(0,-25px,0);
+        }
+        50% {
+            transform: translate3d(0,5px,0);
+        }
     }
 </style>
 @endsection
@@ -865,14 +860,14 @@
 </section>
 
     <!-- CTA Section with Wave Background -->
-    <section class="relative py-24">
+    <section class="relative overflow-hidden h-[500px] pt-52">
         <!-- Wave Background -->
         <div class="ocean">
             <div class="wave"></div>
             <div class="wave"></div>
         </div>
         
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative max-w-7xl px-4 sm:px-6 lg:px-8 ">
             <div class="text-center" data-aos="fade-up">
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-6">
                     Siap Memperbarui Koleksi Tas Anda?
