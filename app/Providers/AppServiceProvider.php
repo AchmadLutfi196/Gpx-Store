@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Category;
+use App\Models\Order; 
+use App\Observers\OrderObserver; 
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        Order::observe(OrderObserver::class);
         // Check if Filament exists and is properly loaded
         if (class_exists(\Filament\Facades\Filament::class)) {
             \Filament\Facades\Filament::serving(function () {

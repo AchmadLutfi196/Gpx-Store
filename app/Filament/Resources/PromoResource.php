@@ -30,9 +30,15 @@ class PromoResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->maxLength(50),
                             
+                        Forms\Components\TextInput::make('promotion_title')
+                            ->label('Judul Promo')
+                            ->maxLength(255)
+                            ->helperText('Judul yang akan ditampilkan untuk promo ini'),
+                            
                         Forms\Components\Textarea::make('description')
-                            ->label('Description')
-                            ->maxLength(255),
+                            ->label('Deskripsi')
+                            ->maxLength(255)
+                            ->helperText('Penjelasan detail tentang promo ini'),
                             
                         Forms\Components\Select::make('discount_type')
                             ->label('Discount Type')
@@ -99,7 +105,6 @@ class PromoResource extends Resource
                                     ->helperText('Number of times this code can be used. 0 means unlimited.')
                                     ->default(0),
                             ]),
-                            // Add this new toggle for homepage display
                         Forms\Components\Toggle::make('show_on_homepage')
                         ->label('Show on Homepage')
                         ->helperText('Display this promo in the homepage banner section')
@@ -117,6 +122,11 @@ class PromoResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label('Promo Code')
+                    ->searchable()
+                    ->sortable(),
+                    
+                Tables\Columns\TextColumn::make('promotion_title')
+                    ->label('Judul Promo')
                     ->searchable()
                     ->sortable(),
                     
