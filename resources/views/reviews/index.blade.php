@@ -21,12 +21,34 @@
             <div class="space-y-4">
                 @foreach($completedOrders as $order)
                     <div class="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div>
-                            <p class="font-medium">Order #{{ $order->order_number }}</p>
-                            <p class="text-sm text-gray-600">{{ $order->created_at->format('d M Y') }}</p>
-                            <p class="text-sm text-gray-700 mt-1">
-                                {{ $order->items_count - $order->reviews_count }} dari {{ $order->items_count }} produk belum direview
-                            </p>
+                        <div class="flex items-start gap-3">
+                            <div class="flex space-x-2">
+                                @foreach($order->items->take(3) as $item)
+                                    <div class="flex-shrink-0">
+                                        @if($item->product->image)
+                                            <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 object-cover rounded">
+                                        @else
+                                            <div class="w-12 h-12 bg-gray-200 flex items-center justify-center rounded">
+                                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                                @if($order->items->count() > 3)
+                                    <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-500 font-medium">
+                                        +{{ $order->items->count() - 3 }}
+                                    </div>
+                                @endif
+                            </div>
+                            <div>
+                                <p class="font-medium">Order #{{ $order->order_number }}</p>
+                                <p class="text-sm text-gray-600">{{ $order->created_at->format('d M Y') }}</p>
+                                <p class="text-sm text-gray-700 mt-1">
+                                    {{ $order->items_count - $order->reviews_count }} dari {{ $order->items_count }} produk belum direview
+                                </p>
+                            </div>
                         </div>
                         <a href="{{ route('reviews.create', $order->id) }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition">
                             Tulis Ulasan
