@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
 use App\Models\Order;
+use App\Models\PromoCode;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -189,9 +190,9 @@ class OrderResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('cancel')
+            Tables\Actions\ViewAction::make(),
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\Action::make('cancel')
                 ->label('Batalkan')
                 ->color('danger')
                 ->icon('heroicon-o-x-circle')
@@ -214,6 +215,37 @@ class OrderResource extends Resource
                     
                     $record->cancelled_at = now();
                     $record->save();
+                    
+                    // Restore promo usage_limit jika promo dipakai
+                    if ($record->promo_code_id) {
+                        $promo = PromoCode::find($record->promo_code_id);
+                        if ($promo && $promo->used_count > 0) {
+                            // Kembalikan penggunaan promo
+                            $promo->used_count--;
+                            $promo->save();
+                            
+                            // Log untuk debugging
+                            Log::info('Penggunaan promo dikembalikan', [
+                                'order_id' => $record->id,
+                                'promo_id' => $promo->id,
+                                'promo_code' => $promo->code,
+                                'used_count_new' => $promo->used_count
+                            ]);
+                            
+                            // Kembalikan penggunaan promo
+                            $promo->restoreUsage();
+                        }
+                        // if ($promo) {
+                        //     $promo->restoreUsage();
+                            
+                        //     Log::info('Penggunaan promo dikembalikan', [
+                        //         'order_id' => $record->id,
+                        //         'promo_id' => $promo->id,
+                        //         'promo_code' => $promo->code,
+                        //         'used_count_new' => $promo->used_count
+                        //     ]);
+                        // }
+                    }
                     
                     // Kembalikan stok HANYA jika pembayaran sebelumnya completed
                     if ($wasPaid) {
@@ -248,10 +280,10 @@ class OrderResource extends Resource
                             ->send();
                     }
                 }),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+        ])
+        ->bulkActions([
+            Tables\Actions\DeleteBulkAction::make(),
+        ]);
     }
     
     public static function getRelations(): array

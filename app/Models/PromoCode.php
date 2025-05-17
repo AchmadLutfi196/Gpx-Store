@@ -33,6 +33,7 @@ class PromoCode extends Model
         'show_on_homepage' => 'boolean',
     ];
     
+
     public function isValid($orderTotal = null)
     {
         // Check if code is active
@@ -111,6 +112,13 @@ class PromoCode extends Model
         $this->used_count += 1;
         $this->save();
     }
+
+    public function restoreUsage()
+    {
+        $this->used_count -= 1;
+        $this->save();
+    }
+    
     public function getFormattedDiscountAttribute()
     {
         if ($this->discount_type === 'percentage') {

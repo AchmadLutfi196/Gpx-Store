@@ -97,7 +97,7 @@
                                 </button>
                             </form>
                             
-                           @if($order->status !== 'cancelled' && $order->status !== 'completed')
+                           @if($order->payment_status !== 'completed')
                                 <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                     @csrf
                                     <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition duration-150 ease-in-out">
