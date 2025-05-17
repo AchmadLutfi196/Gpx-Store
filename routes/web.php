@@ -198,3 +198,6 @@ if (app()->environment('local')) {
     Route::get('/test-payment-success/{orderId}', [App\Http\Controllers\CheckoutController::class, 'paymentSuccess'])
         ->name('test.payment.success');
 }
+
+// Newsletter Routes
+Route::post('/newsletter/subscribe', [App\Http\Controllers\NewsletterSubscriberController::class, 'subscribe'])->name('newsletter.subscribe');
