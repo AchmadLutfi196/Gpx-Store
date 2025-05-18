@@ -9,6 +9,11 @@ GPX Store adalah platform e-commerce berbasis Laravel yang memungkinkan pengguna
 - Sistem pembayaran dengan Midtrans
 - Admin panel menggunakan Filament
 - Pengelolaan transaksi dan pesanan
+- Sistem newsletter dan email marketing
+- Wishlist dan manajemen ulasan produk
+- Manajemen biaya pengiriman
+- Manajemen promo dan kode diskon
+- Dashboard analitik untuk melihat performa toko
 
 ## Instalasi
 
@@ -30,6 +35,10 @@ Buat file `.env` dari template:
 cp .env.example .env
 ```
 
+Edit file `.env` untuk mengatur:
+- Koneksi database
+- Konfigurasi email (untuk newsletter dan notifikasi)
+- Kredensial Midtrans
 
 ### 4. Generate Key dan Migrate Database
 ```sh
@@ -54,13 +63,40 @@ Filament digunakan sebagai admin panel. Untuk mengaksesnya:
 Jika tidak ada akun admin, buat dengan:
 ```sh
 php artisan make:filament-user
-
 ```
 
-## konfigurasi filament shield
+## Konfigurasi Filament Shield
 ```sh
 php artisan shield:super-admin
 php artisan shield:generate --all
+```
+
+## Sistem Newsletter
+GPX Store memiliki sistem newsletter terintegrasi yang memungkinkan:
+- Pendaftaran pelanggan untuk newsletter
+- Pengiriman email campaign massal
+- Pengelolaan subscriber
+- Analitik performa email
+
+Untuk mengatur jadwal pengiriman email:
+```sh
+php artisan schedule:work
+```
+
+## Sistem Pembayaran
+Integrasi dengan Midtrans memungkinkan berbagai metode pembayaran:
+- Kartu kredit/debit
+- Transfer bank
+- E-wallet
+- QRIS
+
+Konfigurasi kredensial Midtrans di `.env`:
+```
+MIDTRANS_SERVER_KEY=your_server_key
+MIDTRANS_CLIENT_KEY=your_client_key
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_IS_SANITIZED=true
+MIDTRANS_IS_3DS=true
 ```
 
 ## Kontribusi
