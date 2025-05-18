@@ -24,10 +24,10 @@ class Review extends Model
     /**
      * Get the user that wrote the review.
      */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class);
+    // }
 
     /**
      * Get the product that was reviewed.

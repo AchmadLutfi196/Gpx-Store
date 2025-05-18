@@ -62,7 +62,7 @@
                 </div>
                 
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">{{ Auth::user()->reviews()->count() }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ Auth::user()->productReviews()->count() }}</div>
                     <div class="text-sm text-gray-600">Reviews</div>
                 </div>
                 

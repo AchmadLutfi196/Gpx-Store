@@ -29,8 +29,30 @@ class Order extends Model
         'payment_token',
         'payment_details',
         'promo_code_id',
+        'cancelled_at',
     ];
 
+    protected $casts = [
+        'cancelled_at' => 'datetime',
+    ];
+
+    protected function setStatusAttribute($value)
+    {
+        $this->attributes['status'] = $value;
+        
+        if ($value === 'cancelled' && empty($this->attributes['cancelled_at'])) {
+            $this->attributes['cancelled_at'] = now();
+        }
+    }
+
+    protected function setPaymentStatusAttribute($value)
+    {
+        $this->attributes['payment_status'] = $value;
+        
+        if ($value === 'cancelled' && empty($this->attributes['cancelled_at'])) {
+            $this->attributes['cancelled_at'] = now();
+        }
+    }
 
     public function user()
     {
@@ -60,6 +82,7 @@ class Order extends Model
             'pending' => '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">Pending</span>',
             'paid' => '<span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Paid</span>',
             'failed' => '<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">Failed</span>',
+            'cancelled' => '<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">Failed</span>',
             'expired' => '<span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">Expired</span>',
         ];
 
