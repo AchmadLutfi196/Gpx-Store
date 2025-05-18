@@ -886,7 +886,7 @@
                                        placeholder="Masukkan email Anda">
                             </div>
                             <button type="submit" id="newsletter-submit"
-                                   class="w-full sm:w-auto px-6 py-3 bg-white text-blue-700 font-medium rounded-md hover:bg-blue-50 focus:outline-none shadow-lg transform transition-all duration-300 hover:scale-105">
+                                   class="w-full sm:w-auto flex-shrink-0 px-6 py-3 bg-white text-blue-700 font-medium rounded-md hover:bg-blue-50 focus:outline-none shadow-lg transform transition-all duration-300 hover:scale-105">
                                 Daftar Sekarang
                             </button>
                         </form>
