@@ -156,7 +156,7 @@ public function completeOrder(Order $order)
 public function cancelOrder(Order $order)
 {
     // Validasi apakah user yang login adalah pemilik pesanan
-    if (auth()->id() !== $order->user_id) {
+    if (Auth::id() !== $order->user_id) {
         return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk membatalkan pesanan ini.');
     }
     

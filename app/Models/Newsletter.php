@@ -15,13 +15,12 @@ class Newsletter extends Model
      * @var array
      */
     protected $fillable = [
-        'email',
-        'status',
-        'subscribed_at',
         'title',
         'content',
+        'email',
+        'status',
         'scheduled_at',
-        'sent_at'
+        'sent_at',
     ];
 
     /**
@@ -30,7 +29,6 @@ class Newsletter extends Model
      * @var array
      */
     protected $casts = [
-        'subscribed_at' => 'datetime',
         'scheduled_at' => 'datetime',
         'sent_at' => 'datetime',
     ];
