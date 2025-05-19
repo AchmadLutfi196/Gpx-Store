@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateNewsletterSubscriber extends CreateRecord
 {
     protected static string $resource = NewsletterSubscriberResource::class;
+    
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
