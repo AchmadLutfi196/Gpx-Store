@@ -467,7 +467,7 @@
                             <div class="flex">
                                 <input type="text" id="coupon_code" name="coupon_code" 
                                     placeholder="Enter coupon code" 
-                                    class="flex-1 form-control rounded-r-none {{ isset($appliedPromo) ? 'bg-green-50 border-green-500' : '' }}"
+                                    class="flex-1 form-control rounded-r-none {{ isset($appliedPromo) ? 'bg-green-50 border-green-500' : '' }} w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value="{{ $appliedPromo['code'] ?? '' }}"
                                     {{ isset($appliedPromo) ? 'readonly' : '' }}>
                                 
@@ -481,7 +481,7 @@
                                     </button>
                                 @else
                                     <button type="button" id="apply-coupon" 
-                                        class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
+                                        class="btn-outline rounded-l-none text-white hover:bg-blue-700 border-l-0 bg-blue-600 p-2">
                                         Apply
                                     </button>
                                 @endif

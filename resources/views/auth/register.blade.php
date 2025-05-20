@@ -156,7 +156,7 @@
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                     <input id="name" name="name" type="text" autocomplete="name" required 
-                           class="form-input @error('name') border-red-500 @enderror" 
+                           class="form-input @error('name') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            value="{{ old('name') }}" 
                            placeholder="Enter your full name">
                 </div>
@@ -164,7 +164,7 @@
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input id="email" name="email" type="email" autocomplete="email" required 
-                           class="form-input @error('email') border-red-500 @enderror" 
+                           class="form-input @error('email') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            value="{{ old('email') }}" 
                            placeholder="name@example.com">
                 </div>
@@ -176,7 +176,7 @@
                             <span class="text-gray-500">+62</span>
                         </div>
                         <input id="phone" name="phone" type="text" autocomplete="tel" required 
-                               class="form-input pl-12 @error('phone') border-red-500 @enderror" 
+                               class="form-input pl-12 @error('phone') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                value="{{ old('phone') }}" 
                                placeholder="812XXXXXXXX">
                     </div>
@@ -186,7 +186,7 @@
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <div class="relative">
                         <input id="password" name="password" type="password" autocomplete="new-password" required 
-                               class="form-input @error('password') border-red-500 @enderror" 
+                               class="form-input @error('password') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Minimum 8 characters">
                         <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600">
                             <svg class="w-5 h-5" id="eye-closed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +208,7 @@
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
                     <div class="relative">
                         <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required 
-                               class="form-input @error('password_confirmation') border-red-500 @enderror" 
+                               class="form-input @error('password_confirmation') border-red-500 @enderror w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Repeat password">
                     </div>
                 </div>
