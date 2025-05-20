@@ -476,21 +476,21 @@
                                 <p class="text-white mb-2 font-medium">Berakhir dalam:</p>
                                 <div class="promo-countdown">
                                     <div class="countdown-item">
-                                        <div class="text-2xl font-bold text-white countdown-days">{{ sprintf('%02d', $daysRemaining) }}</div>
+                                        <div class="text-2xl font-bold text-white countdown-days timess">00</div>
                                         <div class="text-xs text-blue-100">Hari</div>
                                     </div>
                                     <div class="countdown-item">
-                                        <div class="text-2xl font-bold text-white countdown-hours">{{ sprintf('%02d', $hoursRemaining) }}</div>
+                                        <div class="text-2xl font-bold text-white countdown-hours timess">00</div>
                                         <div class="text-xs text-blue-100">Jam</div>
                                     </div>
                                     <div class="countdown-item">
-                                        <div class="text-2xl font-bold text-white countdown-minutes">{{ sprintf('%02d', $minutesRemaining) }}</div>
+                                        <div class="text-2xl font-bold text-white countdown-minutes timess">00</div>
                                         <div class="text-xs text-blue-100">Menit</div>
                                     </div>
-                                    {{-- <div class="countdown-item">
-                                        <div class="text-2xl font-bold text-white" id="countdown-seconds">00</div>
+                                    <div class="countdown-item">
+                                        <div class="text-2xl font-bold text-white timess">00</div>
                                         <div class="text-xs text-blue-100">Detik</div>
-                                    </div> --}}
+                                    </div>
                                 </div>
                             </div>
                             @endif
@@ -1170,8 +1170,10 @@
             
             try {
                 // Try the modern clipboard API first
-                            fallbackCopyMethod(promoCode);
-                        });
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(promoCode).catch(err => {
+                        fallbackCopyMethod(promoCode);
+                    });
                 } else {
                     // If Clipboard API not available, use the fallback method
                     fallbackCopyMethod(promoCode);
@@ -1231,62 +1233,38 @@
                 toast: true
             });
         }
-    });
+
+        // real time promo code 
     
+        const tanggal = document.getElementsByClassName("timess")[0]
+        const jam = document.getElementsByClassName("timess")[1]
+        const menit = document.getElementsByClassName("timess")[2]
+        const detik = document.getElementsByClassName("timess")[3]
     
-    // Enhanced countdown script
-    document.addEventListener('DOMContentLoaded', function() {
-        if (document.querySelector('.countdown-seconds')) {
-            const secondsElement = document.querySelector('.countdown-seconds');
-            const minutesElement = document.querySelector('.countdown-minutes');
-            const hoursElement = document.querySelector('.countdown-hours');
-            const daysElement = document.querySelector('.countdown-days');
+        const endD = '<?= $homepagePromo->end_date;?>';
+        const targetDate = new Date(endD).getTime();
+    
+        function timer() {
+            const currentDate = new Date().getTime();
+            const distance = targetDate - currentDate
+    
+            const days = Math.floor(distance / 1000 / 60 / 60 / 24);
+            const hours = Math.floor(distance / 1000 / 60 / 60) % 24;
+            const minutes = Math.floor(distance / 1000 / 60) % 60;
+            const seconds = Math.floor(distance / 1000) % 60;
+    
+         
+            tanggal.innerHTML = days;
+            jam.innerHTML = hours;
+            menit.innerHTML = minutes;
+            detik.innerHTML = seconds;
             
-            let days = parseInt(daysElement.innerText);
-            let hours = parseInt(hoursElement.innerText);
-            let minutes = parseInt(minutesElement.innerText);
-            let seconds = 0; // Start at 0 and it will immediately count down
-            
-            function updateCountdown() {
-                seconds--;
-                
-                if (seconds < 0) {
-                    seconds = 59;
-                    minutes--;
-                    
-                    if (minutes < 0) {
-                        minutes = 59;
-                        hours--;
-                        
-                        if (hours < 0) {
-                            hours = 23;
-                            days--;
-                            
-                            if (days < 0) {
-                                // Timer completed
-                                days = hours = minutes = seconds = 0;
-                                clearInterval(countdownInterval);
-                            } else {
-                                daysElement.innerText = days < 10 ? '0' + days : days;
-                            }
-                        }
-                        
-                        hoursElement.innerText = hours < 10 ? '0' + hours : hours;
-                    }
-                    
-                    minutesElement.innerText = minutes < 10 ? '0' + minutes : minutes;
-                }
-                
-                secondsElement.innerText = seconds < 10 ? '0' + seconds : seconds;
-            }
-            
-            // Update immediately to avoid delay
-            updateCountdown();
-            
-            // Set the interval
-            const countdownInterval = setInterval(updateCountdown, 1000);
         }
+    
+        setInterval(timer, 1000);
     });
+
+ 
 </script>
 @endif
 @endsection
