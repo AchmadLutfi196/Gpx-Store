@@ -40,7 +40,7 @@
             <div class="bg-white shadow-sm px-6 py-6">
                 <div class="space-y-6">
                     @foreach($messages as $message)
-                        <!-- User Message -->
+                        {{-- <!-- User Message -->
                         <div class="flex justify-start">
                             <div class="max-w-[80%]">
                                 <!-- User Message Content -->
@@ -60,6 +60,41 @@
                         <!-- Admin Response (if exists) -->
                         @if($message->admin_response)
                         <div class="flex justify-end">
+                            <div class="max-w-[80%]">
+                                <!-- Admin Response Content -->
+                                <div class="rounded-lg px-4 py-3 bg-blue-50 text-blue-800">
+                                    <div class="text-sm">{{ $message->admin_response }}</div>
+                                </div>
+                                
+                                <!-- Admin Response Footer -->
+                                <div class="mt-1 text-xs text-gray-500 flex items-center justify-end">
+                                    <span>Admin</span>
+                                    <span class="mx-1">•</span>
+                                    <span>{{ $message->updated_at->format('d M Y, H:i') }}</span>
+                                </div>
+                            </div>
+                        </div> --}}
+
+                        <!-- User Message -->
+                        <div class="flex justify-end">
+                            <div class="max-w-[80%]">
+                                <!-- User Message Content -->
+                                <div class="rounded-lg px-4 py-3 bg-gray-100 text-gray-800">
+                                    <div class="text-sm">{{ $message->message }}</div>
+                                </div>
+                                
+                                <!-- User Message Footer -->
+                                <div class="mt-1 text-xs text-gray-500 flex items-center">
+                                    <span>Anda</span>
+                                    <span class="mx-1">•</span>
+                                    <span>{{ $message->created_at->format('d M Y, H:i') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Admin Response (if exists) -->
+                        @if($message->admin_response)
+                        <div class="flex justify-start">
                             <div class="max-w-[80%]">
                                 <!-- Admin Response Content -->
                                 <div class="rounded-lg px-4 py-3 bg-blue-50 text-blue-800">
