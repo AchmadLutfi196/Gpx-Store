@@ -30,11 +30,11 @@
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="p-6 bg-gray-50 border-b">
                     <div class="flex items-center">
-                        <div class="w-full h-16 rounded-full overflow-hidden mr-4">
+                        <div class="mr-4">
                             @if(Auth::user()->avatar)
-                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="w-16 h-16 rounded-full">
                             @else
-                                <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
+                                <div class="flex items-center justify-center bg-blue-500 text-white text-3xl font- w-16 h-16 rounded-full">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
                             @endif
