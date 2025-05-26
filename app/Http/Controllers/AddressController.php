@@ -41,48 +41,45 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:15',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:20',
+            'city_id' => 'required|string', // Make sure city_id is required
             'province' => 'required|string|max:100',
+            'province_id' => 'required|string', // Make sure province_id is required
+            'postal_code' => 'required|string|max:10',
+            'country' => 'required|string|max:100',
             'is_default' => 'nullable|boolean',
         ]);
         
-        // Set is_default to false by default if not provided
-        $isDefault = $request->has('is_default');
+        $user = auth()->user();
         
-        // Create the address with all fields explicitly
-        $address = new \App\Models\Address;
-        $address->user_id = auth()->id();
-        $address->name = $validated['name'];
-        $address->phone = $validated['phone'];
-        $address->address_line1 = $validated['address_line1'];
-        $address->address_line2 = $validated['address_line2'] ?? null;
-        $address->city = $validated['city'];
-        $address->postal_code = $validated['postal_code'];
-        $address->province = $validated['province'];
-        $address->is_default = $isDefault;
-        $address->save();
+        // If this is the first address or is_default is checked, set as default
+        $isDefault = $request->has('is_default') || $user->addresses()->count() === 0;
         
-        // If this is set as default, unset other defaults
+        // If setting as default, reset all other addresses to non-default
         if ($isDefault) {
-            \App\Models\Address::where('user_id', auth()->id())
-                ->where('id', '!=', $address->id)
-                ->update(['is_default' => false]);
+            $user->addresses()->update(['is_default' => false]);
         }
         
-        return redirect()->route('addresses.index')
-            ->with('sweetAlert', [
-                'title' => 'Success!',
-                'text' => 'Address has been added successfully.',
-                'icon' => 'success',
-                'confirmButtonText' => 'OK'
-            ]);
+        $address = $user->addresses()->create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'address_line1' => $validated['address_line1'],
+            'address_line2' => $validated['address_line2'] ?? null,
+            'city' => $validated['city'],
+            'city_id' => $validated['city_id'],
+            'province' => $validated['province'],
+            'province_id' => $validated['province_id'],
+            'postal_code' => $validated['postal_code'],
+            'country' => $validated['country'],
+            'is_default' => $isDefault,
+        ]);
+        
+        return redirect()->route('profile.addresses')->with('success', 'Address added successfully');
     }
 
     /**
@@ -108,35 +105,36 @@ class AddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Address $address)
     {
-        $address = Address::where('user_id', Auth::id())
-                          ->findOrFail($id);
-        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|string|max:20',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
+            'city_id' => 'required|string', // Make city_id required
             'province' => 'required|string|max:100',
+            'province_id' => 'required|string', // Make province_id required
+            'postal_code' => 'required|string|max:20',
+            'country' => 'required|string|max:100',
+            'is_default' => 'boolean',
         ]);
-        
-        // If set_as_default is checked, make it default
-        if ($request->has('set_as_default') && !$address->is_default) {
-            // Remove default status from other addresses
-            Auth::user()->addresses()->where('id', '!=', $address->id)
-                                    ->update(['is_default' => false]);
-            
+
+        // If setting as default, reset all other addresses to non-default
+        if ($request->has('is_default') && $request->is_default) {
+            auth()->user()->addresses()->where('id', '!=', $address->id)->update(['is_default' => false]);
+        }
+
+        // Ensure we maintain default address if this is the only address
+        if (!$request->has('is_default') && auth()->user()->addresses()->count() === 1) {
             $validated['is_default'] = true;
         }
-        
-        // Update the address
+
+        // Update the address with the validated data
         $address->update($validated);
-        
-        return redirect()->route('addresses.index')
-                         ->with('success', 'Address has been updated successfully.');
+
+        return redirect()->route('profile.addresses')->with('success', 'Address updated successfully');
     }
 
     /**

@@ -20,6 +20,7 @@ use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 use Illuminate\Support\Str;
 use App\Events\OrderPlaced;
+use App\Services\RajaOngkirService;
 
 class CheckoutController extends Controller
 {
@@ -430,6 +431,37 @@ class CheckoutController extends Controller
             return redirect()->route('orders.show', $order->id)
                 ->with('success', 'Payment successful!')
                 ->with('error', 'However, we encountered an issue sending your confirmation email.');
+        }
+    }
+    
+    public function getShippingCost(Request $request, RajaOngkirService $rajaOngkirService)
+    {
+        $request->validate([
+            'destination' => 'required|numeric',
+            'weight' => 'required|numeric|min:1',
+            'courier' => 'required|in:jne,pos,tiki'
+        ]);
+
+        // Origin city ID for your store (e.g., Jakarta Pusat = 152)
+        $origin = 152;
+        
+        try {
+            $costs = $rajaOngkirService->getShippingCost(
+                $origin,
+                $request->destination,
+                $request->weight,
+                $request->courier
+            );
+            
+            return response()->json([
+                'success' => true,
+                'data' => $costs
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get shipping costs: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

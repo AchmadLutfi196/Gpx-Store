@@ -151,63 +151,6 @@
     </div>
 </div>
 
-<!-- Error and Success Messages -->
-@if ($errors->any())
-    <div class="container mx-auto px-4 mb-6">
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm" role="alert">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium">Please fix the following errors:</h3>
-                    <ul class="mt-1 list-disc list-inside text-sm">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
-
-@if (session('success'))
-    <div class="container mx-auto px-4 mb-6">
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm" role="alert" data-aos="fade-down">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
-
-@if (session('error'))
-    <div class="container mx-auto px-4 mb-6">
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm" role="alert" data-aos="fade-down">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm">{{ session('error') }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
-
 <!-- Checkout Content -->
 <div class="container mx-auto px-4 py-6 mb-16 relative">
     <!-- Background effect -->
@@ -219,7 +162,7 @@
             <!-- Customer Information and Shipping Details -->
             <div class="w-full lg:w-2/3">
                 <!-- Customer Information -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6" data-aos="fade-up">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <h2 class="section-title flex items-center">
                         <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,7 +188,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="name" class="form-label">Full Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control" required>
                             @error('name')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -253,7 +196,7 @@
                         
                         <div>
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control" required>
                             @error('email')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -261,7 +204,7 @@
                         
                         <div>
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789" required>
+                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control" placeholder="e.g. 08123456789" required>
                             @error('phone')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -269,13 +212,13 @@
 
                         <div>
                             <label for="alt_phone" class="form-label">Alternative Phone (Optional)</label>
-                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789">
+                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control" placeholder="e.g. 08123456789">
                         </div>
                     </div>
                 </div>
                 
                 <!-- Shipping Addresses -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <h2 class="section-title flex items-center">
                         <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,7 +236,7 @@
                     <!-- Address Selection -->
                     <div class="space-y-3 mb-6">
                         <!-- Saved Addresses -->
-                        @if(count($addresses ?? []) > 0)
+                        @if(isset($addresses) && count($addresses) > 0)
                             <div class="border rounded-lg p-4 bg-blue-50 border-blue-200">
                                 @foreach($addresses as $address)
                                     @if($address->is_default)
@@ -345,7 +288,7 @@
                 </div>
                 
                 <!-- Shipping Method -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <h2 class="section-title flex items-center">
                         <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,50 +299,72 @@
                     </h2>
                     
                     <div class="space-y-3 mt-4">
-                        <div class="shipping-method selected flex" onclick="selectShippingMethod(this, 'regular')">
-                            <input type="radio" name="shipping_method" value="regular" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
-                            <div class="ml-3 flex-grow">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-900">Regular Shipping</span>
-                                    <span class="font-medium text-blue-600">Rp 10.000</span>
-                                </div>
-                                <p class="text-sm text-gray-500">Estimated delivery: 2-4 business days</p>
+                        <div class="mb-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">Pilih Ekspedisi</h3>
+                            
+                            <!-- Courier Selection -->
+                            <div class="mb-4">
+                                <label for="courier" class="block text-sm font-medium text-gray-700 mb-1">Courier</label>
+                                <select id="courier" name="courier" class="form-control">
+                                    <option value="">Select Courier</option>
+                                    <option value="jne">JNE</option>
+                                    <option value="tiki">TIKI</option>
+                                    <option value="pos">POS Indonesia</option>
+                                    <option value="anteraja">AnterAja</option>
+                                    <option value="sicepat">SiCepat</option>
+                                    <option value="jnt">J&T Express</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <button type="button" id="check-shipping" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm">
+                                    Cek Opsi Pengiriman
+                                </button>
                             </div>
                         </div>
                         
-                        <div class="shipping-method flex" onclick="selectShippingMethod(this, 'express')">
-                            <input type="radio" name="shipping_method" value="express" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
-                            <div class="ml-3 flex-grow">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-900">Express Shipping</span>
-                                    <span class="font-medium text-blue-600">Rp 25.000</span>
-                                </div>
-                                <p class="text-sm text-gray-500">Estimated delivery: 1-2 business days</p>
+                        <!-- Shipping results will be displayed here -->
+                        <div id="shipping-options" class="space-y-3">
+                            <div class="p-4 text-sm text-gray-500 border border-gray-200 rounded-md bg-gray-50">
+                                Silakan pilih kurir untuk melihat opsi pengiriman yang tersedia.
                             </div>
                         </div>
                         
-                        <div class="shipping-method flex" onclick="selectShippingMethod(this, 'same_day')">
-                            <input type="radio" name="shipping_method" value="same_day" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
-                            <div class="ml-3 flex-grow">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-900">Same Day Delivery</span>
-                                    <span class="font-medium text-blue-600">Rp 50.000</span>
+                        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700" id="shipping-notice" style="display:none;">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                    </svg>
                                 </div>
-                                <p class="text-sm text-gray-500">Available for selected cities only (Jakarta, Surabaya, Bandung)</p>
+                                <div class="ml-3">
+                                    <p>Jika Anda ingin menggunakan alamat pengiriman yang berbeda, silakan ubah alamat pengiriman pada halaman profil Anda.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Order Notes -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="section-title flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </span>
+                        Order Notes
+                    </h2>
                     
-                    <!-- Order Notes -->
-                    <div class="mt-6 flex">
-                        <label for="notes" class="form-label w-[40%]">Order Notes (Optional)</label>
-                        <textarea id="notes" name="notes" rows="3" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
+                    <div class="mt-4">
+                        <label for="notes" class="form-label">Special Instructions (Optional)</label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
                     </div>
                 </div>
             </div>
             
             <!-- Order Summary -->
-            <div class="w-full lg:w-1/3" data-aos="fade-left">
+            <div class="w-full lg:w-1/3">
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden sticky top-6">
                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-900">Order Summary</h2>
@@ -408,28 +373,34 @@
                     <div class="px-6 py-4">
                         <!-- Order Items -->
                         <div class="mb-4">
-                            <h3 class="text-sm font-medium text-gray-900 mb-2">Items in Your Order ({{ count($cartItems) }})</h3>
+                            <h3 class="text-sm font-medium text-gray-900 mb-2">Items in Your Order ({{ isset($cartItems) ? count($cartItems) : 0 }})</h3>
                             
                             <div class="max-h-60 overflow-y-auto pr-2" style="scrollbar-width: thin;">
-                                @foreach($cartItems as $item)
-                                    <div class="flex items-center py-3 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
-                                        <div class="flex-shrink-0 w-16 h-16 border border-gray-200 rounded overflow-hidden">
-                                            <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                @if(isset($cartItems))
+                                    @foreach($cartItems as $item)
+                                        <div class="flex items-center py-3 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
+                                            <div class="flex-shrink-0 w-16 h-16 border border-gray-200 rounded overflow-hidden">
+                                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                            </div>
+                                            <div class="ml-3 flex-1">
+                                                <h4 class="text-sm font-medium text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
+                                                <p class="text-xs text-gray-500">Qty: {{ $item->quantity }}</p>
+                                            </div>
+                                            <div class="ml-4 text-right">
+                                                @if($item->product->discount_price && $item->product->discount_price < $item->product->price)
+                                                    <p class="text-sm font-medium text-blue-600">Rp {{ number_format($item->product->discount_price * $item->quantity, 0, ',', '.') }}</p>
+                                                    <p class="text-xs text-gray-400 line-through">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</p>
+                                                @else
+                                                    <p class="text-sm font-medium text-blue-600">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div class="ml-3 flex-1">
-                                            <h4 class="text-sm font-medium text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
-                                            <p class="text-xs text-gray-500">Qty: {{ $item->quantity }}</p>
-                                        </div>
-                                        <div class="ml-4 text-right">
-                                            @if($item->product->discount_price && $item->product->discount_price < $item->product->price)
-                                                <p class="text-sm font-medium text-blue-600">Rp {{ number_format($item->product->discount_price * $item->quantity, 0, ',', '.') }}</p>
-                                                <p class="text-xs text-gray-400 line-through">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</p>
-                                            @else
-                                                <p class="text-sm font-medium text-blue-600">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</p>
-                                            @endif
-                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="py-3 text-center text-gray-500">
+                                        No items in cart
                                     </div>
-                                @endforeach
+                                @endif
                             </div>
                         </div>
                         
@@ -437,79 +408,19 @@
                         <div class="border-t border-gray-200 pt-4 pb-2 space-y-2">
                             <div class="flex justify-between py-1">
                                 <span class="text-sm text-gray-600">Subtotal</span>
-                                <span class="text-sm font-medium">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
-                            </div>
-                            
-                            <div class="flex justify-between py-1" id="shipping-cost-display">
-                                <span class="text-sm text-gray-600">Shipping</span>
-                                <span class="text-sm font-medium">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
+                                <span class="text-sm font-medium">Rp {{ isset($subtotal) ? number_format($subtotal, 0, ',', '.') : '0' }}</span>
                             </div>
                             
                             <div class="flex justify-between py-1">
-                                <span class="text-sm text-gray-600">Tax (11%)</span>
-                                <span class="text-sm font-medium">Rp {{ number_format($tax, 0, ',', '.') }}</span>
+                                <span class="text-base font-semibold text-gray-900">Total</span>
+                                <span class="text-lg font-bold text-blue-600">Rp {{ isset($total) ? number_format($total, 0, ',', '.') : number_format($subtotal ?? 0, 0, ',', '.') }}</span>
                             </div>
-                            
-                            <div id="discount-row" class="flex justify-between py-1 {{ $discount > 0 ? 'block' : 'hidden' }}">
-                                <span class="text-sm text-gray-600">Discount</span>
-                                <span class="text-sm font-medium text-red-600" id="discount-amount">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between py-3 border-t border-gray-200 mt-2">
-                            <span class="text-base font-semibold text-gray-900">Total</span>
-                            <span class="text-lg font-bold text-blue-600" id="order-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
-                        </div>
-                        
-                        <!-- Coupon Code -->
-                        <div class="mt-4 border-t border-gray-200 pt-4">
-                            <label for="coupon_code" class="form-label">Coupon Code</label>
-                            <div class="flex">
-                                <input type="text" id="coupon_code" name="coupon_code" 
-                                    placeholder="Enter coupon code" 
-                                    class="flex-1 form-control rounded-r-none {{ isset($appliedPromo) ? 'bg-green-50 border-green-500' : '' }}"
-                                    value="{{ $appliedPromo['code'] ?? '' }}"
-                                    {{ isset($appliedPromo) ? 'readonly' : '' }}>
-                                
-                                @if(isset($appliedPromo))
-                                    <button type="button" id="remove-coupon" 
-                                        class="btn-outline rounded-l-none text-red-600 hover:bg-red-50 border-l-0 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                        Remove
-                                    </button>
-                                @else
-                                    <button type="button" id="apply-coupon" 
-                                        class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
-                                        Apply
-                                    </button>
-                                @endif
-                            </div>
-                            
-                            <div id="promo-message" class="mt-2 text-sm hidden"></div>
-                            
-                            @if(isset($appliedPromo))
-                                <div class="mt-2 text-sm text-green-600 font-medium">
-                                    <span class="inline-flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        Promo "{{ $appliedPromo['code'] }}" applied: 
-                                        @if($appliedPromo['discount_type'] === 'percentage')
-                                            {{ $appliedPromo['discount_value'] }}% off
-                                        @else
-                                            Rp {{ number_format($appliedPromo['discount_value'], 0, ',', '.') }} off
-                                        @endif
-                                    </span>
-                                </div>
-                            @endif
                         </div>
                         
                         <!-- Payment Information -->
                         <div class="mt-6 border-t border-gray-200 pt-4">
                             <h3 class="text-sm font-medium text-gray-900 mb-2">Payment Information</h3>
-                            <p class="text-xs text-gray-500 mb-4">After clicking "Place Order", you will be redirected to our secure payment gateway to complete your payment. We accept various payment methods.</p>
+                            <p class="text-xs text-gray-500 mb-4">After clicking "Place Order", you will be redirected to our secure payment gateway to complete your payment.</p>
                         </div>
                         
                         <button type="submit" id="place-order-button" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition mt-4">
@@ -531,19 +442,299 @@
 
 @section('scripts')
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Checkout page loaded');
+    
     // Initialize AOS
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 100
-    });
+    try {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    } catch(e) {
+        console.error('AOS initialization error:', e);
+    }
+
+    // Get address data for RajaOngkir from selected address
+    function getSelectedAddressData() {
+        @if(isset($addresses) && count($addresses) > 0)
+            @foreach($addresses as $address)
+                @if($address->is_default)
+                    // Check if we have the required city_id
+                    @if(!empty($address->city_id))
+                        return {
+                            id: "{{ $address->id }}",
+                            city: "{{ $address->city }}",
+                            cityId: "{{ $address->city_id }}",
+                            province: "{{ $address->province }}",
+                            provinceId: "{{ $address->province_id }}",
+                            postalCode: "{{ $address->postal_code }}"
+                        };
+                    @else
+                        // Missing city_id - show a better error message
+                        setTimeout(() => {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Alamat Perlu Diperbarui',
+                                text: 'Alamat pengiriman Anda perlu diperbarui untuk menggunakan fitur pengiriman. Silahkan perbarui alamat Anda.',
+                                confirmButtonText: 'Perbarui Alamat',
+                                showCancelButton: true,
+                                cancelButtonText: 'Nanti'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "{{ route('addresses.edit', $address->id) }}";
+                                }
+                            });
+                        }, 500);
+                        
+                        return {
+                            id: "{{ $address->id }}",
+                            city: "{{ $address->city }}",
+                            // Use a default city ID for Jakarta
+                            cityId: "152",
+                            province: "{{ $address->province }}",
+                            provinceId: "6",
+                            postalCode: "{{ $address->postal_code }}"
+                        };
+                    @endif
+                @endif
+            @endforeach
+        @endif
+        return null;
+    }
+
+    // Initialize address data
+    const selectedAddress = getSelectedAddressData();
+    if (selectedAddress) {
+        console.log('Using address data for RajaOngkir:', selectedAddress);
+        
+        // Show shipping notice if we have address data
+        document.getElementById('shipping-notice').style.display = 'block';
+        
+        // If we have city_id and province_id in the address data, we can use it directly
+        // This is useful for RajaOngkir API calls
+        if (selectedAddress.cityId && selectedAddress.provinceId) {
+            // You could set up a hidden field with this data for the form submission
+            const addressDataField = document.createElement('input');
+            addressDataField.type = 'hidden';
+            addressDataField.name = 'shipping_address_data';
+            addressDataField.value = JSON.stringify({
+                city_id: selectedAddress.cityId,
+                province_id: selectedAddress.provinceId,
+                address_id: selectedAddress.id
+            });
+            document.getElementById('checkout-form').appendChild(addressDataField);
+        }
+    }
+    
+    // RajaOngkir API configuration
+    const rajaOngkirConfig = {
+        // Change to false when using production environment
+        isSandbox: true,
+        apiUrl: '/api/rajaongkir',
+        originCity: '152', // Default origin city (Jakarta Pusat)
+    };
+
+    // Check shipping options (expeditions)
+    const checkShippingBtn = document.getElementById('check-shipping');
+    const courierSelect = document.getElementById('courier');
+    const shippingOptionsContainer = document.getElementById('shipping-options');
+    
+    if (checkShippingBtn && courierSelect && shippingOptionsContainer) {
+        checkShippingBtn.addEventListener('click', function() {
+            const courier = courierSelect.value;
+            
+            if (!courier) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Kurir',
+                    text: 'Silakan pilih kurir terlebih dahulu',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            if (!selectedAddress || !selectedAddress.cityId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Alamat Tidak Lengkap',
+                    text: 'Alamat pengiriman tidak memiliki ID kota. Silakan perbarui alamat Anda.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Show loading
+            shippingOptionsContainer.innerHTML = `
+                <div class="p-4 text-center">
+                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-blue-600 border-r-2 border-blue-600 border-b-2 border-blue-600 border-l-2 border-gray-100"></div>
+                    <p class="mt-2 text-sm text-gray-600">Memuat opsi pengiriman...</p>
+                </div>
+            `;
+            
+            // Calculate cart weight - assume 500g per item for this example
+            const cartItems = document.querySelectorAll('.max-h-60.overflow-y-auto > div');
+            const totalWeight = Math.max(cartItems.length * 500, 1000); // 500g per item, minimum 1kg
+            
+            // Debug information
+            console.log('Shipping request:', {
+                origin: rajaOngkirConfig.originCity,
+                destination: selectedAddress.cityId,
+                weight: totalWeight,
+                courier: courier
+            });
+            
+            // Fetch shipping costs
+            fetch('{{ route("checkout.shipping-cost") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    origin: rajaOngkirConfig.originCity,
+                    destination: selectedAddress.cityId,
+                    weight: totalWeight,
+                    courier: courier
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.results && data.results.length > 0) {
+                    let html = '<div class="space-y-3">';
+                    
+                    // Process courier services from the API structure
+                    data.results.forEach(result => {
+                        if (result.costs && result.costs.length > 0) {
+                            result.costs.forEach((option, index) => {
+                                const isChecked = index === 0 ? 'checked' : '';
+                                const isSelected = index === 0 ? 'selected' : '';
+                                
+                                const serviceName = option.service;
+                                const cost = parseInt(option.cost[0].value);
+                                const etd = option.cost[0].etd || '1-3';
+                                
+                                html += `
+                                    <div class="shipping-method ${isSelected} flex" onclick="selectShippingMethod(this, '${serviceName}')">
+                                        <input type="radio" name="shipping_method" value="${serviceName}" ${isChecked} 
+                                            data-cost="${cost}" data-courier="${courier.toUpperCase()}"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-2">
+                                        <div class="ml-3 flex-grow">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-medium text-gray-900">${courier.toUpperCase()} - ${serviceName}</span>
+                                                <span class="font-medium text-blue-600">Rp ${formatNumber(cost)}</span>
+                                            </div>
+                                            <p class="text-sm text-gray-500">Estimasi pengiriman: ${etd.replace('HARI', '').trim()} hari</p>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                    });
+                    
+                    html += '</div>';
+                    shippingOptionsContainer.innerHTML = html;
+                    
+                    // Update shipping cost display with the first option
+                    if (data.results[0].costs && data.results[0].costs.length > 0) {
+                        const firstOption = data.results[0].costs[0];
+                        const shippingCost = parseInt(firstOption.cost[0].value);
+                        updateOrderSummary(shippingCost);
+                        
+                        // Add hidden input for the selected shipping method
+                        let shippingInput = document.querySelector('input[name="selected_shipping_cost"]');
+                        if (!shippingInput) {
+                            shippingInput = document.createElement('input');
+                            shippingInput.type = 'hidden';
+                            shippingInput.name = 'selected_shipping_cost';
+                            document.getElementById('checkout-form').appendChild(shippingInput);
+                        }
+                        shippingInput.value = shippingCost;
+                    }
+                    
+                } else {
+                    shippingOptionsContainer.innerHTML = `
+                        <div class="p-4 text-sm text-red-500 border border-red-200 rounded-md bg-red-50">
+                            Tidak ada opsi pengiriman tersedia untuk kurir dan tujuan yang dipilih.
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching shipping costs:', error);
+                shippingOptionsContainer.innerHTML = `
+                    <div class="p-4 text-sm text-red-500 border border-red-200 rounded-md bg-red-50">
+                        Gagal memuat opsi pengiriman. Silakan coba lagi.
+                    </div>
+                `;
+            });
+        });
+    }
+    
+    // Helper function to update the order summary with shipping cost
+    function updateOrderSummary(shippingCost) {
+        // Add shipping row if it doesn't exist
+        let orderTotals = document.querySelector('.border-t.border-gray-200.pt-4.pb-2.space-y-2');
+        let shippingRow = document.getElementById('shipping-row');
+        
+        if (!shippingRow) {
+            shippingRow = document.createElement('div');
+            shippingRow.id = 'shipping-row';
+            shippingRow.className = 'flex justify-between py-1';
+            shippingRow.innerHTML = `
+                <span class="text-sm text-gray-600">Shipping</span>
+                <span class="text-sm font-medium" id="shipping-cost">Rp ${formatNumber(shippingCost)}</span>
+            `;
+            
+            // Insert after subtotal
+            const subtotalRow = orderTotals.querySelector('div:first-child');
+            subtotalRow.insertAdjacentElement('afterend', shippingRow);
+        } else {
+            document.getElementById('shipping-cost').textContent = `Rp ${formatNumber(shippingCost)}`;
+        }
+        
+        // Recalculate total
+        recalculateTotal();
+    }
+    
+    // Helper functions for currency handling
+    function formatNumber(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+    
+    // Function to recalculateTotal
+    function recalculateTotal() {
+        const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
+        const shippingElement = document.getElementById('shipping-cost');
+        const totalElement = document.querySelector('.text-lg.font-bold.text-blue-600');
+        
+        if (!subtotalElement || !totalElement) return;
+        
+        // Use the currency parsing function to handle Indonesian number format
+        let subtotal = parseCurrency(subtotalElement.textContent);
+        let shipping = shippingElement ? parseCurrency(shippingElement.textContent) : 0;
+        
+        const total = subtotal + shipping;
+        totalElement.textContent = `Rp ${formatNumber(total)}`;
+    }
+    
+    // Utility function to properly parse Indonesian currency format
+    function parseCurrency(currencyStr) {
+        if (!currencyStr) return 0;
+        return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
+    }
     
     // Form submission handler
     const checkoutForm = document.getElementById('checkout-form');
-    
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', function(e) {
             const button = document.getElementById('place-order-button');
@@ -553,14 +744,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 button.classList.add('opacity-75', 'cursor-not-allowed');
             }
             
-            @if(count($addresses ?? []) == 0)
+            // If no address is selected, prevent form submission
+            if (!selectedAddress) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Alamat Pengiriman Diperlukan',
+                    text: 'Anda harus menambahkan alamat pengiriman terlebih dahulu',
+                    confirmButtonText: 'Tambah Alamat',
+                    showCancelButton: true,
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('addresses.create') }}";
+                    } else {
+                        if (button) {
+                            button.disabled = false;
+                            button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
+                            button.classList.remove('opacity-75', 'cursor-not-allowed');
+                        }
+                    }
+                });
+            }
+            
+            @if(isset($addresses) && count($addresses) == 0)
             e.preventDefault();
             Swal.fire({
                 icon: 'error',
-                title: 'No Shipping Address',
-                text: 'Please add a shipping address before proceeding with your order.',
-                confirmButtonText: 'Add Address',
+                title: 'Alamat Pengiriman Diperlukan',
+                text: 'Anda harus menambahkan alamat pengiriman terlebih dahulu',
+                confirmButtonText: 'Tambah Alamat',
                 showCancelButton: true,
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "{{ route('addresses.create') }}";
@@ -574,257 +789,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             @endif
         });
-    }
-    
-    // Helper functions for currency handling
-    function parseCurrency(currencyStr) {
-        return parseFloat(currencyStr.replace('Rp ', '').replaceAll('.', '').trim()) || 0;
-    }
-    
-    function formatCurrency(number) {
-        return 'Rp ' + number.toLocaleString('id-ID');
-    }
-    
-    function recalculateTotal() {
-        const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
-        const shippingElement = document.querySelector('#shipping-cost-display .text-sm.font-medium');
-        const taxElement = document.querySelector('.flex.justify-between.py-1:nth-child(3) .text-sm.font-medium');
-        const discountElement = document.querySelector('#discount-amount');
-        const discountRow = document.getElementById('discount-row');
-        const orderTotal = document.getElementById('order-total');
-        
-        let subtotal = parseCurrency(subtotalElement.textContent);
-        let shipping = parseCurrency(shippingElement.textContent);
-        let tax = parseCurrency(taxElement.textContent);
-        let discount = 0;
-        
-        if (!discountRow.classList.contains('hidden') && discountElement) {
-            discount = parseCurrency(discountElement.textContent.replace('- ', ''));
-        }
-        
-        const total = subtotal + shipping + tax - discount;
-        orderTotal.textContent = formatCurrency(total);
-    }
-
-    const applyCouponButton = document.getElementById('apply-coupon');
-    const removeCouponButton = document.getElementById('remove-coupon');
-    const couponCodeInput = document.getElementById('coupon_code');
-    const promoMessage = document.getElementById('promo-message');
-    const discountRow = document.getElementById('discount-row');
-    const discountAmount = document.getElementById('discount-amount');
-    const orderTotal = document.getElementById('order-total');
-    
-    if (applyCouponButton) {
-        applyCouponButton.addEventListener('click', function() {
-            const code = couponCodeInput.value.trim();
-            if (!code) {
-                showPromoMessage('Please enter a coupon code', 'danger');
-                return;
-            }
-            
-            applyCouponButton.disabled = true;
-            applyCouponButton.innerHTML = '<span class="spinner mr-2"></span> Applying...';
-            
-            const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
-            let subtotal = 0;
-            if (subtotalElement) {
-                subtotal = parseCurrency(subtotalElement.textContent);
-            }
-            
-            axios.post('{{ route("coupon.apply") }}', {
-                coupon_code: code,
-                subtotal: subtotal,
-                _token: '{{ csrf_token() }}'
-            })
-            .then(function (response) {
-                handleCouponResponse(response);
-            })
-            .catch(function (error) {
-                console.log(error);
-                showPromoMessage('An error occurred while applying the coupon', 'danger');
-                applyCouponButton.disabled = false;
-                applyCouponButton.textContent = 'Apply';
-            });
-        });
-    }
-    
-    function setupRemoveCouponEvent() {
-        const removeCoupon = document.getElementById('remove-coupon');
-        if (removeCoupon) {
-            removeCoupon.addEventListener('click', function() {
-                const currentCode = couponCodeInput.value;
-                
-                removeCoupon.disabled = true;
-                removeCoupon.innerHTML = '<span class="spinner mr-2"></span> Removing...';
-                
-                axios.post('{{ route("coupon.remove") }}', {
-                    _token: '{{ csrf_token() }}'
-                })
-                .then(function(response) {
-                    const data = response.data;
-                    if (data.success) {
-                        couponCodeInput.readOnly = false;
-                        couponCodeInput.classList.remove('bg-green-50', 'border-green-500');
-                        
-                        setTimeout(() => {
-                            couponCodeInput.value = currentCode;
-                            couponCodeInput.focus();
-                        }, 50);
-                        
-                        discountRow.classList.add('hidden');
-                        
-                        removeCoupon.parentNode.innerHTML = `
-                            <button type="button" id="apply-coupon" 
-                                class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
-                                Apply
-                            </button>
-                        `;
-                        
-                        const promoInfo = document.querySelector('.text-green-600.font-medium');
-                        if (promoInfo) {
-                            promoInfo.remove();
-                        }
-                        
-                        promoMessage.textContent = '';
-                        promoMessage.classList.add('hidden');
-                        
-                        recalculateTotal();
-                        
-                        const newApplyBtn = document.getElementById('apply-coupon');
-                        if (newApplyBtn) {
-                            newApplyBtn.addEventListener('click', function() {
-                                const code = couponCodeInput.value.trim();
-                                if (!code) {
-                                    showPromoMessage('Please enter a coupon code', 'danger');
-                                    return;
-                                }
-                                
-                                this.disabled = true;
-                                this.innerHTML = '<span class="spinner mr-2"></span> Applying...';
-                                
-                                const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
-                                let subtotal = 0;
-                                if (subtotalElement) {
-                                    subtotal = parseCurrency(subtotalElement.textContent);
-                                }
-                                
-                                axios.post('{{ route("coupon.apply") }}', {
-                                    coupon_code: code,
-                                    subtotal: subtotal,
-                                    _token: '{{ csrf_token() }}'
-                                })
-                                .then(function (response) {
-                                    handleCouponResponse(response);
-                                })
-                                .catch(function (error) {
-                                    console.log(error);
-                                    showPromoMessage('An error occurred while applying the coupon', 'danger');
-                                    newApplyBtn.disabled = false;
-                                    newApplyBtn.textContent = 'Apply';
-                                });
-                            });
-                        }
-                    } else {
-                        removeCoupon.disabled = false;
-                        removeCoupon.innerHTML = `
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Remove
-                        `;
-                        showPromoMessage('Failed to remove promo code', 'danger');
-                    }
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    removeCoupon.disabled = false;
-                    removeCoupon.innerHTML = `
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        Remove
-                    `;
-                    showPromoMessage('An error occurred while removing the coupon', 'danger');
-                });
-            });
-        }
-    }
-    
-    if (removeCouponButton) {
-        setupRemoveCouponEvent();
-    }
-    
-    function showPromoMessage(message, type) {
-        promoMessage.textContent = message;
-        promoMessage.className = 'mt-2 text-sm';
-        promoMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
-        
-        if (type === 'success') {
-            promoMessage.classList.add('text-green-600');
-        } else if (type === 'danger') {
-            promoMessage.classList.add('text-red-600');
-        }
-        
-        promoMessage.classList.remove('hidden');
-    }
-
-    function handleCouponResponse(response) {
-        const data = response.data;
-        if (data.success) {
-            showPromoMessage(data.message, 'success');
-            
-            const appliedCode = data.promo.code;
-            
-            if (couponCodeInput) {
-                couponCodeInput.value = appliedCode;
-                couponCodeInput.readOnly = true;
-                couponCodeInput.classList.add('bg-green-50', 'border-green-500');
-            }
-            
-            discountRow.classList.remove('hidden');
-            discountAmount.textContent = '- ' + data.promo.formatted_discount;
-            
-            const applyButton = document.getElementById('apply-coupon');
-            if (applyButton) {
-                applyButton.parentNode.innerHTML = `
-                    <button type="button" id="remove-coupon" 
-                        class="btn-outline rounded-l-none text-red-600 hover:bg-red-50 border-l-0 flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        Remove
-                    </button>
-                `;
-            }
-            
-            const promoInfoHtml = `
-                <div class="mt-2 text-sm text-green-600 font-medium">
-                    <span class="inline-flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Promo "${appliedCode}" applied: 
-                        ${data.promo.discount_type === 'percentage' 
-                            ? data.promo.discount_value + '% off' 
-                            : data.promo.formatted_discount + ' off'}
-                    </span>
-                </div>
-            `;
-            promoMessage.insertAdjacentHTML('afterend', promoInfoHtml);
-            
-            recalculateTotal();
-            
-            setTimeout(() => {
-                setupRemoveCouponEvent();
-            }, 50);
-        } else {
-            showPromoMessage(data.message, 'danger');
-            const applyButton = document.getElementById('apply-coupon');
-            if (applyButton) {
-                applyButton.disabled = false;
-                applyButton.textContent = 'Apply';
-            }
-        }
     }
 });
 
@@ -840,54 +804,82 @@ function selectShippingMethod(element, method) {
     const radio = element.querySelector('input[type="radio"]');
     if (radio) {
         radio.checked = true;
-    }
-    
-    let shippingCost = 10000;
-    
-    if (method === 'express') {
-        shippingCost = 25000;
-    } else if (method === 'same_day') {
-        shippingCost = 50000;
-    }
-    
-    const shippingDisplay = document.getElementById('shipping-cost-display');
-    if (shippingDisplay) {
-        const shippingText = shippingDisplay.querySelector('.text-sm.font-medium');
-        if (shippingText) {
-            shippingText.textContent = formatCurrency(shippingCost);
+        
+        // Get shipping cost and courier from data attribute
+        const shippingCost = parseInt(radio.getAttribute('data-cost') || 0);
+        const courier = radio.getAttribute('data-courier');
+        
+        // Update shipping cost in order summary
+        updateOrderSummary(shippingCost);
+        
+        // Add hidden input fields for the form submission
+        let shippingInput = document.querySelector('input[name="selected_shipping_cost"]');
+        let courierInput = document.querySelector('input[name="selected_courier"]');
+        let serviceInput = document.querySelector('input[name="selected_service"]');
+        
+        if (!shippingInput) {
+            shippingInput = document.createElement('input');
+            shippingInput.type = 'hidden';
+            shippingInput.name = 'selected_shipping_cost';
+            document.getElementById('checkout-form').appendChild(shippingInput);
         }
+        
+        if (!courierInput) {
+            courierInput = document.createElement('input');
+            courierInput.type = 'hidden';
+            courierInput.name = 'selected_courier';
+            document.getElementById('checkout-form').appendChild(courierInput);
+        }
+        
+        if (!serviceInput) {
+            serviceInput = document.createElement('input');
+            serviceInput.type = 'hidden';
+            serviceInput.name = 'selected_service';
+            document.getElementById('checkout-form').appendChild(serviceInput);
+        }
+        
+        shippingInput.value = shippingCost;
+        courierInput.value = courier;
+        serviceInput.value = method;
+    }
+}
+
+// Helper function to update the order summary with shipping cost
+function updateOrderSummary(shippingCost) {
+    // Update shipping cost display
+    const shippingCostElement = document.getElementById('shipping-cost');
+    if (shippingCostElement) {
+        shippingCostElement.textContent = `Rp ${formatNumber(shippingCost)}`;
     }
     
     recalculateTotal();
 }
 
-function formatCurrency(number) {
-    return 'Rp ' + number.toLocaleString('id-ID');
+// Helper function to format numbers
+function formatNumber(number) {
+    return new Intl.NumberFormat('id-ID').format(number);
 }
 
+// Function to recalculate the total
 function recalculateTotal() {
     const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
-    const shippingElement = document.querySelector('#shipping-cost-display .text-sm.font-medium');
-    const taxElement = document.querySelector('.flex.justify-between.py-1:nth-child(3) .text-sm.font-medium');
-    const discountElement = document.querySelector('#discount-amount');
-    const discountRow = document.getElementById('discount-row');
-    const orderTotal = document.getElementById('order-total');
+    const shippingElement = document.getElementById('shipping-cost');
+    const totalElement = document.querySelector('.text-lg.font-bold.text-blue-600');
     
+    if (!subtotalElement || !totalElement) return;
+    
+    // Use the currency parsing function to handle Indonesian number format
     let subtotal = parseCurrency(subtotalElement.textContent);
-    let shipping = parseCurrency(shippingElement.textContent);
-    let tax = parseCurrency(taxElement.textContent);
-    let discount = 0;
+    let shipping = shippingElement ? parseCurrency(shippingElement.textContent) : 0;
     
-    if (!discountRow.classList.contains('hidden') && discountElement) {
-        discount = parseCurrency(discountElement.textContent.replace('- ', ''));
-    }
-    
-    const total = subtotal + shipping + tax - discount;
-    orderTotal.textContent = formatCurrency(total);
+    const total = subtotal + shipping;
+    totalElement.textContent = `Rp ${formatNumber(total)}`;
 }
 
+// Utility function to properly parse Indonesian currency format
 function parseCurrency(currencyStr) {
-    return parseFloat(currencyStr.replace('Rp ', '').replaceAll('.', '').trim()) || 0;
+    if (!currencyStr) return 0;
+    return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
 }
 </script>
 @endsection

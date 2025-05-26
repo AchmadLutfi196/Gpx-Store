@@ -9,11 +9,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\RajaOngkirController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +127,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/coupon/apply', [App\Http\Controllers\PromoCodeController::class, 'apply'])->name('coupon.apply');
     Route::post('/coupon/remove', [App\Http\Controllers\PromoCodeController::class, 'remove'])->name('coupon.remove');
     Route::post('/cart/apply-promo', [CartController::class, 'applyPromo'])->name('cart.apply-promo');
+    
+    // Shipping cost route
+    Route::post('/checkout/shipping-cost', [App\Http\Controllers\CheckoutController::class, 'getShippingCost'])
+        ->name('checkout.shipping-cost');
 });
 
 // Route untuk mengecek status wishlist (tidak perlu auth)
@@ -201,3 +207,10 @@ if (app()->environment('local')) {
 
 // Newsletter Routes
 Route::post('/newsletter/subscribe', [App\Http\Controllers\NewsletterSubscriberController::class, 'subscribe'])->name('newsletter.subscribe');
+
+// RajaOngkir API Routes
+Route::prefix('api/rajaongkir')->group(function () {
+    Route::get('/provinces', [App\Http\Controllers\ApiController::class, 'getProvinces'])->name('rajaongkir.provinces');
+    Route::get('/cities/{provinceId}', [App\Http\Controllers\ApiController::class, 'getCities'])->name('rajaongkir.cities');
+    Route::post('/shipping-cost', [App\Http\Controllers\ApiController::class, 'getShippingCost'])->name('checkout.shipping-cost');
+});

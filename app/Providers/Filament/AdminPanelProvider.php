@@ -60,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
                 LowStockAlert::class,
                 OutOfStockProducts::class,
                 Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class, // Anda bisa menonaktifkan widget ini jika terlalu banyak
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

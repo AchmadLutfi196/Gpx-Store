@@ -195,18 +195,8 @@
                     
                     <div class="px-6 py-4">
                         <div class="flex justify-between py-2">
-                            <span class="text-gray-600">Subtotal</span>
+                            <span class="text-lg font-semibold">Subtotal</span>
                             <span class="font-medium" id="cart-subtotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
-                        </div>
-                        
-                        <div class="flex justify-between py-2">
-                            <span class="text-gray-600">Shipping</span>
-                            <span class="font-medium" id="cart-shipping">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
-                        </div>
-                        
-                        <div class="flex justify-between py-2">
-                            <span class="text-gray-600">Tax</span>
-                            <span class="font-medium" id="cart-tax">Rp {{ number_format($tax, 0, ',', '.') }}</span>
                         </div>
                         
                         @if($discount > 0)
@@ -215,11 +205,6 @@
                                 <span class="font-medium text-red-600" id="cart-discount">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                             </div>
                         @endif
-                        
-                        <div class="flex justify-between py-4 border-t border-gray-200 mt-2">
-                            <span class="text-lg font-semibold">Total</span>
-                            <span class="text-lg font-bold" id="cart-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
-                        </div>
                         
                         @if(Auth::check() && Schema::hasColumn('users', 'email_verified_at') && Auth::user()->email_verified_at === null)
                             <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
@@ -387,20 +372,6 @@
                 // Update the UI to reflect the discount
                 document.getElementById('cart-discount').textContent = '- Rp 50.000';
                 updateCartTotals();
-            });
-        }
-        
-        // Shipping method radios
-        const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
-        
-        if (shippingRadios.length > 0) {
-            shippingRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    // Update shipping cost based on selection
-                    const shippingCost = this.value === 'express' ? 25000 : 10000;
-                    document.getElementById('cart-shipping').textContent = `Rp ${numberFormat(shippingCost)}`;
-                    updateCartTotals();
-                });
             });
         }
         
@@ -605,13 +576,6 @@
                 subtotal += price * quantity;
             });
             
-            // Get shipping cost
-            const shippingText = document.getElementById('cart-shipping').textContent;
-            const shipping = parseFloat(shippingText.replace(/[^0-9]/g, ''));
-            
-            // Calculate tax (11%)
-            const tax = subtotal * 0.11;
-            
             // Get discount if any
             let discount = 0;
             const discountElement = document.getElementById('cart-discount');
@@ -620,13 +584,8 @@
                 discount = parseFloat(discountText.replace(/[^0-9]/g, ''));
             }
             
-            // Calculate total
-            const total = subtotal + shipping + tax - discount;
-            
             // Update UI
             document.getElementById('cart-subtotal').textContent = `Rp ${numberFormat(subtotal)}`;
-            document.getElementById('cart-tax').textContent = `Rp ${numberFormat(tax)}`;
-            document.getElementById('cart-total').textContent = `Rp ${numberFormat(total)}`;
         }
         
         // Helper function to format numbers with thousand separators

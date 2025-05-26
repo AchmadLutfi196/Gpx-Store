@@ -25,10 +25,14 @@
 <form action="{{ route('addresses.store') }}" method="POST">
     @csrf
 
-    <!-- Hidden field to ensure name is included even if something is wrong with the visible fields -->
+    <!-- Hidden fields for form submission -->
     <input type="hidden" name="name" id="hidden_name" value="{{ old('name') }}">
     <input type="hidden" name="phone" id="hidden_phone" value="{{ old('phone') }}">
     <input type="hidden" name="address_line1" id="hidden_address_line1" value="{{ old('address_line1') }}">
+    
+    <!-- Hidden fields for RajaOngkir integration -->
+    <input type="hidden" name="city_id" id="city_id" value="{{ old('city_id') }}">
+    <input type="hidden" name="province_id" id="province_id" value="{{ old('province_id') }}">
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Full Name -->
@@ -74,12 +78,28 @@
             @enderror
         </div>
 
-        <!-- City -->
+        <!-- Province Selection with RajaOngkir -->
+        <div>
+            <label for="province" class="block text-sm font-medium text-gray-700 mb-1">Province <span class="text-red-600">*</span></label>
+            <select name="province" id="province" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required>
+                <option value="">Select Province</option>
+                <!-- Will be populated via API -->
+            </select>
+            @error('province')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- City Selection with RajaOngkir -->
         <div>
             <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City <span class="text-red-600">*</span></label>
-            <input type="text" name="city" id="city" value="{{ old('city') }}" 
+            <select name="city" id="city" 
                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                   required>
+                   required disabled>
+                <option value="">Select Province First</option>
+            </select>
             @error('city')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
@@ -96,20 +116,13 @@
             @enderror
         </div>
 
-        <!-- Province -->
+        <!-- Country (Default to Indonesia) -->
         <div>
-            <label for="province" class="block text-sm font-medium text-gray-700 mb-1">Province <span class="text-red-600">*</span></label>
-            <select name="province" id="province" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required>
-                <option value="">Select Province</option>
-                @foreach($provinces as $province)
-                    <option value="{{ $province }}" {{ old('province') == $province ? 'selected' : '' }}>
-                        {{ $province }}
-                    </option>
-                @endforeach
-            </select>
-            @error('province')
+            <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country <span class="text-red-600">*</span></label>
+            <input type="text" name="country" id="country" value="{{ old('country', 'Indonesia') }}" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   required>
+            @error('country')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -136,22 +149,131 @@
         </button>
     </div>
 </form>
-
-<script>
-// Ensure form submission captures all the required fields
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        // Update hidden fields with current values before submission
-        document.getElementById('hidden_name').value = document.getElementById('name').value;
-        document.getElementById('hidden_phone').value = document.getElementById('phone').value;
-        document.getElementById('hidden_address_line1').value = document.getElementById('address_line1').value;
-    });
-});
-</script>
 @endsection
 
 @section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const provinceSelect = document.getElementById('province');
+    const citySelect = document.getElementById('city');
+    const provinceIdInput = document.getElementById('province_id');
+    const cityIdInput = document.getElementById('city_id');
+
+    // Load provinces from RajaOngkir API
+    loadProvinces();
+
+    // Event listener for province selection
+    provinceSelect.addEventListener('change', function() {
+        const selectedOption = provinceSelect.options[provinceSelect.selectedIndex];
+        const provinceId = selectedOption.dataset.id;
+        const provinceName = selectedOption.value;
+
+        if (provinceId && provinceName) {
+            provinceIdInput.value = provinceId;
+            loadCities(provinceId);
+        } else {
+            citySelect.innerHTML = '<option value="">Select Province First</option>';
+            citySelect.disabled = true;
+            cityIdInput.value = '';
+        }
+    });
+
+    // Event listener for city selection
+    citySelect.addEventListener('change', function() {
+        const selectedOption = citySelect.options[citySelect.selectedIndex];
+        const cityId = selectedOption.dataset.id;
+        
+        if (cityId) {
+            cityIdInput.value = cityId;
+        }
+    });
+
+    // Form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        // Update hidden fields before submission
+        document.getElementById('hidden_name').value = document.getElementById('name').value;
+        document.getElementById('hidden_phone').value = document.getElementById('phone').value;
+        document.getElementById('hidden_address_line1').value = document.getElementById('address_line1').value;
+
+        // Validate that province and city have been selected
+        if (!provinceIdInput.value || !cityIdInput.value) {
+            e.preventDefault();
+            alert('Please select both province and city');
+            return false;
+        }
+    });
+
+    // Function to load provinces
+    function loadProvinces() {
+        fetch('/api/rajaongkir/provinces')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.data) {
+                    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+                    
+                    data.data.forEach(province => {
+                        const option = document.createElement('option');
+                        option.value = province.province;
+                        option.textContent = province.province;
+                        option.dataset.id = province.province_id;
+                        provinceSelect.appendChild(option);
+                    });
+                } else {
+                    console.error('Failed to load provinces:', data.message || 'Unknown error');
+                    provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading provinces:', error);
+                provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
+            });
+    }
+
+    // Function to load cities for selected province
+    function loadCities(provinceId) {
+        citySelect.innerHTML = '<option value="">Loading cities...</option>';
+        citySelect.disabled = true;
+
+        fetch(`/api/rajaongkir/cities/${provinceId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.data) {
+                    citySelect.innerHTML = '<option value="">Select City</option>';
+                    
+                    data.data.forEach(city => {
+                        const option = document.createElement('option');
+                        // Format city name as "Type CityName" e.g. "Kota Jakarta Pusat"
+                        option.value = `${city.type} ${city.city_name}`;
+                        option.textContent = `${city.type} ${city.city_name}`;
+                        option.dataset.id = city.city_id;
+                        citySelect.appendChild(option);
+                    });
+                    
+                    citySelect.disabled = false;
+                } else {
+                    console.error('Failed to load cities:', data.message || 'Unknown error');
+                    citySelect.innerHTML = '<option value="">Error loading cities</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading cities:', error);
+                citySelect.innerHTML = '<option value="">Error loading cities</option>';
+            });
+    }
+});
+</script>
+
 @if(session('sweetAlert'))
 <script>
     document.addEventListener('DOMContentLoaded', function() {
