@@ -120,6 +120,13 @@ class ContactMessageResource extends Resource
                     ->boolean()
                     ->trueColor('success')
                     ->falseColor('warning'),
+                
+                // Add user relationship column
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('User')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -136,6 +143,11 @@ class ContactMessageResource extends Resource
                         '0' => 'Belum Dibalas',
                         '1' => 'Sudah Dibalas',
                     ]),
+                
+                // Add filter by user
+                Tables\Filters\SelectFilter::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name'),
                 
                 Tables\Filters\Filter::make('created_at')
                     ->form([
@@ -167,6 +179,18 @@ class ContactMessageResource extends Resource
                     ->modalHeading(fn (ContactMessage $record) => 'Balas ke: ' . $record->name)
                     ->modalDescription(fn (ContactMessage $record) => 'Subjek: ' . $record->subject)
                     ->form([
+                        Forms\Components\Section::make('Pesan Asli')
+                            ->schema([
+                                Forms\Components\Textarea::make('original_message')
+                                    ->label('Pesan dari Pengirim')
+                                    ->default(fn (ContactMessage $record) => $record->message)
+                                    ->disabled()
+                                    ->rows(3)
+                                    ->extraAttributes(['class' => 'bg-gray-50']),
+                            ])
+                            ->collapsible()
+                            ->collapsed(false),
+                            
                         Forms\Components\Textarea::make('admin_response')
                             ->label('Balasan')
                             ->required()

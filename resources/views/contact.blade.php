@@ -10,7 +10,7 @@
         <!-- Hero Section -->
         <div class="text-center mb-12">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Hubungi Kami</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto">Ada pertanyaan atau butuh bantuan? Tim customer service kami siap membantu. Silahkan isi form di bawah ini dan kami akan merespons secepat mungkin.</p>
+            <p class="text-gray-600 max-w-2xl mx-auto">Ada pertanyaan atau butuh bantuan? Tim customer service kami siap membantu.</p>
         </div>
 
         <div class="max-w-5xl mx-auto">
@@ -109,218 +109,250 @@
                     </div>
                 </div>
 
-                <!-- Contact Form -->
+                <!-- Customer Support Section -->
                 <div class="col-span-1 md:col-span-2">
                     <div class="bg-white p-8 rounded-lg shadow-md">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Kirim Pesan</h2>
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Pusat Layanan Pelanggan</h2>
 
-                        @if(session('success'))
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-6 rounded relative" role="alert">
-                                <span class="block sm:inline">{{ session('success') }}</span>
-                                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                    <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path d="M14.293 5.293a1 1 0 011.414 0l.293.293V7a1 1 0 01-2 0V5.586l.293.293a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
-                                    </svg>
-                                </span>
+                        @auth
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            Selamat datang di pusat layanan pelanggan. Disini Anda dapat mengirimkan pertanyaan, melihat riwayat percakapan, dan mendapatkan bantuan dari tim kami.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        @endif
-
-                        <form action="{{ route('contact.store') }}" method="POST">
-                            @csrf
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Name -->
-                                <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        id="name" 
-                                        name="name" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror" 
-                                        value="{{ old('name') }}" 
-                                        required
-                                    >
-                                    @error('name')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Email -->
-                                <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
-                                    <input 
-                                        type="email" 
-                                        id="email" 
-                                        name="email" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror" 
-                                        value="{{ old('email') }}" 
-                                        required
-                                    >
-                                    @error('email')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Phone -->
-                                <div>
-                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
-                                    <input 
-                                        type="text" 
-                                        id="phone" 
-                                        name="phone" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('phone') border-red-500 @enderror" 
-                                        value="{{ old('phone') }}"
-                                        placeholder="Contoh: 081234567890"
-                                    >
-                                    @error('phone')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Subject -->
-                                <div>
-                                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subjek <span class="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        id="subject" 
-                                        name="subject" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('subject') border-red-500 @enderror" 
-                                        value="{{ old('subject') }}" 
-                                        required
-                                    >
-                                    @error('subject')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Message -->
-                                <div class="md:col-span-2">
-                                    <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Pesan <span class="text-red-500">*</span></label>
-                                    <textarea 
-                                        id="message" 
-                                        name="message" 
-                                        rows="5" 
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('message') border-red-500 @enderror" 
-                                        required
-                                    >{{ old('message') }}</textarea>
-                                    @error('message')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="md:col-span-2">
-                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                        <div class="flex items-center">
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                            </svg>
-                                            Kirim Pesan
+                            
+                            <div class="mb-8">
+                                <h3 class="text-lg font-medium text-gray-800 mb-4">Pesan Terbaru</h3>
+                                
+                                @if(count(auth()->user()->contactMessages ?? []) > 0)
+                                    <div class="bg-white rounded-lg border border-gray-200">
+                                        <div class="overflow-hidden rounded-lg">
+                                            <div class="divide-y divide-gray-200">
+                                                @foreach(auth()->user()->contactMessages->sortByDesc('created_at')->take(3) as $message)
+                                                <a href="{{ route('customer-support.conversation', $message->conversation_id ?? $message->id) }}" class="block hover:bg-gray-50 transition-colors p-4">
+                                                    <div class="flex justify-between items-start">
+                                                        <div>
+                                                            <p class="font-medium text-gray-900">{{ $message->subject }}</p>
+                                                            <p class="text-sm text-gray-600 mt-1 line-clamp-1">{{ Str::limit($message->message, 80) }}</p>
+                                                        </div>
+                                                        <span class="text-xs text-gray-500">{{ $message->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    
+                                                    <div class="mt-2 flex items-center">
+                                                        @if($message->response_sent)
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                                <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 011.414 0l.293.293V7a1 1 0 01-2 0V5.586l.293.293a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+                                                                </svg>
+                                                                Terjawab
+                                                            </span>
+                                                        @else
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                                <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                                </svg>
+                                                                Menunggu Balasan
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </a>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </button>
+                                    </div>
+                                    
+                                    <div class="mt-4 text-right">
+                                        <a href="{{ route('customer-support.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                                            Lihat Semua Percakapan
+                                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                @else
+                                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                        </svg>
+                                        <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada percakapan</h3>
+                                        <p class="mt-1 text-sm text-gray-500">Mulai percakapan baru dengan tim support kami.</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <!-- New Message Form -->
+                            <div class="mt-6">
+                                <h3 class="text-lg font-medium text-gray-800 mb-4">Buat Pesan Baru</h3>
+                                
+                                <form action="{{ route('customer-support.store') }}" method="POST" class="space-y-4">
+                                    @csrf
+                                    
+                                    <div>
+                                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subjek <span class="text-red-500">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            id="subject" 
+                                            name="subject" 
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('subject') border-red-500 @enderror" 
+                                            value="{{ old('subject') }}" 
+                                            required
+                                        >
+                                        @error('subject')
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Pesan <span class="text-red-500">*</span></label>
+                                        <textarea 
+                                            id="message" 
+                                            name="message" 
+                                            rows="5" 
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 @error('message') border-red-500 @enderror" 
+                                            required
+                                        >{{ old('message') }}</textarea>
+                                        @error('message')
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div>
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                            <div class="flex items-center">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                                </svg>
+                                                Kirim Pesan
+                                            </div>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        @else
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+                                <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                </svg>
+                                
+                                <h3 class="mt-4 text-lg font-medium text-gray-900">Masuk untuk mengakses layanan pelanggan</h3>
+                                <p class="mt-2 text-gray-600">Untuk mengirim pesan kepada tim kami dan melacak status pesan Anda, silakan masuk ke akun Anda.</p>
+                                
+                                <div class="mt-6">
+                                    <a href="{{ route('login') }}" class="inline-flex items-center px-5 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                        </svg>
+                                        Masuk
+                                    </a>
+                                    <p class="mt-2 text-sm text-gray-500">
+                                        Belum punya akun? 
+                                        <a href="{{ route('register') }}" class="text-blue-600 font-semibold hover:text-blue-500">
+                                            Daftar sekarang
+                                        </a>
+                                    </p>
                                 </div>
                             </div>
-                        </form>
+                        @endauth
                     </div>
                 </div>
             </div>
-        <!-- Di bawah form kontak, tambahkan: -->
-        <div class="mt-8 p-4 bg-blue-50 rounded-md">
-            <h3 class="text-lg font-semibold text-blue-800 mb-2">Sudah mengirim pesan sebelumnya?</h3>
-            <p class="text-blue-700 mb-3">Anda dapat mengecek status pesan dan balasan dari tim customer service kami.</p>
-            <a href="{{ route('message.check-status') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                </svg>
-                Cek Status Pesan
-            </a>
-        </div>
-    </div>
 
-        <!-- FAQ Section -->
-        <div class="mt-16">
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Pertanyaan Umum</h2>
-            
-            <div class="max-w-3xl mx-auto">
-                <div class="space-y-4">
-                    <!-- FAQ Item 1 -->
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
-                            <span class="font-medium text-gray-800">Bagaimana cara melacak pesanan saya?</span>
-                            <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="hidden p-4 bg-gray-50 faq-content">
-                            <p class="text-gray-600">Anda dapat melacak pesanan dengan masuk ke akun Anda, pilih menu "Pesanan Saya" dan klik tombol "Lacak" pada pesanan yang ingin Anda lacak. Alternatif lain, Anda dapat menggunakan nomor resi yang dikirimkan ke email Anda dan memasukkannya ke halaman pelacakan di website kurir yang digunakan.</p>
+            <!-- FAQ Section -->
+            <div class="mt-16">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Pertanyaan Umum</h2>
+                
+                <div class="max-w-3xl mx-auto">
+                    <div class="space-y-4">
+                        <!-- FAQ Item 1 -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
+                                <span class="font-medium text-gray-800">Bagaimana cara melacak pesanan saya?</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="hidden p-4 bg-gray-50 faq-content">
+                                <p class="text-gray-600">Anda dapat melacak pesanan dengan masuk ke akun Anda, pilih menu "Pesanan Saya" dan klik tombol "Lacak" pada pesanan yang ingin Anda lacak. Alternatif lain, Anda dapat menggunakan nomor resi yang dikirimkan ke email Anda dan memasukkannya ke halaman pelacakan di website kurir yang digunakan.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 2 -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
+                                <span class="font-medium text-gray-800">Berapa lama waktu pengiriman?</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="hidden p-4 bg-gray-50 faq-content">
+                                <p class="text-gray-600">Waktu pengiriman bervariasi tergantung lokasi dan metode pengiriman yang dipilih. Pengiriman reguler biasanya membutuhkan 2-4 hari kerja untuk wilayah Jawa dan 4-7 hari kerja untuk luar Jawa. Untuk pengiriman ekspres, biasanya membutuhkan 1-2 hari kerja.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 3 -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
+                                <span class="font-medium text-gray-800">Bagaimana cara melakukan pengembalian produk?</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="hidden p-4 bg-gray-50 faq-content">
+                                <p class="text-gray-600">Untuk melakukan pengembalian produk, ikuti langkah-langkah berikut:</p>
+                                <ol class="list-decimal ml-5 mt-2">
+                                    <li>Masuk ke akun Anda</li>
+                                    <li>Buka halaman "Pesanan Saya"</li>
+                                    <li>Pilih pesanan yang ingin dikembalikan</li>
+                                    <li>Klik tombol "Ajukan Pengembalian"</li>
+                                    <li>Isi formulir pengembalian dengan alasan dan bukti foto (jika diperlukan)</li>
+                                    <li>Tunggu konfirmasi dari tim kami</li>
+                                </ol>
+                                <p class="mt-2 text-gray-600">Pengembalian harus diajukan dalam waktu 7 hari sejak produk diterima.</p>
+                            </div>
+                        </div>
+                        
+                        
+                        <!-- FAQ Item 4 -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
+                                <span class="font-medium text-gray-800">Metode pembayaran apa saja yang tersedia?</span>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="hidden p-4 bg-gray-50 faq-content">
+                                <p class="text-gray-600">Kami menerima berbagai metode pembayaran, termasuk:</p>
+                                <ul class="list-disc ml-5 mt-2">
+                                    <li>Kartu Kredit (Visa, Mastercard, JCB)</li>
+                                    <li>Transfer Bank (BCA, Mandiri, BNI, BRI)</li>
+                                    <li>E-wallet (GoPay, OVO, Dana, ShopeePay)</li>
+                                    <li>Virtual Account</li>
+                                    <li>Cicilan 0% (untuk pembelian minimal Rp 500.000)</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- FAQ Item 2 -->
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
-                            <span class="font-medium text-gray-800">Berapa lama waktu pengiriman?</span>
-                            <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="hidden p-4 bg-gray-50 faq-content">
-                            <p class="text-gray-600">Waktu pengiriman bervariasi tergantung lokasi dan metode pengiriman yang dipilih. Pengiriman reguler biasanya membutuhkan 2-4 hari kerja untuk wilayah Jawa dan 4-7 hari kerja untuk luar Jawa. Untuk pengiriman ekspres, biasanya membutuhkan 1-2 hari kerja.</p>
+                        <!-- Map Section -->
+                    <div class="mt-16">
+                        <div class="rounded-lg overflow-hidden shadow-md">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2773226946512!2d106.82768931536993!3d-6.22968996288741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3bffbf44d8d%3A0xb4c14ce06c61066!2sJl.%20Sudirman%2C%20Daerah%20Khusus%20Ibukota%20Jakarta!5e0!3m2!1sid!2sid!4v1619023458189!5m2!1sid!2sid"
+                                width="100%"
+                                height="450"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy">
+                            </iframe>
                         </div>
-                    </div>
-                    
-                    <!-- FAQ Item 3 -->
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
-                            <span class="font-medium text-gray-800">Bagaimana cara melakukan pengembalian produk?</span>
-                            <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="hidden p-4 bg-gray-50 faq-content">
-                            <p class="text-gray-600">Untuk melakukan pengembalian produk, ikuti langkah-langkah berikut:</p>
-                            <ol class="list-decimal ml-5 mt-2">
-                                <li>Masuk ke akun Anda</li>
-                                <li>Buka halaman "Pesanan Saya"</li>
-                                <li>Pilih pesanan yang ingin dikembalikan</li>
-                                <li>Klik tombol "Ajukan Pengembalian"</li>
-                                <li>Isi formulir pengembalian dengan alasan dan bukti foto (jika diperlukan)</li>
-                                <li>Tunggu konfirmasi dari tim kami</li>
-                            </ol>
-                            <p class="mt-2 text-gray-600">Pengembalian harus diajukan dalam waktu 7 hari sejak produk diterima.</p>
-                        </div>
-                    </div>
-                    
-                    
-                    <!-- FAQ Item 4 -->
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button class="w-full flex justify-between items-center p-4 focus:outline-none bg-white hover:bg-gray-50" onclick="toggleFaq(this)">
-                            <span class="font-medium text-gray-800">Metode pembayaran apa saja yang tersedia?</span>
-                            <svg class="w-5 h-5 text-gray-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="hidden p-4 bg-gray-50 faq-content">
-                            <p class="text-gray-600">Kami menerima berbagai metode pembayaran, termasuk:</p>
-                            <ul class="list-disc ml-5 mt-2">
-                                <li>Kartu Kredit (Visa, Mastercard, JCB)</li>
-                                <li>Transfer Bank (BCA, Mandiri, BNI, BRI)</li>
-                                <li>E-wallet (GoPay, OVO, Dana, ShopeePay)</li>
-                                <li>Virtual Account</li>
-                                <li>Cicilan 0% (untuk pembelian minimal Rp 500.000)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                    <!-- Map Section -->
-                <div class="mt-16">
-                    <div class="rounded-lg overflow-hidden shadow-md">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2773226946512!2d106.82768931536993!3d-6.22968996288741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3bffbf44d8d%3A0xb4c14ce06c61066!2sJl.%20Sudirman%2C%20Daerah%20Khusus%20Ibukota%20Jakarta!5e0!3m2!1sid!2sid!4v1619023458189!5m2!1sid!2sid"
-                            width="100%"
-                            height="450"
-                            style="border:0;"
-                            allowfullscreen=""
-                            loading="lazy">
-                        </iframe>
                     </div>
                 </div>
             </div>

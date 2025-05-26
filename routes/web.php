@@ -214,3 +214,11 @@ Route::prefix('api/rajaongkir')->group(function () {
     Route::get('/cities/{provinceId}', [App\Http\Controllers\ApiController::class, 'getCities'])->name('rajaongkir.cities');
     Route::post('/shipping-cost', [App\Http\Controllers\ApiController::class, 'getShippingCost'])->name('checkout.shipping-cost');
 });
+
+// Customer Support
+Route::middleware('auth')->prefix('support')->group(function () {
+    Route::get('/', [App\Http\Controllers\CustomerSupportController::class, 'index'])->name('customer-support.index');
+    Route::post('/message', [App\Http\Controllers\CustomerSupportController::class, 'store'])->name('customer-support.store');
+    Route::get('/conversation/{conversationId}', [App\Http\Controllers\CustomerSupportController::class, 'viewConversation'])->name('customer-support.conversation');
+    Route::post('/conversation/{conversationId}/reply', [App\Http\Controllers\CustomerSupportController::class, 'reply'])->name('customer-support.reply');
+});
