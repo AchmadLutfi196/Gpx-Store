@@ -194,9 +194,15 @@
                     </div>
                     
                     <div class="px-6 py-4">
+                        <div class="px-6 py-4">
                         <div class="flex justify-between py-2">
-                            <span class="text-lg font-semibold">Subtotal</span>
+                            <span class="text-gray-600">Subtotal</span>
                             <span class="font-medium" id="cart-subtotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                        </div>
+                        
+                        <div class="flex justify-between py-2">
+                            <span class="text-gray-600">Tax</span>
+                            <span class="font-medium" id="cart-tax">Rp {{ number_format($tax, 0, ',', '.') }}</span>
                         </div>
                         
                         @if($discount > 0)
@@ -205,6 +211,11 @@
                                 <span class="font-medium text-red-600" id="cart-discount">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                             </div>
                         @endif
+                        
+                        <div class="flex justify-between py-4 border-t border-gray-200 mt-2">
+                            <span class="text-lg font-semibold">Total</span>
+                            <span class="text-lg font-bold" id="cart-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                        </div>
                         
                         @if(Auth::check() && Schema::hasColumn('users', 'email_verified_at') && Auth::user()->email_verified_at === null)
                             <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">

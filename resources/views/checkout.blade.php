@@ -188,7 +188,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="name" class="form-label">Full Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control" required>
+                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             @error('name')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -196,7 +196,7 @@
                         
                         <div>
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control" required>
+                            <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             @error('email')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -204,7 +204,7 @@
                         
                         <div>
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control" placeholder="e.g. 08123456789" required>
+                            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789" required>
                             @error('phone')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -212,7 +212,7 @@
 
                         <div>
                             <label for="alt_phone" class="form-label">Alternative Phone (Optional)</label>
-                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control" placeholder="e.g. 08123456789">
+                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789">
                         </div>
                     </div>
                 </div>
@@ -303,24 +303,39 @@
                             <h3 class="text-sm font-medium text-gray-700 mb-2">Pilih Ekspedisi</h3>
                             
                             <!-- Courier Selection -->
-                            <div class="mb-4">
-                                <label for="courier" class="block text-sm font-medium text-gray-700 mb-1">Courier</label>
-                                <select id="courier" name="courier" class="form-control">
-                                    <option value="">Select Courier</option>
-                                    <option value="jne">JNE</option>
-                                    <option value="tiki">TIKI</option>
-                                    <option value="pos">POS Indonesia</option>
-                                    <option value="anteraja">AnterAja</option>
-                                    <option value="sicepat">SiCepat</option>
-                                    <option value="jnt">J&T Express</option>
+                            <label for="courier" class="block text-sm font-medium text-gray-700 mb-2"></label>
+                            <div class="relative">
+                                <select id="courier" name="courier" class="form-control appearance-none pr-10 pl-4 py-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full transition-colors duration-200">
+                                    <option value="" disabled selected>Pilih Jasa Pengiriman</option>
+                                    <option value="jne" class="py-2">JNE</option>
+                                    <option value="tiki" class="py-2">TIKI</option>
+                                    <option value="pos" class="py-2">POS Indonesia</option>
+                                    <option value="anteraja" class="py-2">AnterAja</option>
+                                    <option value="sicepat" class="py-2">SiCepat</option>
+                                    <option value="jnt" class="py-2">J&T Express</option>
                                 </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
                             </div>
                             
-                            <div class="mt-2">
-                                <button type="button" id="check-shipping" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm">
-                                    Cek Opsi Pengiriman
-                                </button>
+                            <div class="flex courier-logos mt-3 mb-4 justify-between">
+                                <img src="{{ asset('images/couriers/jne.png') }}" alt="JNE" class="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity cursor-pointer" onclick="selectCourierByLogo('jne')">
+                                <img src="{{ asset('images/couriers/tiki.png') }}" alt="TIKI" class="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity cursor-pointer" onclick="selectCourierByLogo('tiki')">
+                                <img src="{{ asset('images/couriers/pos.png') }}" alt="POS" class="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity cursor-pointer" onclick="selectCourierByLogo('pos')">
+                                <img src="{{ asset('images/couriers/anteraja.png') }}" alt="AnterAja" class="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity cursor-pointer" onclick="selectCourierByLogo('anteraja')">
+                                <img src="{{ asset('images/couriers/sicepat.png') }}" alt="SiCepat" class="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity cursor-pointer" onclick="selectCourierByLogo('sicepat')">
+                                <img src="{{ asset('images/couriers/jnt.png') }}" alt="J&T" class="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity cursor-pointer" onclick="selectCourierByLogo('jnt')">
                             </div>
+                            
+                            <button type="button" id="check-shipping" class="w-full flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                Cek Opsi Pengiriman
+                            </button>
                         </div>
                         
                         <!-- Shipping results will be displayed here -->
@@ -356,9 +371,9 @@
                         Order Notes
                     </h2>
                     
-                    <div class="mt-4">
-                        <label for="notes" class="form-label">Special Instructions (Optional)</label>
-                        <textarea id="notes" name="notes" rows="3" class="form-control" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
+                    <div class="mt-6 flex">
+                        <label for="notes" class="form-label w-[40%]">Order Notes (Optional)</label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Special instructions for delivery or order">{{ old('notes') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -412,12 +427,15 @@
                             </div>
                             
                             <div class="flex justify-between py-1">
+                                <span class="text-sm text-gray-600">Tax (11%)</span>
+                                <span class="text-sm font-medium">Rp {{ number_format($tax, 0, ',', '.') }}</span>
+                            </div>
+
+                            <div class="flex justify-between py-1">
                                 <span class="text-base font-semibold text-gray-900">Total</span>
                                 <span class="text-lg font-bold text-blue-600">Rp {{ isset($total) ? number_format($total, 0, ',', '.') : number_format($subtotal ?? 0, 0, ',', '.') }}</span>
                             </div>
-<<<<<<< HEAD
-=======
-                            
+
                             <div id="discount-row" class="flex justify-between py-1 {{ $discount > 0 ? 'block' : 'hidden' }}">
                                 <span class="text-sm text-gray-600">Discount</span>
                                 <span class="text-sm font-medium text-red-600" id="discount-amount">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
@@ -472,7 +490,6 @@
                                     </span>
                                 </div>
                             @endif
->>>>>>> 34b0a4b6833d1b5d56daabcb01dc0bd06acb3ec9
                         </div>
                         
                         <!-- Payment Information -->
@@ -939,5 +956,38 @@ function parseCurrency(currencyStr) {
     if (!currencyStr) return 0;
     return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
 }
+
+function selectCourierByLogo(courierCode) {
+    const courierSelect = document.getElementById('courier');
+    courierSelect.value = courierCode;
+    
+    // Highlight logo yang dipilih
+    const logos = document.querySelectorAll('.courier-logos img');
+    logos.forEach(logo => {
+        if (logo.alt.toLowerCase().includes(courierCode.toLowerCase())) {
+            logo.classList.remove('opacity-60');
+            logo.classList.add('opacity-100');
+        } else {
+            logo.classList.add('opacity-60');
+            logo.classList.remove('opacity-100');
+        }
+    });
+}
+
+// Ketika nilai select berubah, update highlight logo
+document.getElementById('courier').addEventListener('change', function() {
+    const selectedValue = this.value;
+    const logos = document.querySelectorAll('.courier-logos img');
+    
+    logos.forEach(logo => {
+        if (logo.alt.toLowerCase().includes(selectedValue.toLowerCase())) {
+            logo.classList.remove('opacity-60');
+            logo.classList.add('opacity-100');
+        } else {
+            logo.classList.add('opacity-60');
+            logo.classList.remove('opacity-100');
+        }
+    });
+});
 </script>
 @endsection
