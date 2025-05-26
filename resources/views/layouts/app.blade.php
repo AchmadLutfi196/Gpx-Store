@@ -475,11 +475,6 @@
                         <li><a href="{{ route('shop') }}" class="text-gray-300 hover:text-white footer-link inline-block">Shop</a></li>
                         <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-white footer-link inline-block">Tentang Kami</a></li>
                         <li><a href="{{ route('contact.index') }}" class="text-gray-300 hover:text-white footer-link inline-block">Customor Service</a></li>
-                        <li>
-                            <a href="{{ route('message.check-status') }}" class="text-gray-300 hover:text-white transition">
-                                Cek Status Pesan
-                            </a>
-                        </li>
                     </ul>
                 </div>
                 
