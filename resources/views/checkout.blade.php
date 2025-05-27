@@ -659,43 +659,40 @@ function recalculateTotal() {
     // Update the display
     totalElement.textContent = `Rp ${formatNumber(total)}`;
     
-    // Also update the hidden input for the backend
-    let totalInput = document.querySelector('input[name="final_total"]');
-    if (!totalInput) {
-        totalInput = document.createElement('input');
-        totalInput.type = 'hidden';
-        totalInput.name = 'final_total';
-        document.getElementById('checkout-form').appendChild(totalInput);
-    }
-    totalInput.value = total;
+    // CRITICAL FIX: We need to ensure these exact values are used for payment
+    // Create special form elements for payment gateway
+    // Use direct value assignment to avoid any formatting/parsing issues
     
-    // Add or update discount information if there's a discount
-    if (discount > 0) {
-        // Find or create the discount info element
-        let discountInfo = document.getElementById('discount-info');
-        if (!discountInfo) {
-            discountInfo = document.createElement('div');
-            discountInfo.id = 'discount-info';
-            discountInfo.className = 'mt-2 text-sm text-green-600';
-            
-            // Insert after the discount row
-            const discountRow = document.getElementById('discount-row');
-            if (discountRow) {
-                discountRow.insertAdjacentElement('afterend', discountInfo);
-            }
-        }
-        
-        // Calculate discount percentage based on subtotal
-        const discountPercentage = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
-        // Modified to show only the percentage
-        discountInfo.textContent = `Potongan ${discountPercentage}%`;
-    } else {
-        // Remove discount info if exists and no discount
-        const discountInfo = document.getElementById('discount-info');
-        if (discountInfo) {
-            discountInfo.remove();
-        }
+    // Create form fields for Midtrans/payment gateway specifically
+    updateOrCreateHiddenInput('payment_total', total);
+    updateOrCreateHiddenInput('payment_subtotal', subtotal); 
+    updateOrCreateHiddenInput('payment_tax', tax);
+    updateOrCreateHiddenInput('payment_shipping', shipping);
+    updateOrCreateHiddenInput('payment_discount', discount);
+    
+    // Set a flag to use these exact values in backend without recalculation
+    updateOrCreateHiddenInput('bypass_calculation', 'true');
+    
+    // Extra logging to trace the values being submitted
+    console.log('PAYMENT VALUES (Sending to gateway):', {
+        payment_total: total,
+        payment_subtotal: subtotal,
+        payment_tax: tax,
+        payment_shipping: shipping,
+        payment_discount: discount
+    });
+}
+
+// Helper function to create or update hidden inputs
+function updateOrCreateHiddenInput(name, value) {
+    let input = document.querySelector(`input[name="${name}"]`);
+    if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        document.getElementById('checkout-form').appendChild(input);
     }
+    input.value = value;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -970,6 +967,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
+            // Ensure all total amounts are calculated and added to form
+            recalculateTotal();
+            
             if (button) {
                 button.disabled = true;
                 button.innerHTML = '<span class="spinner mr-2"></span>Processing...';
@@ -1095,40 +1095,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             // Update existing shipping cost
-            const shippingCostEl = document.getElementById('shipping-cost');
-            if (shippingCostEl) {
-                shippingCostEl.textContent = `Rp ${formatNumber(shippingCost)}`;
-            }
-        }
-        
-        // Recalculate total with the new shipping cost
-        recalculateTotal();
-    }
-
-    // Helper function to update the order summary with shipping cost
-    function updateOrderSummary(shippingCost) {
-        let shippingRow = document.getElementById('shipping-row');
-        const orderTotals = document.querySelector('.border-t.border-gray-200.pt-4.pb-2.space-y-2');
-        
-        if (!shippingRow) {
-            // Create shipping row if it doesn't exist
-            shippingRow = document.createElement('div');
-            shippingRow.id = 'shipping-row';
-            shippingRow.className = 'flex justify-between py-1';
-            shippingRow.innerHTML = `
-                <span class="text-sm text-gray-600">Shipping</span>
-                <span class="text-sm font-medium" id="shipping-cost">Rp ${formatNumber(shippingCost)}</span>
-            `;
-            
-            // Insert before discount row if it exists, otherwise append to the container
-            const discountRow = document.getElementById('discount-row');
-            if (discountRow) {
-                discountRow.insertAdjacentElement('beforebegin', shippingRow);
-            } else {
-                orderTotals.appendChild(shippingRow);
-            }
-        } else {
-            // Update existing shipping cost
             document.getElementById('shipping-cost').textContent = `Rp ${formatNumber(shippingCost)}`;
         }
         
@@ -1176,43 +1142,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update the display
         totalElement.textContent = `Rp ${formatNumber(total)}`;
         
-        // Also update the hidden input for the backend
-        let totalInput = document.querySelector('input[name="final_total"]');
-        if (!totalInput) {
-            totalInput = document.createElement('input');
-            totalInput.type = 'hidden';
-            totalInput.name = 'final_total';
-            document.getElementById('checkout-form').appendChild(totalInput);
-        }
-        totalInput.value = total;
+        // CRITICAL FIX: We need to ensure these exact values are used for payment
+        // Create special form elements for payment gateway
+        // Use direct value assignment to avoid any formatting/parsing issues
         
-        // Add or update discount information if there's a discount
-        if (discount > 0) {
-            // Find or create the discount info element
-            let discountInfo = document.getElementById('discount-info');
-            if (!discountInfo) {
-                discountInfo = document.createElement('div');
-                discountInfo.id = 'discount-info';
-                discountInfo.className = 'mt-2 text-sm text-green-600';
-                
-                // Insert after the discount row
-                const discountRow = document.getElementById('discount-row');
-                if (discountRow) {
-                    discountRow.insertAdjacentElement('afterend', discountInfo);
-                }
-            }
-            
-            // Calculate discount percentage based on subtotal
-            const discountPercentage = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
-            // Modified to show only the percentage
-            discountInfo.textContent = `Potongan ${discountPercentage}%`;
-        } else {
-            // Remove discount info if exists and no discount
-            const discountInfo = document.getElementById('discount-info');
-            if (discountInfo) {
-                discountInfo.remove();
-            }
-        }
+        // Create form fields for Midtrans/payment gateway specifically
+        updateOrCreateHiddenInput('payment_total', total);
+        updateOrCreateHiddenInput('payment_subtotal', subtotal); 
+        updateOrCreateHiddenInput('payment_tax', tax);
+        updateOrCreateHiddenInput('payment_shipping', shipping);
+        updateOrCreateHiddenInput('payment_discount', discount);
+        
+        // Set a flag to use these exact values in backend without recalculation
+        updateOrCreateHiddenInput('bypass_calculation', 'true');
+        
+        // Extra logging to trace the values being submitted
+        console.log('PAYMENT VALUES (Sending to gateway):', {
+            payment_total: total,
+            payment_subtotal: subtotal,
+            payment_tax: tax,
+            payment_shipping: shipping,
+            payment_discount: discount
+        });
     }
 
     // Ketika nilai select berubah, update highlight logo

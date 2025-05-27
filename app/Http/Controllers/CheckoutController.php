@@ -46,8 +46,8 @@ class CheckoutController extends Controller
             return redirect()->route('cart')->with('error', 'Your cart is empty.');
         }
         
-        // Calculate totals with the fixed function
-        $shippingCost = 10000; // Default shipping cost
+        // Initialize with zero shipping - will be selected by user in checkout
+        $shippingCost = 0; 
         $totals = $this->calculateOrderTotals($cartItems, $shippingCost);
         
         $user = Auth::user();
@@ -151,19 +151,22 @@ class CheckoutController extends Controller
             }
         }
         
-        // Ambil metode pengiriman yang dipilih
-        $shipping_method = $request->shipping_method;
+        // Get the shipping cost directly from the request instead of hardcoding
+        $shippingCost = $request->input('selected_shipping_cost', 0);
         
-        // Set biaya pengiriman berdasarkan metode
-        $shipping_cost = 10000; // Default: Regular
-        if ($shipping_method === 'express') {
-            $shipping_cost = 25000;
-        } elseif ($shipping_method === 'same_day') {
-            $shipping_cost = 50000;
+        // Fallback to shipping_amount if selected_shipping_cost is not available
+        if (!$shippingCost) {
+            $shippingCost = $request->input('shipping_amount', 0);
         }
         
-        // Calculate totals with the fixed function
-        $totals = $this->calculateOrderTotals($cartItems, $shipping_cost);
+        // Ensure it's an integer
+        $shippingCost = (int)$shippingCost;
+        
+        // Log the shipping cost for debugging
+        Log::debug("Using shipping cost from request: {$shippingCost}");
+        
+        // Calculate totals with the dynamic shipping cost from user selection
+        $totals = $this->calculateOrderTotals($cartItems, $shippingCost);
         
         $subtotal = $totals['subtotal'];
         $tax = $totals['tax'];
@@ -190,11 +193,11 @@ class CheckoutController extends Controller
         $order->order_number = 'ORD-' . strtoupper(Str::random(10));
         $order->status = 'pending';
         $order->total_amount = $total;
-        $order->shipping_amount = $shipping_cost;
+        $order->shipping_amount = $shippingCost; // Use the dynamic shipping cost
         $order->tax_amount = $tax;
         $order->discount_amount = $discount;
         $order->promo_code_id = $promo_id;
-        $order->shipping_method = $shipping_method;
+        $order->shipping_method = $request->shipping_method;
         
         // Atur alamat pengiriman
         if ($request->has('address_id')) {
@@ -304,10 +307,10 @@ class CheckoutController extends Controller
         
         // Tambahkan biaya pengiriman sebagai item
         $params['item_details'][] = [
-            'id' => 'SHIPPING-' . $shipping_method,
-            'price' => (int) $shipping_cost,
+            'id' => 'SHIPPING-' . $request->shipping_method,
+            'price' => (int) $shippingCost,
             'quantity' => 1,
-            'name' => ucfirst($shipping_method) . ' Shipping',
+            'name' => ucfirst($request->shipping_method) . ' Shipping',
         ];
         
         // Tambahkan pajak sebagai item

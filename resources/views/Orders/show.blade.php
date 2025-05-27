@@ -51,6 +51,36 @@
     .payment-badge {
         @apply px-3 py-1.5 rounded-md text-xs font-medium;
     }
+    
+    /* Courier badge */
+    .courier-badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border;
+    }
+    
+    .courier-logo {
+        height: 20px;
+        width: auto;
+        margin-right: 6px;
+    }
+    
+    /* Shipping timeline */
+    .shipping-timeline {
+        @apply relative pl-6 pb-6;
+    }
+    
+    .shipping-timeline:before {
+        content: "";
+        @apply absolute top-0 bottom-0 left-2.5 w-px bg-gray-200;
+    }
+    
+    .shipping-timeline-item {
+        @apply relative mb-4 last:mb-0;
+    }
+    
+    .shipping-timeline-item:before {
+        content: "";
+        @apply absolute top-2 left-[-18px] w-4 h-4 rounded-full bg-white border-2 border-blue-500;
+    }
 </style>
 @endsection
 
@@ -212,7 +242,14 @@
                     <span class="font-medium">Rp {{ number_format($order->total_amount - $order->shipping_amount - $order->tax_amount + $order->discount_amount, 0, ',', '.') }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="text-gray-600">Biaya Pengiriman ({{ ucfirst($order->shipping_method) }})</span>
+                    <span class="text-gray-600">
+                        Biaya Pengiriman 
+                        @if($order->shipping_courier && $order->shipping_service)
+                            ({{ strtoupper($order->shipping_courier) }} - {{ $order->shipping_service }})
+                        @elseif($order->shipping_method)
+                            ({{ ucfirst($order->shipping_method) }})
+                        @endif
+                    </span>
                     <span class="font-medium">Rp {{ number_format($order->shipping_amount, 0, ',', '.') }}</span>
                 </div>
                 <div class="info-row">
