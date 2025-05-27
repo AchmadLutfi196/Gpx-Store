@@ -244,11 +244,25 @@
                 <div class="info-row">
                     <span class="text-gray-600">
                         Biaya Pengiriman 
-                        @if($order->shipping_courier && $order->shipping_service)
-                            ({{ strtoupper($order->shipping_courier) }} - {{ $order->shipping_service }})
-                        @elseif($order->shipping_method)
-                            ({{ ucfirst($order->shipping_method) }})
-                        @endif
+                        <span class="inline-flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-xs font-medium ml-2">
+                            @if($order->selected_courier && $order->selected_service)
+                                <img src="{{ asset('images/couriers/' . strtolower($order->selected_courier) . '.png') }}" 
+                                     alt="{{ $order->selected_courier }}" 
+                                     class="h-4 mr-1.5 object-contain"
+                                     onerror="this.style.display='none'">
+                                {{ $order->selected_courier }} {{ $order->selected_service }}
+                            @elseif($order->shipping_courier && $order->shipping_method)
+                                <img src="{{ asset('images/couriers/' . strtolower($order->shipping_courier) . '.png') }}" 
+                                     alt="{{ $order->shipping_courier }}" 
+                                     class="h-4 mr-1.5 object-contain"
+                                     onerror="this.style.display='none'">
+                                {{ strtoupper($order->shipping_courier) }} {{ $order->shipping_method }}
+                            @elseif($order->shipping_method)
+                                {{ ucfirst($order->shipping_method) }}
+                            @else
+                                Reguler
+                            @endif
+                        </span>
                     </span>
                     <span class="font-medium">Rp {{ number_format($order->shipping_amount, 0, ',', '.') }}</span>
                 </div>
