@@ -368,23 +368,119 @@ class RajaOngkirService
                     ],
                 ]
             ],
+            // Adding missing couriers that might be in the frontend
+            'anteraja' => [
+                'code' => 'anteraja',
+                'name' => 'AnterAja',
+                'costs' => [
+                    [
+                        'service' => 'Regular',
+                        'description' => 'Layanan Reguler',
+                        'cost' => [
+                            [
+                                'value' => 16000,
+                                'etd' => '1-2',
+                                'note' => ''
+                            ]
+                        ]
+                    ],
+                    [
+                        'service' => 'Express',
+                        'description' => 'Layanan Express',
+                        'cost' => [
+                            [
+                                'value' => 25000,
+                                'etd' => '1',
+                                'note' => ''
+                            ]
+                        ]
+                    ],
+                ]
+            ],
+            'sicepat' => [
+                'code' => 'sicepat',
+                'name' => 'SiCepat',
+                'costs' => [
+                    [
+                        'service' => 'REG',
+                        'description' => 'Layanan Reguler',
+                        'cost' => [
+                            [
+                                'value' => 17000,
+                                'etd' => '1-2',
+                                'note' => ''
+                            ]
+                        ]
+                    ],
+                    [
+                        'service' => 'BEST',
+                        'description' => 'Besok Sampai',
+                        'cost' => [
+                            [
+                                'value' => 28000,
+                                'etd' => '1',
+                                'note' => ''
+                            ]
+                        ]
+                    ],
+                ]
+            ],
+            'jnt' => [
+                'code' => 'jnt',
+                'name' => 'J&T Express',
+                'costs' => [
+                    [
+                        'service' => 'EZ',
+                        'description' => 'Economy Service',
+                        'cost' => [
+                            [
+                                'value' => 15500,
+                                'etd' => '2-3',
+                                'note' => ''
+                            ]
+                        ]
+                    ],
+                    [
+                        'service' => 'REG',
+                        'description' => 'Regular Service',
+                        'cost' => [
+                            [
+                                'value' => 22000,
+                                'etd' => '1-2',
+                                'note' => ''
+                            ]
+                        ]
+                    ],
+                ]
+            ],
         ];
         
-        // Apply weight multiplier (for heavy packages)
+        // Apply weight multiplier (for heavier packages)
         if ($weight > 1000) {
             $weightMultiplier = ceil($weight / 1000);
-            foreach ($courierData as &$courier) {
-                foreach ($courier['costs'] as &$cost) {
-                    $cost['cost'][0]['value'] *= $weightMultiplier;
+            
+            // Loop through each courier service and update costs based on weight
+            foreach ($courierData as &$courierInfo) {
+                foreach ($courierInfo['costs'] as &$service) {
+                    foreach ($service['cost'] as &$cost) {
+                        $cost['value'] = $cost['value'] * $weightMultiplier;
+                    }
                 }
             }
+            
+            Log::info('Applying weight multiplier to shipping cost', [
+                'weight' => $weight, 
+                'multiplier' => $weightMultiplier
+            ]);
         }
 
         // Return data for the requested courier only
-        if (array_key_exists($courier, $courierData)) {
-            return [$courierData[$courier]];
+        if (array_key_exists(strtolower($courier), $courierData)) {
+            Log::info('Returning static shipping cost for courier', ['courier' => $courier]);
+            return [$courierData[strtolower($courier)]];
         }
         
+        Log::warning('Courier not found in static data', ['requested' => $courier]);
         return [];
     }
 }

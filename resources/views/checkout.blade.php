@@ -177,7 +177,6 @@
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                </svg>
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm">Informasi ini akan digunakan untuk keperluan pengiriman dan konfirmasi pesanan.</p>
@@ -350,7 +349,6 @@
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                    </svg>
                                 </div>
                                 <div class="ml-3">
                                     <p>Jika Anda ingin menggunakan alamat pengiriman yang berbeda, silakan ubah alamat pengiriman pada halaman profil Anda.</p>
@@ -423,18 +421,15 @@
                         <div class="border-t border-gray-200 pt-4 pb-2 space-y-2">
                             <div class="flex justify-between py-1">
                                 <span class="text-sm text-gray-600">Subtotal</span>
-                                <span class="text-sm font-medium">Rp {{ isset($subtotal) ? number_format($subtotal, 0, ',', '.') : '0' }}</span>
+                                <span class="text-sm font-medium" id="subtotal-amount">Rp {{ isset($subtotal) ? number_format($subtotal, 0, ',', '.') : '0' }}</span>
                             </div>
                             
                             <div class="flex justify-between py-1">
                                 <span class="text-sm text-gray-600">Tax (11%)</span>
-                                <span class="text-sm font-medium">Rp {{ number_format($tax, 0, ',', '.') }}</span>
+                                <span class="text-sm font-medium" id="tax-amount">Rp {{ number_format($tax, 0, ',', '.') }}</span>
                             </div>
-
-                            <div class="flex justify-between py-1">
-                                <span class="text-base font-semibold text-gray-900">Total</span>
-                                <span class="text-lg font-bold text-blue-600">Rp {{ isset($total) ? number_format($total, 0, ',', '.') : number_format($subtotal ?? 0, 0, ',', '.') }}</span>
-                            </div>
+                            
+                            <!-- Shipping row will be added here dynamically -->
 
                             <div id="discount-row" class="flex justify-between py-1 {{ $discount > 0 ? 'block' : 'hidden' }}">
                                 <span class="text-sm text-gray-600">Discount</span>
@@ -442,9 +437,10 @@
                             </div>
                         </div>
                         
+                        <!-- Only one Total row -->
                         <div class="flex justify-between py-3 border-t border-gray-200 mt-2">
                             <span class="text-base font-semibold text-gray-900">Total</span>
-                            <span class="text-lg font-bold text-blue-600" id="order-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            <span class="text-lg font-bold text-blue-600" id="order-total">Rp {{ number_format($subtotal + $tax - $discount, 0, ',', '.') }}</span>
                         </div>
                         
                         <!-- Coupon Code -->
@@ -467,29 +463,13 @@
                                     </button>
                                 @else
                                     <button type="button" id="apply-coupon" 
-                                        class="btn-outline rounded-l-none text-white hover:bg-blue-700 border-l-0 bg-blue-600 p-2">
+                                        class="btn-outline rounded-l-none text-blue-600 hover:bg-blue-50 border-l-0">
                                         Apply
                                     </button>
                                 @endif
                             </div>
                             
                             <div id="promo-message" class="mt-2 text-sm hidden"></div>
-                            
-                            @if(isset($appliedPromo))
-                                <div class="mt-2 text-sm text-green-600 font-medium">
-                                    <span class="inline-flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        Promo "{{ $appliedPromo['code'] }}" applied: 
-                                        @if($appliedPromo['discount_type'] === 'percentage')
-                                            {{ $appliedPromo['discount_value'] }}% off
-                                        @else
-                                            Rp {{ number_format($appliedPromo['discount_value'], 0, ',', '.') }} off
-                                        @endif
-                                    </span>
-                                </div>
-                            @endif
                         </div>
                         
                         <!-- Payment Information -->
@@ -519,6 +499,205 @@
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// Make selectCourierByLogo globally accessible
+function selectCourierByLogo(courierCode) {
+    const courierSelect = document.getElementById('courier');
+    if (courierSelect) {
+        courierSelect.value = courierCode;
+        
+        // Trigger change event to ensure proper behavior
+        const changeEvent = new Event('change', { bubbles: true });
+        courierSelect.dispatchEvent(changeEvent);
+        
+        // Highlight the selected logo
+        const logos = document.querySelectorAll('.courier-logos img');
+        logos.forEach(logo => {
+            if (logo.alt.toLowerCase().includes(courierCode.toLowerCase())) {
+                logo.classList.remove('opacity-60');
+                logo.classList.add('opacity-100');
+            } else {
+                logo.classList.add('opacity-60');
+                logo.classList.remove('opacity-100');
+            }
+        });
+    }
+}
+
+// Make shipping method functions globally accessible
+function selectShippingMethod(element, method) {
+    const shippingMethods = document.querySelectorAll('.shipping-method');
+    shippingMethods.forEach(method => {
+        method.classList.remove('selected');
+    });
+    
+    element.classList.add('selected');
+    
+    const radio = element.querySelector('input[type="radio"]');
+    if (radio) {
+        radio.checked = true;
+        
+        // Get shipping cost and courier from data attribute
+        const shippingCost = parseInt(radio.getAttribute('data-cost') || 0);
+        const courier = radio.getAttribute('data-courier');
+        
+        // Update shipping cost in order summary
+        updateOrderSummary(shippingCost);
+        
+        // Add hidden input fields for the form submission
+        let shippingInput = document.querySelector('input[name="selected_shipping_cost"]');
+        let courierInput = document.querySelector('input[name="selected_courier"]');
+        let serviceInput = document.querySelector('input[name="selected_service"]');
+        
+        if (!shippingInput) {
+            shippingInput = document.createElement('input');
+            shippingInput.type = 'hidden';
+            shippingInput.name = 'selected_shipping_cost';
+            document.getElementById('checkout-form').appendChild(shippingInput);
+        }
+        
+        if (!courierInput) {
+            courierInput = document.createElement('input');
+            courierInput.type = 'hidden';
+            courierInput.name = 'selected_courier';
+            document.getElementById('checkout-form').appendChild(courierInput);
+        }
+        
+        if (!serviceInput) {
+            serviceInput = document.createElement('input');
+            serviceInput.type = 'hidden';
+            serviceInput.name = 'selected_service';
+            document.getElementById('checkout-form').appendChild(serviceInput);
+        }
+        
+        shippingInput.value = shippingCost;
+        courierInput.value = courier;
+        serviceInput.value = method;
+        
+        // Log the shipping cost change for debugging
+        console.log('Shipping cost updated:', {
+            cost: shippingCost,
+            courier: courier,
+            service: method
+        });
+    }
+}
+
+// Helper function to update order summary (making globally accessible)
+function updateOrderSummary(shippingCost) {
+    let shippingRow = document.getElementById('shipping-row');
+    const orderTotals = document.querySelector('.border-t.border-gray-200.pt-4.pb-2.space-y-2');
+    
+    if (!shippingRow) {
+        // Create shipping row if it doesn't exist
+        shippingRow = document.createElement('div');
+        shippingRow.id = 'shipping-row';
+        shippingRow.className = 'flex justify-between py-1';
+        shippingRow.innerHTML = `
+            <span class="text-sm text-gray-600">Shipping</span>
+            <span class="text-sm font-medium" id="shipping-cost">Rp ${formatNumber(shippingCost)}</span>
+        `;
+        
+        // Insert before discount row if it exists, otherwise append to the container
+        const discountRow = document.getElementById('discount-row');
+        if (discountRow && orderTotals) {
+            discountRow.insertAdjacentElement('beforebegin', shippingRow);
+        } else if (orderTotals) {
+            orderTotals.appendChild(shippingRow);
+        }
+    } else {
+        // Update existing shipping cost
+        const shippingCostEl = document.getElementById('shipping-cost');
+        if (shippingCostEl) {
+            shippingCostEl.textContent = `Rp ${formatNumber(shippingCost)}`;
+        }
+    }
+    
+    // Recalculate total with the new shipping cost
+    recalculateTotal();
+}
+
+// Utilities needed by our global functions
+function formatNumber(number) {
+    return new Intl.NumberFormat('id-ID').format(number);
+}
+
+function parseCurrency(currencyStr) {
+    if (!currencyStr) return 0;
+    return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
+}
+
+function recalculateTotal() {
+    const subtotalElement = document.getElementById('subtotal-amount');
+    const taxElement = document.getElementById('tax-amount');
+    const shippingElement = document.getElementById('shipping-cost');
+    const discountElement = document.getElementById('discount-amount');
+    const totalElement = document.getElementById('order-total');
+    
+    if (!subtotalElement || !totalElement) return;
+    
+    // Parse all currency values
+    let subtotal = parseCurrency(subtotalElement.textContent);
+    let tax = taxElement ? parseCurrency(taxElement.textContent) : 0;
+    let shipping = 0; // Default to 0
+    let discount = 0;
+    
+    // Only add shipping if the element exists (meaning shipping was selected)
+    if (shippingElement) {
+        shipping = parseCurrency(shippingElement.textContent);
+        console.log('Current shipping cost:', shipping);
+    }
+    
+    // Only subtract discount if it exists
+    if (discountElement && window.getComputedStyle(discountElement.parentElement).display !== 'none') {
+        discount = parseCurrency(discountElement.textContent);
+    }
+    
+    // Calculate total
+    const total = subtotal + tax + shipping - discount;
+    console.log('Calculated total:', { subtotal, tax, shipping, discount, total });
+    
+    // Update the display
+    totalElement.textContent = `Rp ${formatNumber(total)}`;
+    
+    // Also update the hidden input for the backend
+    let totalInput = document.querySelector('input[name="final_total"]');
+    if (!totalInput) {
+        totalInput = document.createElement('input');
+        totalInput.type = 'hidden';
+        totalInput.name = 'final_total';
+        document.getElementById('checkout-form').appendChild(totalInput);
+    }
+    totalInput.value = total;
+    
+    // Add or update discount information if there's a discount
+    if (discount > 0) {
+        // Find or create the discount info element
+        let discountInfo = document.getElementById('discount-info');
+        if (!discountInfo) {
+            discountInfo = document.createElement('div');
+            discountInfo.id = 'discount-info';
+            discountInfo.className = 'mt-2 text-sm text-green-600';
+            
+            // Insert after the discount row
+            const discountRow = document.getElementById('discount-row');
+            if (discountRow) {
+                discountRow.insertAdjacentElement('afterend', discountInfo);
+            }
+        }
+        
+        // Calculate discount percentage based on subtotal
+        const discountPercentage = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
+        // Modified to show only the percentage
+        discountInfo.textContent = `Potongan ${discountPercentage}%`;
+    } else {
+        // Remove discount info if exists and no discount
+        const discountInfo = document.getElementById('discount-info');
+        if (discountInfo) {
+            discountInfo.remove();
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Checkout page loaded');
     
@@ -605,6 +784,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Calculate initial total without shipping on page load
+    // We need to make sure the total only includes subtotal + tax - discount initially
+    recalculateTotal();
+    
     // RajaOngkir API configuration
     const rajaOngkirConfig = {
         // Change to false when using production environment
@@ -684,6 +867,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                console.log('Shipping response:', data);
+                
                 if (data.success && data.results && data.results.length > 0) {
                     let html = '<div class="space-y-3">';
                     
@@ -755,64 +940,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Helper function to update the order summary with shipping cost
-    function updateOrderSummary(shippingCost) {
-        // Add shipping row if it doesn't exist
-        let orderTotals = document.querySelector('.border-t.border-gray-200.pt-4.pb-2.space-y-2');
-        let shippingRow = document.getElementById('shipping-row');
-        
-        if (!shippingRow) {
-            shippingRow = document.createElement('div');
-            shippingRow.id = 'shipping-row';
-            shippingRow.className = 'flex justify-between py-1';
-            shippingRow.innerHTML = `
-                <span class="text-sm text-gray-600">Shipping</span>
-                <span class="text-sm font-medium" id="shipping-cost">Rp ${formatNumber(shippingCost)}</span>
-            `;
-            
-            // Insert after subtotal
-            const subtotalRow = orderTotals.querySelector('div:first-child');
-            subtotalRow.insertAdjacentElement('afterend', shippingRow);
-        } else {
-            document.getElementById('shipping-cost').textContent = `Rp ${formatNumber(shippingCost)}`;
-        }
-        
-        // Recalculate total
-        recalculateTotal();
-    }
-    
-    // Helper functions for currency handling
-    function formatNumber(number) {
-        return new Intl.NumberFormat('id-ID').format(number);
-    }
-    
-    // Function to recalculateTotal
-    function recalculateTotal() {
-        const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
-        const shippingElement = document.getElementById('shipping-cost');
-        const totalElement = document.querySelector('.text-lg.font-bold.text-blue-600');
-        
-        if (!subtotalElement || !totalElement) return;
-        
-        // Use the currency parsing function to handle Indonesian number format
-        let subtotal = parseCurrency(subtotalElement.textContent);
-        let shipping = shippingElement ? parseCurrency(shippingElement.textContent) : 0;
-        
-        const total = subtotal + shipping;
-        totalElement.textContent = `Rp ${formatNumber(total)}`;
-    }
-    
-    // Utility function to properly parse Indonesian currency format
-    function parseCurrency(currencyStr) {
-        if (!currencyStr) return 0;
-        return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
-    }
-    
     // Form submission handler
     const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', function(e) {
             const button = document.getElementById('place-order-button');
+            
+            // Check if shipping method is selected
+            const shippingMethodSelected = document.querySelector('input[name="shipping_method"]:checked');
+            if (!shippingMethodSelected) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Shipping Method Required',
+                    text: 'Silakan pilih metode pengiriman sebelum melanjutkan ke pembayaran',
+                    confirmButtonText: 'OK'
+                });
+                
+                // Scroll to shipping section
+                const shippingMethodSection = document.querySelector('#shipping-options');
+                if (shippingMethodSection) {
+                    shippingMethodSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+                
+                return false;
+            }
+            
             if (button) {
                 button.disabled = true;
                 button.innerHTML = '<span class="spinner mr-2"></span>Processing...';
@@ -822,6 +979,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // If no address is selected, prevent form submission
             if (!selectedAddress) {
                 e.preventDefault();
+                button.disabled = false;
+                button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
+                button.classList.remove('opacity-75', 'cursor-not-allowed');
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Alamat Pengiriman Diperlukan',
@@ -832,18 +993,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = "{{ route('addresses.create') }}";
-                    } else {
-                        if (button) {
-                            button.disabled = false;
-                            button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
-                            button.classList.remove('opacity-75', 'cursor-not-allowed');
-                        }
                     }
                 });
             }
             
             @if(isset($addresses) && count($addresses) == 0)
             e.preventDefault();
+            button.disabled = false;
+            button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
+            button.classList.remove('opacity-75', 'cursor-not-allowed');
+            
             Swal.fire({
                 icon: 'error',
                 title: 'Alamat Pengiriman Diperlukan',
@@ -854,140 +1013,410 @@ document.addEventListener('DOMContentLoaded', function() {
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "{{ route('addresses.create') }}";
-                } else {
-                    if (button) {
-                        button.disabled = false;
-                        button.innerHTML = '<span>Place Order</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
-                        button.classList.remove('opacity-75', 'cursor-not-allowed');
-                    }
                 }
             });
             @endif
         });
     }
-});
 
-// Function to select shipping method
-function selectShippingMethod(element, method) {
-    const shippingMethods = document.querySelectorAll('.shipping-method');
-    shippingMethods.forEach(method => {
-        method.classList.remove('selected');
-    });
-    
-    element.classList.add('selected');
-    
-    const radio = element.querySelector('input[type="radio"]');
-    if (radio) {
-        radio.checked = true;
+    // Make function to select shipping method globally accessible
+    function selectShippingMethod(element, method) {
+        const shippingMethods = document.querySelectorAll('.shipping-method');
+        shippingMethods.forEach(method => {
+            method.classList.remove('selected');
+        });
         
-        // Get shipping cost and courier from data attribute
-        const shippingCost = parseInt(radio.getAttribute('data-cost') || 0);
-        const courier = radio.getAttribute('data-courier');
+        element.classList.add('selected');
         
-        // Update shipping cost in order summary
-        updateOrderSummary(shippingCost);
-        
-        // Add hidden input fields for the form submission
-        let shippingInput = document.querySelector('input[name="selected_shipping_cost"]');
-        let courierInput = document.querySelector('input[name="selected_courier"]');
-        let serviceInput = document.querySelector('input[name="selected_service"]');
-        
-        if (!shippingInput) {
-            shippingInput = document.createElement('input');
-            shippingInput.type = 'hidden';
-            shippingInput.name = 'selected_shipping_cost';
-            document.getElementById('checkout-form').appendChild(shippingInput);
+        const radio = element.querySelector('input[type="radio"]');
+        if (radio) {
+            radio.checked = true;
+            
+            // Get shipping cost and courier from data attribute
+            const shippingCost = parseInt(radio.getAttribute('data-cost') || 0);
+            const courier = radio.getAttribute('data-courier');
+            
+            // Update shipping cost in order summary
+            updateOrderSummary(shippingCost);
+            
+            // Add hidden input fields for the form submission
+            let shippingInput = document.querySelector('input[name="selected_shipping_cost"]');
+            let courierInput = document.querySelector('input[name="selected_courier"]');
+            let serviceInput = document.querySelector('input[name="selected_service"]');
+            
+            if (!shippingInput) {
+                shippingInput = document.createElement('input');
+                shippingInput.type = 'hidden';
+                shippingInput.name = 'selected_shipping_cost';
+                document.getElementById('checkout-form').appendChild(shippingInput);
+            }
+            
+            if (!courierInput) {
+                courierInput = document.createElement('input');
+                courierInput.type = 'hidden';
+                courierInput.name = 'selected_courier';
+                document.getElementById('checkout-form').appendChild(courierInput);
+            }
+            
+            if (!serviceInput) {
+                serviceInput = document.createElement('input');
+                serviceInput.type = 'hidden';
+                serviceInput.name = 'selected_service';
+                document.getElementById('checkout-form').appendChild(serviceInput);
+            }
+            
+            shippingInput.value = shippingCost;
+            courierInput.value = courier;
+            serviceInput.value = method;
         }
-        
-        if (!courierInput) {
-            courierInput = document.createElement('input');
-            courierInput.type = 'hidden';
-            courierInput.name = 'selected_courier';
-            document.getElementById('checkout-form').appendChild(courierInput);
-        }
-        
-        if (!serviceInput) {
-            serviceInput = document.createElement('input');
-            serviceInput.type = 'hidden';
-            serviceInput.name = 'selected_service';
-            document.getElementById('checkout-form').appendChild(serviceInput);
-        }
-        
-        shippingInput.value = shippingCost;
-        courierInput.value = courier;
-        serviceInput.value = method;
     }
-}
 
-// Helper function to update the order summary with shipping cost
-function updateOrderSummary(shippingCost) {
-    // Update shipping cost display
-    const shippingCostElement = document.getElementById('shipping-cost');
-    if (shippingCostElement) {
-        shippingCostElement.textContent = `Rp ${formatNumber(shippingCost)}`;
+    // Make updateOrderSummary function globally accessible too
+    function updateOrderSummary(shippingCost) {
+        let shippingRow = document.getElementById('shipping-row');
+        const orderTotals = document.querySelector('.border-t.border-gray-200.pt-4.pb-2.space-y-2');
+        
+        if (!shippingRow) {
+            // Create shipping row if it doesn't exist
+            shippingRow = document.createElement('div');
+            shippingRow.id = 'shipping-row';
+            shippingRow.className = 'flex justify-between py-1';
+            shippingRow.innerHTML = `
+                <span class="text-sm text-gray-600">Shipping</span>
+                <span class="text-sm font-medium" id="shipping-cost">Rp ${formatNumber(shippingCost)}</span>
+            `;
+            
+            // Insert before discount row if it exists, otherwise append to the container
+            const discountRow = document.getElementById('discount-row');
+            if (discountRow && orderTotals) {
+                discountRow.insertAdjacentElement('beforebegin', shippingRow);
+            } else if (orderTotals) {
+                orderTotals.appendChild(shippingRow);
+            }
+        } else {
+            // Update existing shipping cost
+            const shippingCostEl = document.getElementById('shipping-cost');
+            if (shippingCostEl) {
+                shippingCostEl.textContent = `Rp ${formatNumber(shippingCost)}`;
+            }
+        }
+        
+        // Recalculate total with the new shipping cost
+        recalculateTotal();
     }
-    
-    recalculateTotal();
-}
 
-// Helper function to format numbers
-function formatNumber(number) {
-    return new Intl.NumberFormat('id-ID').format(number);
-}
-
-// Function to recalculate the total
-function recalculateTotal() {
-    const subtotalElement = document.querySelector('.flex.justify-between.py-1:first-child .text-sm.font-medium');
-    const shippingElement = document.getElementById('shipping-cost');
-    const totalElement = document.querySelector('.text-lg.font-bold.text-blue-600');
-    
-    if (!subtotalElement || !totalElement) return;
-    
-    // Use the currency parsing function to handle Indonesian number format
-    let subtotal = parseCurrency(subtotalElement.textContent);
-    let shipping = shippingElement ? parseCurrency(shippingElement.textContent) : 0;
-    
-    const total = subtotal + shipping;
-    totalElement.textContent = `Rp ${formatNumber(total)}`;
-}
-
-// Utility function to properly parse Indonesian currency format
-function parseCurrency(currencyStr) {
-    if (!currencyStr) return 0;
-    return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
-}
-
-function selectCourierByLogo(courierCode) {
-    const courierSelect = document.getElementById('courier');
-    courierSelect.value = courierCode;
-    
-    // Highlight logo yang dipilih
-    const logos = document.querySelectorAll('.courier-logos img');
-    logos.forEach(logo => {
-        if (logo.alt.toLowerCase().includes(courierCode.toLowerCase())) {
-            logo.classList.remove('opacity-60');
-            logo.classList.add('opacity-100');
+    // Helper function to update the order summary with shipping cost
+    function updateOrderSummary(shippingCost) {
+        let shippingRow = document.getElementById('shipping-row');
+        const orderTotals = document.querySelector('.border-t.border-gray-200.pt-4.pb-2.space-y-2');
+        
+        if (!shippingRow) {
+            // Create shipping row if it doesn't exist
+            shippingRow = document.createElement('div');
+            shippingRow.id = 'shipping-row';
+            shippingRow.className = 'flex justify-between py-1';
+            shippingRow.innerHTML = `
+                <span class="text-sm text-gray-600">Shipping</span>
+                <span class="text-sm font-medium" id="shipping-cost">Rp ${formatNumber(shippingCost)}</span>
+            `;
+            
+            // Insert before discount row if it exists, otherwise append to the container
+            const discountRow = document.getElementById('discount-row');
+            if (discountRow) {
+                discountRow.insertAdjacentElement('beforebegin', shippingRow);
+            } else {
+                orderTotals.appendChild(shippingRow);
+            }
         } else {
-            logo.classList.add('opacity-60');
-            logo.classList.remove('opacity-100');
+            // Update existing shipping cost
+            document.getElementById('shipping-cost').textContent = `Rp ${formatNumber(shippingCost)}`;
         }
-    });
-}
+        
+        // Recalculate total with the new shipping cost
+        recalculateTotal();
+    }
 
-// Ketika nilai select berubah, update highlight logo
-document.getElementById('courier').addEventListener('change', function() {
-    const selectedValue = this.value;
-    const logos = document.querySelectorAll('.courier-logos img');
-    
-    logos.forEach(logo => {
-        if (logo.alt.toLowerCase().includes(selectedValue.toLowerCase())) {
-            logo.classList.remove('opacity-60');
-            logo.classList.add('opacity-100');
-        } else {
-            logo.classList.add('opacity-60');
-            logo.classList.remove('opacity-100');
+    // Utility function to properly parse Indonesian currency format
+    function parseCurrency(currencyStr) {
+        if (!currencyStr) return 0;
+        return parseInt(currencyStr.replace(/[^\d]/g, '')) || 0;
+    }
+
+    // Global recalculateTotal function
+    function recalculateTotal() {
+        const subtotalElement = document.getElementById('subtotal-amount');
+        const taxElement = document.getElementById('tax-amount');
+        const shippingElement = document.getElementById('shipping-cost');
+        const discountElement = document.getElementById('discount-amount');
+        const totalElement = document.getElementById('order-total');
+        
+        if (!subtotalElement || !totalElement) return;
+        
+        // Parse all currency values
+        let subtotal = parseCurrency(subtotalElement.textContent);
+        let tax = taxElement ? parseCurrency(taxElement.textContent) : 0;
+        let shipping = 0; // Default to 0
+        let discount = 0;
+        
+        // Only add shipping if the element exists (meaning shipping was selected)
+        if (shippingElement) {
+            shipping = parseCurrency(shippingElement.textContent);
+            console.log('Current shipping cost:', shipping);
         }
+        
+        // Only subtract discount if it exists
+        if (discountElement && window.getComputedStyle(discountElement.parentElement).display !== 'none') {
+            discount = parseCurrency(discountElement.textContent);
+        }
+        
+        // Calculate total
+        const total = subtotal + tax + shipping - discount;
+        console.log('Calculated total:', { subtotal, tax, shipping, discount, total });
+        
+        // Update the display
+        totalElement.textContent = `Rp ${formatNumber(total)}`;
+        
+        // Also update the hidden input for the backend
+        let totalInput = document.querySelector('input[name="final_total"]');
+        if (!totalInput) {
+            totalInput = document.createElement('input');
+            totalInput.type = 'hidden';
+            totalInput.name = 'final_total';
+            document.getElementById('checkout-form').appendChild(totalInput);
+        }
+        totalInput.value = total;
+        
+        // Add or update discount information if there's a discount
+        if (discount > 0) {
+            // Find or create the discount info element
+            let discountInfo = document.getElementById('discount-info');
+            if (!discountInfo) {
+                discountInfo = document.createElement('div');
+                discountInfo.id = 'discount-info';
+                discountInfo.className = 'mt-2 text-sm text-green-600';
+                
+                // Insert after the discount row
+                const discountRow = document.getElementById('discount-row');
+                if (discountRow) {
+                    discountRow.insertAdjacentElement('afterend', discountInfo);
+                }
+            }
+            
+            // Calculate discount percentage based on subtotal
+            const discountPercentage = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
+            // Modified to show only the percentage
+            discountInfo.textContent = `Potongan ${discountPercentage}%`;
+        } else {
+            // Remove discount info if exists and no discount
+            const discountInfo = document.getElementById('discount-info');
+            if (discountInfo) {
+                discountInfo.remove();
+            }
+        }
+    }
+
+    // Ketika nilai select berubah, update highlight logo
+    document.getElementById('courier').addEventListener('change', function() {
+        const selectedValue = this.value;
+        const logos = document.querySelectorAll('.courier-logos img');
+        
+        logos.forEach(logo => {
+            if (logo.alt.toLowerCase().includes(selectedValue.toLowerCase())) {
+                logo.classList.remove('opacity-60');
+                logo.classList.add('opacity-100');
+            } else {
+                logo.classList.add('opacity-60');
+                logo.classList.remove('opacity-100');
+            }
+        });
     });
+
+    // Apply Coupon Code - Fixed version
+    const applyCouponButton = document.getElementById('apply-coupon');
+    const removeCouponButton = document.getElementById('remove-coupon');
+    const couponCodeInput = document.getElementById('coupon_code');
+    const promoMessage = document.getElementById('promo-message');
+    const discountRow = document.getElementById('discount-row');
+    const discountAmount = document.getElementById('discount-amount');
+    const orderTotal = document.getElementById('order-total');
+
+    if (applyCouponButton) {
+        applyCouponButton.addEventListener('click', function() {
+            const code = couponCodeInput.value.trim();
+            if (!code) {
+                showPromoMessage('Please enter a coupon code', 'danger');
+                return;
+            }
+            
+            // Show loading state
+            applyCouponButton.disabled = true;
+            applyCouponButton.innerHTML = '<span class="spinner mr-2"></span> Applying...';
+            
+            // Get subtotal from the page
+            const subtotalElement = document.querySelector('#subtotal-amount');
+            const subtotal = parseCurrency(subtotalElement.textContent);
+            
+            // Use URLSearchParams for proper form data encoding
+            const params = new URLSearchParams();
+            params.append('coupon_code', code);
+            params.append('subtotal', subtotal);
+            
+            // Send AJAX request to apply coupon using axios
+            axios.post('{{ route("coupon.apply") }}', params)
+                .then(function(response) {
+                    const data = response.data;
+                    if (data.success) {
+                        // Reload the page to ensure proper state update
+                        window.location.reload();
+                    } else {
+                        // Error
+                        showPromoMessage(data.message || 'Failed to apply coupon code', 'danger');
+                        applyCouponButton.disabled = false;
+                        applyCouponButton.innerHTML = 'Apply';
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Coupon application error:', error);
+                    showPromoMessage('An error occurred while applying the coupon', 'danger');
+                    applyCouponButton.disabled = false;
+                    applyCouponButton.innerHTML = 'Apply';
+                });
+        });
+    }
+
+    // Fix the remove coupon functionality as well
+    function setupRemoveCouponEvent() {
+        const removeCoupon = document.getElementById('remove-coupon');
+        if (removeCoupon) {
+            removeCoupon.addEventListener('click', function() {
+                // Show loading state
+                removeCoupon.disabled = true;
+                removeCoupon.innerHTML = '<span class="spinner mr-2"></span> Removing...';
+                
+                // Send AJAX request to remove coupon using axios
+                axios.post('{{ route("coupon.remove") }}')
+                    .then(function(response) {
+                        const data = response.data;
+                        if (data.success) {
+                            // Reload the page to ensure proper state update
+                            window.location.reload();
+                        } else {
+                            removeCoupon.disabled = false;
+                            removeCoupon.innerHTML = `
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Remove
+                            `;
+                            showPromoMessage(data.message || 'Failed to remove promo code', 'danger');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Coupon removal error:', error);
+                        removeCoupon.disabled = false;
+                        removeCoupon.innerHTML = `
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Remove
+                        `;
+                        showPromoMessage('An error occurred while removing the coupon', 'danger');
+                    });
+            });
+        }
+    }
+
+    // If remove button exists on page load, set up its event listener
+    if (removeCouponButton) {
+        setupRemoveCouponEvent();
+    }
+
+    // Helper function to show promo message
+    function showPromoMessage(message, type) {
+        promoMessage.textContent = message;
+        promoMessage.className = 'mt-2 text-sm';
+        promoMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
+        
+        if (type === 'success') {
+            promoMessage.classList.add('text-green-600');
+        } else if (type === 'danger') {
+            promoMessage.classList.add('text-red-600');
+        }
+        
+        promoMessage.classList.remove('hidden');
+    }
+
+    // Helper function to recalculate the total
+    function recalculateTotal() {
+        // Get all the necessary elements
+        const subtotalElement = document.getElementById('subtotal-amount');
+        const taxElement = document.getElementById('tax-amount');
+        const shippingElement = document.getElementById('shipping-cost');
+        const discountElement = document.getElementById('discount-amount');
+        const totalElement = document.getElementById('order-total');
+        
+        if (!subtotalElement || !totalElement) return;
+        
+        // Parse all currency values
+        let subtotal = parseCurrency(subtotalElement.textContent);
+        let tax = taxElement ? parseCurrency(taxElement.textContent) : 0;
+        let shipping = 0; // Default to 0
+        let discount = 0;
+        
+        // Only add shipping if the element exists (meaning shipping was selected)
+        if (shippingElement) {
+            shipping = parseCurrency(shippingElement.textContent);
+        }
+        
+        // Only subtract discount if it exists
+        if (discountElement && window.getComputedStyle(discountElement.parentElement).display !== 'none') {
+            discount = parseCurrency(discountElement.textContent);
+        }
+        
+        // Calculate total
+        const total = subtotal + tax + shipping - discount;
+        
+        // Update the display
+        totalElement.textContent = `Rp ${formatNumber(total)}`;
+        
+        // Also update the hidden input for the backend
+        let totalInput = document.querySelector('input[name="final_total"]');
+        if (!totalInput) {
+            totalInput = document.createElement('input');
+            totalInput.type = 'hidden';
+            totalInput.name = 'final_total';
+            document.getElementById('checkout-form').appendChild(totalInput);
+        }
+        totalInput.value = total;
+        
+        // Add or update discount information if there's a discount
+        if (discount > 0) {
+            // Find or create the discount info element
+            let discountInfo = document.getElementById('discount-info');
+            if (!discountInfo) {
+                discountInfo = document.createElement('div');
+                discountInfo.id = 'discount-info';
+                discountInfo.className = 'mt-2 text-sm text-green-600';
+                
+                // Insert after the discount row
+                const discountRow = document.getElementById('discount-row');
+                if (discountRow) {
+                    discountRow.insertAdjacentElement('afterend', discountInfo);
+                }
+            }
+            
+            // Calculate discount percentage based on subtotal
+            const discountPercentage = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
+            // Modified to show only the percentage
+            discountInfo.textContent = `Potongan ${discountPercentage}%`;
+        } else {
+            // Remove discount info if exists and no discount
+            const discountInfo = document.getElementById('discount-info');
+            if (discountInfo) {
+                discountInfo.remove();
+            }
+        }
+    }
 });
 </script>
 @endsection

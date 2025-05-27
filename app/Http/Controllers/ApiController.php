@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\RajaOngkirService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
@@ -37,6 +38,7 @@ class ApiController extends Controller
     
     public function getShippingCost(Request $request)
     {
+        // Validate incoming request
         $validator = Validator::make($request->all(), [
             'origin' => 'required|string',
             'destination' => 'required|string',
@@ -52,6 +54,10 @@ class ApiController extends Controller
             ], 422);
         }
         
+        // Log the request parameters for debugging
+        Log::info('Shipping cost request', $request->all());
+        
+        // Get shipping costs from RajaOngkir service
         $shippingCosts = $this->rajaOngkirService->getShippingCost(
             $request->origin,
             $request->destination,
@@ -59,6 +65,10 @@ class ApiController extends Controller
             $request->courier
         );
         
+        // Log the response for debugging
+        Log::info('Shipping cost response', ['results' => $shippingCosts]);
+        
+        // Return the shipping costs
         return response()->json([
             'success' => true,
             'results' => $shippingCosts
