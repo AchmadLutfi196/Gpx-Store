@@ -370,7 +370,7 @@
                     'completed' => 'bg-green-100 text-green-800 border border-green-200',
                     'cancelled' => 'bg-red-100 text-red-800 border border-red-200',
                     'shipped' => 'bg-indigo-100 text-indigo-800 border border-indigo-200',
-                    'delivered' => 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+                    'delivered' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
                     'failed' => 'bg-gray-100 text-gray-800 border border-gray-200',
                     
                     // Status pembayaran
@@ -693,15 +693,28 @@
                             '&order_id=' + result.order_id;
                     },
                     onError: function(result) {
-                        alert('Pembayaran gagal: ' + result.status_message);
-                        window.location.href = '{{ route("payment.finish", $order->id) }}?' + 
-                            'transaction_status=error' +
-                            '&status_code=' + result.status_code +
-                            '&status_message=' + result.status_message +
-                            '&order_id=' + result.order_id;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Pembayaran Gagal',
+                            text: 'Error: ' + (result.status_message || 'Terjadi kesalahan pada proses pembayaran'),
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = '{{ route("payment.finish", $order->id) }}?' + 
+                                'transaction_status=error' +
+                                '&status_code=' + (result.status_code || '500') +
+                                '&status_message=' + (result.status_message || 'Unknown error') +
+                                '&order_id=' + (result.order_id || '{{ $order->order_number }}');
+                        });
                     },
                     onClose: function() {
-                        alert('Anda menutup popup pembayaran tanpa menyelesaikan pembayaran');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Pembayaran Belum Selesai',
+                            text: 'Anda menutup popup pembayaran tanpa menyelesaikan transaksi.',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             };
