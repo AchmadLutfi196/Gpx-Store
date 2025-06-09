@@ -124,6 +124,7 @@
 @else
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 @endif
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -148,7 +149,14 @@
             payButton.disabled = true;
             payButton.classList.add('bg-gray-400');
             payButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-            alert('Payment initialization failed. Please contact support.');
+            
+            Swal.fire({
+                title: 'Error Pembayaran',
+                text: 'Inisialisasi pembayaran gagal. Silakan coba lagi nanti.',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
         }
         
         payButton.addEventListener('click', function() {
@@ -159,43 +167,105 @@
                 if (typeof window.snap === 'undefined') {
                     console.error('Snap.js is not loaded properly');
                     hideLoading();
-                    alert('Payment system is not available. Please try again later.');
+                    
+                    Swal.fire({
+                        title: 'Sistem Pembayaran Tidak Tersedia',
+                        text: 'Sistem pembayaran sedang tidak tersedia. Silakan coba lagi nanti.',
+                        icon: 'warning',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Coba Lagi'
+                    });
                     return;
                 }
                 
-                // Trigger snap popup
-                window.snap.pay(snapToken, {
-                    onSuccess: function(result) {
-                        console.log('Payment success:', result);
-                        window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=settlement&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
-                    },
-                    onPending: function(result) {
-                        console.log('Payment pending:', result);
-                        window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=pending&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
-                    },
-                    onError: function(result) {
-                        console.error('Payment error:', result);
-                        hideLoading();
-                        alert('Payment failed: ' + (result.message || 'Unknown error'));
-                        window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=deny&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
-                    },
-                    onClose: function() {
-                        console.log('Customer closed the payment window');
-                        hideLoading();
-                        alert('Payment cancelled. Please complete your payment to process the order.');
-                    }
-                });
+                // Fix: force a small delay before triggering Snap
+                setTimeout(function() {
+                    // Trigger snap popup
+                    window.snap.pay(snapToken, {
+                        onSuccess: function(result) {
+                            console.log('Payment success:', result);
+                            window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=settlement&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
+                        },
+                        onPending: function(result) {
+                            console.log('Payment pending:', result);
+                            window.location.href = '{{ route("payment.finish", $order->id) }}?transaction_status=pending&order_id={{ $order->order_number }}&transaction_id=' + (result.transaction_id || '');
+                        },
+                        onError: function(result) {
+                            console.error('Payment error:', result);
+                            hideLoading();
+                            
+                            Swal.fire({
+                                title: 'Pembayaran Gagal',
+                                text: (result.message || 'Terjadi kesalahan saat proses pembayaran'),
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Coba Lagi'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        onClose: function() {
+                            console.log('Customer closed the payment window');
+                            hideLoading();
+                            
+                            Swal.fire({
+                                title: 'Pembayaran Dibatalkan',
+                                text: 'Pembayaran dibatalkan. Silakan selesaikan pembayaran untuk memproses pesanan Anda.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Coba Lagi',
+                                cancelButtonText: 'Kembali ke Pesanan'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Trigger payment again
+                                    setTimeout(() => payButton.click(), 500);
+                                } else {
+                                    // Go back to orders page
+                                    window.location.href = '{{ route("profile.orders") }}';
+                                }
+                            });
+                        }
+                    });
+                }, 100); // Small delay before triggering Snap
             } catch (error) {
                 console.error('Error initiating payment:', error);
                 hideLoading();
-                alert('Failed to initialize payment. Please try again or contact support.');
+                
+                Swal.fire({
+                    title: 'Error Pembayaran',
+                    text: 'Gagal memulai pembayaran. Silakan coba lagi nanti.',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
             }
         });
         
-        // Auto trigger payment popup after a short delay for better UX
-        setTimeout(function() {
-            payButton.click();
-        }, 1500);
+        // Fix: Ensure the automatic trigger properly waits for Midtrans scripts to load
+        if (snapToken && typeof window.snap !== 'undefined') {
+            // Auto trigger payment popup after a short delay for better UX
+            setTimeout(function() {
+                payButton.click();
+            }, 1500);
+        } else {
+            // If snap isn't immediately available, set a longer delay and check again
+            setTimeout(function() {
+                if (typeof window.snap !== 'undefined') {
+                    payButton.click();
+                } else {
+                    console.error('Failed to load Midtrans after waiting');
+                    Swal.fire({
+                        title: 'Gagal Memuat Pembayaran',
+                        text: 'Sistem pembayaran tidak dapat dimuat. Silakan klik tombol "Pay Now" untuk mencoba lagi.',
+                        icon: 'error',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }, 3000);
+        }
     });
 </script>
 @endsection

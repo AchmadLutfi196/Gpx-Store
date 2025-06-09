@@ -161,7 +161,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Customer Information and Shipping Details -->
             <div class="w-full lg:w-2/3">
-                <!-- Customer Information -->
+                <!-- Customer Information - Modified to be Order Contact Info -->
                 <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <h2 class="section-title flex items-center">
                         <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-2">
@@ -169,7 +169,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                         </span>
-                        Customer Information
+                        Informasi Kontak Pemesanan
                     </h2>
                     
                     <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 mt-2 rounded-r-md">
@@ -179,22 +179,14 @@
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm">Informasi ini akan digunakan untuk keperluan pengiriman dan konfirmasi pesanan.</p>
+                                <p class="text-sm">Informasi ini akan digunakan untuk notifikasi status pesanan dan konfirmasi pembayaran.</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            @error('name')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <div>
-                            <label for="email" class="form-label">Email Address</label>
+                            <label for="email" class="form-label">Email Konfirmasi Pesanan</label>
                             <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             @error('email')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -202,16 +194,15 @@
                         </div>
                         
                         <div>
-                            <label for="phone" class="form-label">Phone Number</label>
+                            <label for="phone" class="form-label">Nomor HP Aktif</label>
                             <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789" required>
                             @error('phone')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div>
-                            <label for="alt_phone" class="form-label">Alternative Phone (Optional)</label>
-                            <input type="text" id="alt_phone" name="alt_phone" value="{{ old('alt_phone') }}" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 08123456789">
+                        <div class="hidden">
+                            <input type="hidden" id="name" name="name" value="{{ old('name', $user->name ?? '') }}">
                         </div>
                     </div>
                 </div>
